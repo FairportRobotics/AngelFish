@@ -5,6 +5,17 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2022.1.1"
 }
 
+repositories {
+    maven {
+            name = "GitHub"
+            url = uri("https://maven.pkg.github.com/FairportRobotics/potential-octo-eureka")
+            credentials {
+                username = "tywilly"
+                password = "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"
+            }
+        }
+}
+
 sourceCompatibility = JavaVersion.VERSION_11
 targetCompatibility = JavaVersion.VERSION_11
 
@@ -68,6 +79,8 @@ dependencies {
     simulationRelease wpi.sim.enableRelease()
 
     testImplementation 'junit:junit:4.12'
+
+    implementation 'org.fairportrobotics.poe:potential-octo-eureka-library-java:2022.0.1'
 }
 
 // Simulation configuration (e.g. environment variables).
