@@ -11,7 +11,8 @@ repositories {
             url = uri("https://maven.pkg.github.com/FairportRobotics/potential-octo-eureka")
             credentials {
                 username = "tywilly"
-                password = "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"
+                password = "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"
+                
             }
         }
 }
