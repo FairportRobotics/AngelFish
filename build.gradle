@@ -12,7 +12,6 @@ repositories {
             credentials {
                 username = "tywilly"
                 password = "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"
-                
             }
         }
 }
@@ -81,7 +80,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 
-    implementation 'org.fairportrobotics.poe:potential-octo-eureka-library-java:2023.1.0'
+    implementation 'org.fairportrobotics.poe:potential-octo-eureka-library-java:2022.0.1'
 }
 
 // Simulation configuration (e.g. environment variables).
