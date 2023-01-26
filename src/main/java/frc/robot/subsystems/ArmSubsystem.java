@@ -5,10 +5,15 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+// import com.ctre.phoenix.motorcontrol.can;
 
-public class ExampleSubsystem extends SubsystemBase {
-  /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
+public class ArmSubsystem extends SubsystemBase {
+  /** Creates a new ArmSubsystem. */
+  double speed = .5;
+  public void set( double speed ) {
+    
+  }
+  public ArmSubsystem() {}
 
   @Override
   public void periodic() {
