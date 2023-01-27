@@ -9,6 +9,16 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
+
+import frc.robot.commands.GripperCommand;
+import frc.robot.commands.WristCommand;
+
+
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -22,10 +32,34 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
+  public final GenericHID operator;
+  private Subsystem armSubsystem;
+  private Subsystem gripperSubsystem;
+
+
+  private Command gripperCommand;
+  private Command wristCommand;
+
+  public JoystickButton gripperOpen; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
+  public JoystickButton gripperClose;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    
+    this.armSubsystem = new ArmSubsystem();
+    this.gripperSubsystem = new GripperSubsystem();
+
+    this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
+
     // Configure the button bindings
     configureButtonBindings();
+  }
+  public void initCommands() {
+    // Initiate commands.
+    this.gripperCommand = new GripperCommand();
+    this.wristCommand = new WristCommand();
+
+    this.configureButtonBindings();
   }
 
   /**
@@ -34,7 +68,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+
+    gripperOpen = new JoystickButton(operator, Constants.GRIPPER_OPEN);
+    gripperClose = new JoystickButton(operator, Constants.GRIPPER_CLOSE);
+    gripperOpen.toggleOnTrue(new GripperCommand());
+    gripperClose.toggleOnTrue(new GripperCommand());
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
