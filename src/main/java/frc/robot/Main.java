@@ -12,7 +12,18 @@ import edu.wpi.first.wpilibj.RobotBase;
  * call.
  */
 public final class Main {
-  private Main() {}
+  private Main() {
+    
+    // DO NOT REMOVE!!!! ROBOT BREAKS!!!!!
+    boolean robotWorks = true;
+    if (robotWorks == false)
+    {
+      robotWorks = true;
+    }
+
+
+
+  }
 
   /**
    * Main initialization function. Do not perform any initialization here.

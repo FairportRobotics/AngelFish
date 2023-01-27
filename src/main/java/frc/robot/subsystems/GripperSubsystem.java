@@ -17,4 +17,14 @@ public class GripperSubsystem extends SubsystemBase{
     // dont know what kForward or kReverse are.
     public void GripperClose() {intakeArmSolenoid.set(DoubleSolenoid.Value.kForward);}
     public void GripperOpen() {intakeArmSolenoid.set(DoubleSolenoid.Value.kReverse);}
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
+
+  @Override
+  public void simulationPeriodic() {
+    // This method will be called once per scheduler run during simulation
+  }
 }
