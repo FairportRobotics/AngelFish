@@ -17,9 +17,9 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 public final class Constants {
     
     // Gripper Pneumatics
-    public static final PneumaticsModuleType PCM = PneumaticsModuleType.CTREPCM;
-    public static final int PCM_GRIPPER_CLOSE = 2;
-    public static final int PCM_GRIPPER_OPEN = 3;
+    public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;
+    public static final int PH_GRIPPER_CLOSE = 2;
+    public static final int PH_GRIPPER_OPEN = 3;
 
     // Controller
     public static final int OPERATOR_CONTROLLER = 1;

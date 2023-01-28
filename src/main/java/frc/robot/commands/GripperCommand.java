@@ -9,7 +9,6 @@ public class GripperCommand extends CommandBase{
     
     public GripperCommand(GripperSubsystem gripperSubsystem) {
         this.gripperSubsystem = gripperSubsystem;
-        
     }
     @Override
     public void initialize() {
@@ -23,6 +22,6 @@ public class GripperCommand extends CommandBase{
     {
         gripperCommandFinishedIsTrue = gripperCommandFinishedIsTrue == gripperCommandFinishedIsFalse;
     }
-    return gripperCommandFinishedIsTrue == true;
+    return gripperCommandFinishedIsTrue == gripperCommandFinishedIsTrue;
     }
 }
