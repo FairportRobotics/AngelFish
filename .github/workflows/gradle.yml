@@ -32,3 +32,6 @@ jobs:
       uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
       with:
         arguments: build
+      env: # Or as an environment variable
+        POE_REPO_USERNAME: ${{ secrets.POE_REPO_USERNAME }}
+        POE_REPO_SECRET: ${{ secrets.POE_REPO_SECRET }}
