@@ -33,15 +33,14 @@ public class RobotContainer {
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   public final GenericHID operator;
-  private Subsystem armSubsystem;
-  private Subsystem gripperSubsystem;
+  private ArmSubsystem armSubsystem;
+  private GripperSubsystem gripperSubsystem;
 
 
-  private Command gripperCommand;
-  private Command wristCommand;
+  private GripperCommand gripperCommand;
+  private WristCommand wristCommand;
 
-  public JoystickButton gripperOpen; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
-  public JoystickButton gripperClose;
+  public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -56,7 +55,7 @@ public class RobotContainer {
   }
   public void initCommands() {
     // Initiate commands.
-    this.gripperCommand = new GripperCommand();
+    this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
 
     this.configureButtonBindings();
@@ -70,10 +69,9 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    gripperOpen = new JoystickButton(operator, Constants.GRIPPER_OPEN);
-    gripperClose = new JoystickButton(operator, Constants.GRIPPER_CLOSE);
-    gripperOpen.toggleOnTrue(new GripperCommand());
-    gripperClose.toggleOnTrue(new GripperCommand());
+    gripperToggle = new JoystickButton(operator, Constants.GRIPPER_TOGGLE);
+    gripperToggle.toggleOnTrue(new GripperCommand(gripperSubsystem));
+
   }
 
   /**
