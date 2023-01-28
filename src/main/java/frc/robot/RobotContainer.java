@@ -41,6 +41,7 @@ public class RobotContainer {
   private WristCommand wristCommand;
 
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
+  public JoystickButton gripperSafety;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -69,9 +70,11 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
+    gripperSafety = new JoystickButton(operator, Constants.GRIPPER_SAFETY);
     gripperToggle = new JoystickButton(operator, Constants.GRIPPER_TOGGLE);
-    gripperToggle.toggleOnTrue(new GripperCommand(gripperSubsystem));
-
+    gripperToggle
+          .and(gripperSafety)
+                      .toggleOnTrue(new GripperCommand(gripperSubsystem));
   }
 
   /**
