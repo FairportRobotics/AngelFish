@@ -1,20 +1,26 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class GripperSubsystem extends SubsystemBase{
 
-    private DoubleSolenoid intakeArmSolenoid;
+    private DoubleSolenoid gripperSolenoid;
+    private PneumaticHub ph;
 
     public GripperSubsystem() {
-        // Added some stuff from askar to constants and changed the names, PCM as well.
-        intakeArmSolenoid = new DoubleSolenoid(Constants.PCM, Constants.PCM_GRIPPER_CLOSE, Constants.PCM_GRIPPER_OPEN);
+        // Added some stuff from askar to constants and changed the names, PH as well.
+        ph = new PneumaticHub(1);
+        Compressor phCompressor = new Compressor(1, Constants.PH);
+
+        gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
     }
 
     // Pistons that push/pull gripper claws -- toggles position
-    public void GripperToggle() {intakeArmSolenoid.toggle();}
+    public void GripperToggle() {gripperSolenoid.toggle();}
 
   @Override
   public void periodic() {
