@@ -26,7 +26,7 @@ public final class Constants {
 
     // Buttons
     public static final int GRIPPER_TOGGLE = 0; // Talk to operator on if held
-    public static final int GRIPPER_CLOSE = 1; 
+    public static final int GRIPPER_SAFETY = 1; 
     public static final int UNDERFINED_BUTTON_3 = 2; // Implement some sort of wrist reset
     public static final int UNDERFINED_BUTTON_4 = 3;
     public static final int UNDERFINED_BUTTON_5 = 4;
