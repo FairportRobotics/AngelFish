@@ -13,10 +13,8 @@ public class GripperSubsystem extends SubsystemBase{
         intakeArmSolenoid = new DoubleSolenoid(Constants.PCM, Constants.PCM_GRIPPER_CLOSE, Constants.PCM_GRIPPER_OPEN);
     }
 
-    // Pistons that push/pull gripper claws - need to update for 2023, ripped code from askar
-    // dont know what kForward or kReverse are.
-    public void GripperClose() {intakeArmSolenoid.set(DoubleSolenoid.Value.kForward);}
-    public void GripperOpen() {intakeArmSolenoid.set(DoubleSolenoid.Value.kReverse);}
+    // Pistons that push/pull gripper claws -- toggles position
+    public void GripperToggle() {intakeArmSolenoid.toggle();}
 
   @Override
   public void periodic() {
