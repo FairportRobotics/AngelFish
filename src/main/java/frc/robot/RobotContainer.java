@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ArmSubsystem m_exampleSubsystem = new ArmSubsystem();
+  private final ArmSubsystem m_exampleSubsystem = new ArmSubsystem(0, null);
 
   private final ArmCommand m_autoCommand = new ArmCommand(m_exampleSubsystem);
 
