@@ -5,9 +5,6 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.ArmSubsystem;
-
-import java.security.KeyStore.PrivateKeyEntry;
-
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
@@ -27,7 +24,7 @@ public class ArmCommand extends CommandBase {
   }
 
   // Called when the command is initially scheduled.
-  @Overrided 
+  @Override
   public void initialize() {}
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -43,36 +40,36 @@ public class ArmCommand extends CommandBase {
   public boolean isFinished() {
     return false;
   }
-}
 
+  //take many botton's
+  private int movewristp() {
+    //input current locations, 
 
-//take mulable bottons
-private void movewristp() {
-//input current locations, 
+    //could have 4 bottons 
+    //down, up, midle
 
-//could have 4 bottons 
-//down, up, midle
+    //output instructions 
+    return 1;
+  }
 
-//output instructions 
-}
+  private void wristfollow() {
+   //input:current position
 
+    // keeps the grip parallel to the arm
 
-private void wristfollow() {
-  //input:current position
+    // output: instructions
+  }
 
-  // keeps the grip parallel to the arm
-
-  // output: instructions
-}
-
-
-public void getwristPostion() {
-  //gets the votage 
+  public void getwristPostion() {
+    //gets the votage 
   
-} 
+  } 
 
-public double setwrsitpostion() {
-  //getwristpostion check if its on the current postion
-  
-//  set the wrist postion
+  public double setwrsitpostion() {
+    //getwristpostion check if its on the current postion
+
+  //  set the wrist postion
+  return 0.0;
+  }
+
 }
