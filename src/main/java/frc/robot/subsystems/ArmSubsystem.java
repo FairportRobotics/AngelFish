@@ -4,31 +4,33 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix.motorcontrol.can;
 
 public class ArmSubsystem extends SubsystemBase {
-  /** Creates a new ArmSubsystem. */
-  private AnalogInput shoulderAnalogInput;
+  /* Creates a new ArmSubsystem. */
+  private AnalogInput ShoulderAnalogInput;
+  private String name;
   double speed = .5;
   public void set( double speed ) {
+  }
+  
     
+  
+  public ArmSubsystem(int falconId, String name) {
+    ShoulderAnalogInput = new AnalogInput(0); 
+    this.name=name;
   }
-  public ArmSubsystem() {
-    shoulderAnalogInput = new AnalogInput(); 
-  }
-
-  public void ArmMovePossition (){
+  
+  public void armMovePossition (){
     //  for(int getArmPossition=1; 1<50;i++);
-    // 
     // need range of voltage/ range of motion of Arm
     // need exact voltage value of 3 or 4 possitons
     // some sort of if statement will be used to 
     // move the arm to a new possition
-    //
   }
 
-  public getArmPossition (){
+  public  void getArmPossition (){
     // .getvoltage shoulderAnalogInput;
   }
   @Override
@@ -40,5 +42,5 @@ public class ArmSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
-  
-}
+}  
+
