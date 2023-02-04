@@ -6,6 +6,8 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 
@@ -18,11 +20,11 @@ public class ArmSubsystem extends SubsystemBase {
   private String name;
   
 
-    public ArmSubsystem(String name) {
+    public ArmSubsystem(int i, String name) {
     ShoulderAnalogInput = new AnalogInput(0);
     WristAnalogInput = new AnalogInput(0);
-    ShoulderFalcon = new WPI_TalonFX(shoulderFalconId);
-    WristFalcon = new WPI_TalonFX(wristFalconId);
+    ShoulderFalcon = new WPI_TalonFX(Constants.shoulderFalconId);
+    WristFalcon = new WPI_TalonFX(Constants.wristFalconId);
      this.name = name;
     }
     public void armMovePossition (){

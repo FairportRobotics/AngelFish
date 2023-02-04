@@ -14,6 +14,6 @@ package frc.robot;
  */
 public final class Constants {
 
-    public static final int shoulderFalconId=0;
-    public static final int wristFalconId=1;
+    public static final int shoulderFalconId = 0;
+    public static final int wristFalconId = 1;
 }
