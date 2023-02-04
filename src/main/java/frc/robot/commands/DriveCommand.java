@@ -17,10 +17,10 @@ public class DriveCommand extends CommandBase {
     /**
      * Construct a new drive command.
      */
-    public DriveCommand() {
-        controller = RobotContainer.getInstance().controller;
-		driveSubsystem = RobotContainer.getInstance().driveSubsystem;
-		gyroSubsystem = RobotContainer.getInstance().gyroSubsystem;
+    public DriveCommand(CommandXboxController controller, GyroSubsystem gyroSubsystem, DriveSubsystem driveSubsystem) {
+        this.controller = controller;
+        this.gyroSubsystem = gyroSubsystem;
+        this.driveSubsystem = driveSubsystem;
         addRequirements(driveSubsystem);
     }
 
