@@ -26,14 +26,14 @@ public class ArmSubsystem extends SubsystemBase {
      this.setName("ArmSubsystem");
     }
     public void armMovePosition (){
-      //  for(int getArmPossition=1; 1<50;i++);
+      //  for(int getArmPosition=1; 1<50;i++);
       // need range of voltage/ range of motion of Arm
       // need exact voltage value of 3 or 4 possitons
       // some sort of if statement will be used to
       // move the arm to a new possition
     }
     
-    public double getArmPossition (){
+    public double getArmPosition (){
       // .getvoltage shoulderAnalogInput;
     }
 
