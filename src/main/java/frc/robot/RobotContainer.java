@@ -6,12 +6,17 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.GyroSubsystem;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 
 import frc.robot.commands.GripperCommand;
@@ -33,12 +38,17 @@ public class RobotContainer {
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
   public final GenericHID operator;
+  public final CommandXboxController controller;
+
   private ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
+  public DriveSubsystem driveSubsystem;
+  private GyroSubsystem gyroSubsystem;
 
 
   private GripperCommand gripperCommand;
   private WristCommand wristCommand;
+  public DriveCommand driveCommand;
 
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
@@ -48,8 +58,13 @@ public class RobotContainer {
     
     this.armSubsystem = new ArmSubsystem();
     this.gripperSubsystem = new GripperSubsystem();
+    this.gyroSubsystem = new GyroSubsystem();
+    this.driveSubsystem = new DriveSubsystem(gyroSubsystem);
 
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
+    this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
+
+    this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
 
     // Configure the button bindings
     configureButtonBindings();

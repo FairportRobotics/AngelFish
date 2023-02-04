@@ -67,7 +67,7 @@ public class SwerveModule {
 
     /**
      * Get the position of swerve module, consisting of a distance and a direction.
-     * @return <code>SwerveModulePositoin> of the current module.
+     * @return <code>SwerveModulePosition</code> of the current module.
      */
     public SwerveModulePosition getPosition() {
         double distance = driveFalcon.getSelectedSensorPosition() / Constants.ENCODER_TICKS_PER_METER;

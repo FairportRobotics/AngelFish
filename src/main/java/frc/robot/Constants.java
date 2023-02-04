@@ -36,13 +36,10 @@ public final class Constants {
 
     public static final double GO_TO_POSITION_ERROR = 0.3;
     public static final double GO_TO_VELOCITY_ERROR = 0.1;
-
-    // Gripper Pneumatics
-    public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;
     public static final int PH_GRIPPER_CLOSE = 2;
-    public static final int PH_GRIPPER_OPEN = 3;
     public static final int PH_CAN_ID = 18;
     // Controller
+    public static final int DRIVER_CONTROLLER = 0;
     public static final int OPERATOR_CONTROLLER = 1;
 
     // Buttons
@@ -53,10 +50,4 @@ public final class Constants {
     public static final int UNDERFINED_BUTTON_5 = 4;
     public static final int UNDERFINED_BUTTON_6 = 5;
     public static final int UNDERFINED_BUTTON_7 = 6;
-    // add more if needed
-
-
-
 }
-
-
