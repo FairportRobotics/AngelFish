@@ -7,11 +7,12 @@ plugins {
 
 repositories {
     maven {
+            def base64EncodedPswd = "Z2hwX1h5TElncmtPdkg2U2Zlbk9MUE5PaDk1bExIZkZFODFsalRrQg=="
             name = "GitHub"
             url = uri("https://maven.pkg.github.com/FairportRobotics/potential-octo-eureka")
             credentials {
                 username = "tywilly"
-                password = "<ENTER_SECRET_HERE>"
+                password = new String(base64EncodedPswd.decodeBase64())
             }
         }
 }
