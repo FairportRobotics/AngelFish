@@ -29,7 +29,6 @@ public class SwerveModule {
     private SimpleMotorFeedforward swerveFeedForward;
 
     private String name;
-    private long previousTime;
 
     /**
      * Create a new swerve module class.
@@ -47,8 +46,8 @@ public class SwerveModule {
         this.offset = offset;
         this.name = name;
 
-        driveController = new PIDController(.3, 0, 0);
-        swerveController = new ProfiledPIDController(0.2, 0, 0,
+        driveController = new PIDController(Constants.SWERVE_DRIVE_P, Constants.SWERVE_DRIVE_I, Constants.SWERVE_DRIVE_D);
+        swerveController = new ProfiledPIDController(Constants.SWERVE_STEER_P, Constants.SWERVE_STEER_I, Constants.SWERVE_STEER_D,
             new TrapezoidProfile.Constraints(Constants.MAX_ANG_VEL, Constants.MAX_ANG_ACC)
         );
         swerveController.enableContinuousInput(0, 360);

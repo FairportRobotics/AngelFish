@@ -64,15 +64,16 @@ public class RobotContainer {
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
     this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
 
-    this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
-
     // Configure the button bindings
     configureButtonBindings();
   }
+
+  /** Initialize the commands */
   public void initCommands() {
     // Initiate commands.
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
+    this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
 
     this.configureButtonBindings();
   }

@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
@@ -11,7 +12,7 @@ import frc.robot.subsystems.swerve.DriveSubsystem;
 public class DriveCommand extends CommandBase {
 
     private DriveSubsystem driveSubsystem;
-	private GyroSubsystem gyroSubsystem;
+    private GyroSubsystem gyroSubsystem;
     private CommandXboxController controller;
 
     /**
@@ -29,9 +30,9 @@ public class DriveCommand extends CommandBase {
         double forward = controller.getLeftY();
         double strafe = controller.getLeftX();
         double rotate = controller.getRightX();
-        forward = deadband(forward, 0.05);
-        strafe = deadband(strafe, 0.05);
-        rotate = deadband(rotate, 0.05);
+        forward = deadband(forward, Constants.DEADBAND_TRANSLATE);
+        strafe = deadband(strafe, Constants.DEADBAND_TRANSLATE);
+        rotate = deadband(rotate, Constants.DEADBAND_ROTATE);
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);
         rotate *= Math.abs(rotate);

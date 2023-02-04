@@ -4,6 +4,10 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public class Constants {
 
+    // TODO mesaure wheel base and recalculate offsets
+    public static final double WHEEL_BASE = 20;
+    public static final double TRACK_WIDTH = 20;
+
     public static final int FRONT_LEFT_DRIVE_ID = 1;
     public static final int FRONT_LEFT_SWERVE_ID = 2;
     public static final int FRONT_LEFT_ENCODER_ID = 3;
@@ -30,6 +34,16 @@ public class Constants {
     public static final double STEERING_RATIO = 7/150;
     public static final double DRIVE_ENCODER_RESOLUTION = 2048;
 
+    public static final double DEADBAND_TRANSLATE = 0.05;
+    public static final double DEADBAND_ROTATE = 0.05;
+
+    public static final double GO_TO_POSITION_PID_P = 1;
+    public static final double GO_TO_POSITION_PID_I = 0;
+    public static final double GO_TO_POSITION_PID_D = 0.5;
+
+    public static final double GO_TO_POSITION_MAX_VELOCITY = 1;
+    public static final double GO_TO_POSITION_MAX_ACCELERATION = 0.5;
+
     public static final double MAX_ANG_VEL = 360;
     public static final double MAX_ANG_ACC = 3600;
 
@@ -37,6 +51,14 @@ public class Constants {
 
     public static final double GO_TO_POSITION_ERROR = 0.3;
     public static final double GO_TO_VELOCITY_ERROR = 0.1;
+
+    public static final double SWERVE_DRIVE_P = 0.3;
+    public static final double SWERVE_DRIVE_I = 0.0;
+    public static final double SWERVE_DRIVE_D = 0.0;
+
+    public static final double SWERVE_STEER_P = 0.2;
+    public static final double SWERVE_STEER_I = 0.0;
+    public static final double SWERVE_STEER_D = 0.0;
     
     // Gripper Pneumatics
     public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;

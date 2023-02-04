@@ -14,8 +14,8 @@ public class GotoPositionCommand extends CommandBase {
     private GyroSubsystem gyro;
     private double x;
     private double y;
-    ProfiledPIDController xProfile;
-    ProfiledPIDController yProfile;
+    ProfiledPIDController xController;
+    ProfiledPIDController yController;
 
     /**
      * Construct a command to drive to robot to a target position.
@@ -29,18 +29,22 @@ public class GotoPositionCommand extends CommandBase {
         this.driveSubsystem = driveSubsystem;
         this.x = x;
         this.y = y;
-        xProfile = new ProfiledPIDController(1, 0, 0.5, new TrapezoidProfile.Constraints(1, 0.5));
-        yProfile = new ProfiledPIDController(1, 0, 0.5, new TrapezoidProfile.Constraints(1, 0.5));
+        
+        xController = new ProfiledPIDController(Constants.GO_TO_POSITION_PID_P, Constants.GO_TO_POSITION_PID_I, Constants.GO_TO_POSITION_PID_D, 
+            new TrapezoidProfile.Constraints(Constants.GO_TO_POSITION_MAX_VELOCITY, Constants.GO_TO_POSITION_MAX_ACCELERATION));
+
+        yController = new ProfiledPIDController(Constants.GO_TO_POSITION_PID_P, Constants.GO_TO_POSITION_PID_I, Constants.GO_TO_POSITION_PID_D,
+            new TrapezoidProfile.Constraints(Constants.GO_TO_POSITION_MAX_VELOCITY, Constants.GO_TO_POSITION_MAX_ACCELERATION));
+        
         addRequirements(driveSubsystem);
     }
 
     @Override
     public void execute() {
         Pose2d currLoc = driveSubsystem.getPosition();
-        double outX = xProfile.getSetpoint().velocity + xProfile.calculate(currLoc.getX(), x);
-        double outY = yProfile.getSetpoint().velocity + yProfile.calculate(currLoc.getY(), y);
-        driveSubsystem.drive(outX, outY, 
-        0, gyro.getYaw());
+        double outX = xController.getSetpoint().velocity + xController.calculate(currLoc.getX(), x);
+        double outY = yController.getSetpoint().velocity + yController.calculate(currLoc.getY(), y);
+        driveSubsystem.drive(outX, outY, 0, gyro.getYaw());
     }
 
 
@@ -51,9 +55,8 @@ public class GotoPositionCommand extends CommandBase {
     @Override
     public boolean isFinished() {
         Pose2d currLoc = driveSubsystem.getPosition();
-        return driveSubsystem.getAverageVelocity() < Constants.GO_TO_VELOCITY_ERROR && 
-        Math.sqrt(Math.pow(currLoc.getX() - x, 2) + 
-        Math.pow(currLoc.getY() - y, 2)) < Constants.GO_TO_POSITION_ERROR;
+        return (driveSubsystem.getAverageVelocity() < Constants.GO_TO_VELOCITY_ERROR) && 
+            (Math.sqrt(Math.pow(currLoc.getX() - x, 2) + Math.pow(currLoc.getY() - y, 2)) < Constants.GO_TO_POSITION_ERROR);
     }
 
     @Override

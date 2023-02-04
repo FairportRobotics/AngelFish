@@ -37,10 +37,10 @@ public class DriveSubsystem extends SubsystemBase {
         rightFrontModule = new SwerveModule(Constants.FRONT_RIGHT_DRIVE_ID, Constants.FRONT_RIGHT_SWERVE_ID, Constants.FRONT_RIGHT_ENCODER_ID, "Back Left", Constants.BACK_LEFT_SWERVE_OFFSET);
         rightBackModule = new SwerveModule(Constants.BACK_RIGHT_DRIVE_ID, Constants.BACK_RIGHT_SWERVE_ID, Constants.BACK_RIGHT_ENCODER_ID, "Back Right", Constants.BACK_RIGHT_SWERVE_OFFSET);
 
-        Translation2d frontLeftLocation = new Translation2d(11.25, 10);
-        Translation2d frontRightLocation = new Translation2d(-11.25, 10);
-        Translation2d backLeftLocation = new Translation2d(11.25, -10);
-        Translation2d backRightLocation = new Translation2d(-11.25, -10);
+        Translation2d frontLeftLocation = new Translation2d(Constants.WHEEL_BASE/2, Constants.TRACK_WIDTH/2);
+        Translation2d frontRightLocation = new Translation2d(Constants.WHEEL_BASE/2, Constants.TRACK_WIDTH/2);
+        Translation2d backLeftLocation = new Translation2d(Constants.WHEEL_BASE/2, Constants.TRACK_WIDTH/2);
+        Translation2d backRightLocation = new Translation2d(Constants.WHEEL_BASE/2, Constants.TRACK_WIDTH/2);
 
         kinematics = new SwerveDriveKinematics(
             frontLeftLocation,
@@ -103,9 +103,9 @@ public class DriveSubsystem extends SubsystemBase {
       * @return Approximation of the speed.
       */
      public double getAverageVelocity() {
-         return (Math.abs(leftFrontModule.getVelocity()) +
-         Math.abs(leftFrontModule.getVelocity()) + 
-         Math.abs(leftFrontModule.getVelocity()) +
-         Math.abs(leftFrontModule.getVelocity()))/4;
+         return (Math.abs( leftFrontModule.getVelocity()) +
+                 Math.abs(rightFrontModule.getVelocity()) + 
+                 Math.abs(  leftBackModule.getVelocity()) +
+                 Math.abs( rightBackModule.getVelocity()))/4;
      }
 }
