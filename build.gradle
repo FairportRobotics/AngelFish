@@ -10,8 +10,8 @@ repositories {
             name = "GitHub"
             url = uri("https://maven.pkg.github.com/FairportRobotics/potential-octo-eureka")
             credentials {
-                username = "tywilly"
-                password = "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"
+                username = findProperty('poeRepoUsername') ?: "$System.env.POE_REPO_USERNAME"
+                password = findProperty('poeRepoSecret') ?: "$System.env.POE_REPO_SECRET"
             }
         }
 }
