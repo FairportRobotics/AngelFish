@@ -1,8 +1,7 @@
 package frc.robot;
-
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
-public class Constants {
+public final class Constants {
 
     // TODO mesaure wheel base and recalculate offsets
     public static final double WHEEL_BASE = 20;
