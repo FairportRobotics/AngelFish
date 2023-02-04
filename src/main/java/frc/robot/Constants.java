@@ -20,7 +20,7 @@ public final class Constants {
     public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;
     public static final int PH_GRIPPER_CLOSE = 2;
     public static final int PH_GRIPPER_OPEN = 3;
-
+    public static final int PH_CAN_ID = 18;
     // Controller
     public static final int OPERATOR_CONTROLLER = 1;
 
