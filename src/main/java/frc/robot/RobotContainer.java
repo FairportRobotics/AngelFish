@@ -9,6 +9,16 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
+
+import frc.robot.commands.GripperCommand;
+import frc.robot.commands.WristCommand;
+
+
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -18,14 +28,40 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ArmSubsystem armSubsystem = new ArmSubsystem(0, null);
 
-  private final ArmCommand m_autoCommand = new ArmCommand(armSubsystem);
+  private Command m_autoCommand;
+
+  private ArmCommand m_armCommand;
+
+  public final GenericHID operator;
+  private final ArmSubsystem armSubsystem;
+  private GripperSubsystem gripperSubsystem;
+
+
+  private GripperCommand gripperCommand;
+  private WristCommand wristCommand;
+
+  public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
+  public JoystickButton gripperSafety;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    
+    this.armSubsystem = new ArmSubsystem();
+    this.gripperSubsystem = new GripperSubsystem();
+
+    this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
+
     // Configure the button bindings
     configureButtonBindings();
+  }
+  public void initCommands() {
+    // Initiate commands.
+    this.gripperCommand = new GripperCommand(gripperSubsystem);
+    this.wristCommand = new WristCommand();
+    this.m_armCommand = new ArmCommand(armSubsystem);
+
+    this.configureButtonBindings();
   }
 
   /**
@@ -34,7 +70,14 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {}
+  private void configureButtonBindings() {
+
+    gripperSafety = new JoystickButton(operator, Constants.GRIPPER_SAFETY);
+    gripperToggle = new JoystickButton(operator, Constants.GRIPPER_TOGGLE);
+    gripperToggle
+          .and(gripperSafety)
+                      .toggleOnTrue(this.gripperCommand);
+  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
