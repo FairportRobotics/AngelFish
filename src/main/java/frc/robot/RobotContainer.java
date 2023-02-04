@@ -28,9 +28,8 @@ import frc.robot.commands.WristCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private Command m_autoCommand;
 
   public final GenericHID operator;
   private ArmSubsystem armSubsystem;
@@ -52,10 +51,11 @@ public class RobotContainer {
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
 
     // Configure the button bindings
-    configureButtonBindings();
+    initCommands();
   }
   public void initCommands() {
     // Initiate commands.
+    this.m_autoCommand = new WristCommand();
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
 

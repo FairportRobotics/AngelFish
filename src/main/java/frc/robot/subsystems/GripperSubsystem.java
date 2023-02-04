@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -17,14 +20,22 @@ public class GripperSubsystem extends SubsystemBase{
         Compressor phCompressor = new Compressor(1, Constants.PH);
 
         gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
+        gripperSolenoid.set(Value.kForward);
     }
 
     // Pistons that push/pull gripper claws -- toggles position
-    public void GripperToggle() {gripperSolenoid.toggle();}
+    public void GripperToggle() {
+      if(gripperSolenoid.get() == Value.kOff){
+        gripperSolenoid.set(Value.kForward);
+      }else {
+        gripperSolenoid.toggle();
+      }
+    }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putData(gripperSolenoid);
   }
 
   @Override
