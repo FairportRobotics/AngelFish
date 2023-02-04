@@ -53,9 +53,8 @@ public class RobotContainer {
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
 
     initCommands();
-    // Configure the button bindings
-    configureButtonBindings();
   }
+
   public void initCommands() {
     // Initiate commands.
     this.gripperCommand = new GripperCommand(gripperSubsystem);
