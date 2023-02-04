@@ -41,7 +41,7 @@ public class ArmCommand extends CommandBase {
     return false;
   }
 
-  //take many bottom's
+  //take many botton's
   private int moveWristPos() {
     //input current locations, 
 
@@ -65,7 +65,7 @@ public class ArmCommand extends CommandBase {
   return 0.0;
   } 
 
-  public void setWrsitPos() {
+  public void setWristPos() {
   
   //  set the wrist postion
   

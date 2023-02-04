@@ -25,7 +25,7 @@ public class ArmSubsystem extends SubsystemBase {
     WristFalcon = new WPI_TalonFX(Constants.wristFalconId);
      this.setName("ArmSubsystem");
     }
-    public void armMovePossition (){
+    public void armMovePosition (){
       //  for(int getArmPossition=1; 1<50;i++);
       // need range of voltage/ range of motion of Arm
       // need exact voltage value of 3 or 4 possitons
@@ -33,7 +33,7 @@ public class ArmSubsystem extends SubsystemBase {
       // move the arm to a new possition
     }
     
-    public  void getArmPossition (){
+    public double getArmPossition (){
       // .getvoltage shoulderAnalogInput;
     }
 
