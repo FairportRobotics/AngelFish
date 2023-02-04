@@ -74,7 +74,7 @@ public class RobotContainer {
     gripperToggle = new JoystickButton(operator, Constants.GRIPPER_TOGGLE);
     gripperToggle
           .and(gripperSafety)
-                      .toggleOnTrue(new GripperCommand(gripperSubsystem));
+                      .toggleOnTrue(this.gripperCommand);
   }
 
   /**

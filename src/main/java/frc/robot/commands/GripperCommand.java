@@ -16,12 +16,6 @@ public class GripperCommand extends CommandBase{
     }
     @Override
     public boolean isFinished() {
-    boolean gripperCommandFinishedIsTrue = true;
-    boolean gripperCommandFinishedIsFalse = false;
-    if (gripperCommandFinishedIsTrue == false)
-    {
-        gripperCommandFinishedIsTrue = gripperCommandFinishedIsTrue == gripperCommandFinishedIsFalse;
-    }
-    return gripperCommandFinishedIsTrue == gripperCommandFinishedIsTrue;
+    return true;
     }
 }
