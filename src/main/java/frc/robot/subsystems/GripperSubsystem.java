@@ -13,7 +13,7 @@ public class GripperSubsystem extends SubsystemBase{
 
     public GripperSubsystem() {
         // Added some stuff from askar to constants and changed the names, PH as well.
-        ph = new PneumaticHub(1);
+        ph = new PneumaticHub(Constants.PH_CAN_ID);
         Compressor phCompressor = new Compressor(1, Constants.PH);
 
         gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
