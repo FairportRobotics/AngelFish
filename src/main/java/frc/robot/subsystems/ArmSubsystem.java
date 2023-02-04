@@ -21,8 +21,8 @@ public class ArmSubsystem extends SubsystemBase {
     public ArmSubsystem() {
     ShoulderAnalogInput = new AnalogInput(0);
     WristAnalogInput = new AnalogInput(1);
-    ShoulderFalcon = new WPI_TalonFX(Constants.shoulderFalconId);
-    WristFalcon = new WPI_TalonFX(Constants.wristFalconId);
+    ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
+    WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
      this.setName("ArmSubsystem");
     }
     public void armMovePosition (){
