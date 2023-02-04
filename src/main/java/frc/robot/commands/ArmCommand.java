@@ -41,8 +41,8 @@ public class ArmCommand extends CommandBase {
     return false;
   }
 
-  //take many botton's
-  private int movewristp() {
+  //take many bottom's
+  private int moveWristPos() {
     //input current locations, 
 
     //could have 4 bottons 
@@ -52,7 +52,7 @@ public class ArmCommand extends CommandBase {
     return 1;
   }
 
-  private void wristfollow() {
+  private void wristFollow() {
    //input:current position
 
     // keeps the grip parallel to the arm
@@ -60,16 +60,15 @@ public class ArmCommand extends CommandBase {
     // output: instructions
   }
 
-  public void getwristPostion() {
+  public double getWristPos() {
     //gets the votage 
-  
+  return 0.0;
   } 
 
-  public double setwrsitpostion() {
-    //getwristpostion check if its on the current postion
-
+  public void setWrsitPos() {
+  
   //  set the wrist postion
-  return 0.0;
+  
   }
 
 }
