@@ -13,16 +13,16 @@ public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
   private AnalogInput WristAnalogInput;
   private AnalogInput ShoulderAnalogInput;
-  private WPI_TalonFX Wristfalcon;
+  private WPI_TalonFX WristFalcon;
+  private WPI_TalonFX ShoulderFalcon;
   private String name;
-  double speed = .5;
-  public void set( double speed ) {
-  }
+  
 
-    public ArmSubsystem(int falconId, String name) {
-    ShoulderAnalogInput = new AnalogInput(0); 
-     WristAnalogInput = new AnalogInput(0);
-     Wristfalcon = new WPI_TalonFX(falconId); 
+    public ArmSubsystem(String name) {
+    ShoulderAnalogInput = new AnalogInput(0);
+    WristAnalogInput = new AnalogInput(0);
+    ShoulderFalcon = new WPI_TalonFX(shoulderFalconId);
+    WristFalcon = new WPI_TalonFX(wristFalconId);
      this.name = name;
     }
     public void armMovePossition (){
