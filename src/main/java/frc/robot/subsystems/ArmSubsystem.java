@@ -35,6 +35,7 @@ public class ArmSubsystem extends SubsystemBase {
     
     public double getArmPosition (){
       // .getvoltage shoulderAnalogInput;
+      return 0.0;
     }
 
     @Override
