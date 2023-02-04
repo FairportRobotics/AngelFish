@@ -25,10 +25,11 @@ public class GripperSubsystem extends SubsystemBase{
 
     // Pistons that push/pull gripper claws -- toggles position
     public void GripperToggle() {
-      if(gripperSolenoid.get() == Value.kOff){
-        gripperSolenoid.set(Value.kForward);
-      }else {
-        gripperSolenoid.toggle();
+      if (!ph.getPressureSwitch() && ph.getCompressor())
+        if(gripperSolenoid.get() == Value.kOff){
+          gripperSolenoid.set(Value.kForward);
+        }else {
+          gripperSolenoid.toggle();
       }
     }
 
