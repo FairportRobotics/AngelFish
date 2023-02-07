@@ -15,6 +15,12 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
+
+    public static final int SHOULDER_FALCON_ID = 0;
+    public static final int WRIST_FALCON_ID = 1;
+    public static final int SHOULDER_PE_ID = 3;
+    public static final int WRIST_PE_ID = 2;
+    // Not final id's
     
     // Gripper Pneumatics
     public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;
