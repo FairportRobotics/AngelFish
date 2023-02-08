@@ -1,5 +1,9 @@
 package frc.robot.subsystems.swerve;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPSwerveControllerCommand;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -9,6 +13,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.GyroSubsystem;
@@ -70,6 +77,9 @@ public class DriveSubsystem extends SubsystemBase {
     public void drive(double forward, double strafe, double rotate, double yaw) {
         SmartDashboard.putNumber("yaw", yaw);
         ChassisSpeeds velocity = ChassisSpeeds.fromFieldRelativeSpeeds(forward, strafe, rotate/10, Rotation2d.fromDegrees(-yaw));
+        setModuleStates(velocity);
+    }
+    public void setModuleStates(ChassisSpeeds velocity){
         SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(velocity);
         leftFrontModule.fromModuleState(moduleStates[0]);
         leftBackModule.fromModuleState(moduleStates[1]);
@@ -108,4 +118,35 @@ public class DriveSubsystem extends SubsystemBase {
          Math.abs(leftFrontModule.getVelocity()) +
          Math.abs(leftFrontModule.getVelocity()))/4;
      }
+
+     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
+        return new SequentialCommandGroup(
+             new InstantCommand(() -> {
+               // Reset odometry for the first path you run during auto
+               if(isFirstPath){
+                   this.resetOdometry(traj.getInitialHolonomicPose());
+               }
+             }),
+             new PPSwerveControllerCommand(
+                traj,
+                odometry::getPoseMeters,
+                new PIDController(0,0,0),
+                new PIDController(0,0,0),
+                new PIDController(0,0,0),
+                this::setModuleStates,
+                true,
+                this
+            )
+             
+         );
+     }
+
+    private void resetOdometry(Pose2d initialHolonomicPose) {
+        odometry.resetPosition(new Rotation2d(), new SwerveModulePosition[]{
+            leftFrontModule.getPosition(),
+            rightFrontModule.getPosition(),
+            leftBackModule.getPosition(),
+            rightBackModule.getPosition()
+        }, initialHolonomicPose);
+    }
 }
