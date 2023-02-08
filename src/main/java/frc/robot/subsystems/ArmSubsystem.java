@@ -9,20 +9,23 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
   private AnalogInput WristAnalogInput;
   private AnalogInput ShoulderAnalogInput;
-  private WPI_TalonFX WristFalcon;
+  private WPI_TalonSRX WristFalcon;
   private WPI_TalonFX ShoulderFalcon;
 
     public ArmSubsystem() {
     ShoulderAnalogInput = new AnalogInput(Constants.SHOULDER_PE_ID);
     WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
     ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
-    WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
+    WristFalcon = new WPI_TalonSRX(Constants.WRIST_FALCON_ID);
      this.setName("ArmSubsystem");
     }
     public void armMovePosition (){
@@ -41,7 +44,12 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
     // This method will be called once per scheduler run
-  }
+    int wristPos = WristAnalogInput.getValue();
+    SmartDashboard.putNumber("Wrist angle",wristPos); 
+    double wSpeed = wristPos/4000.0;
+    WristFalcon.set(wSpeed);
+    SmartDashboard.putNumber("Speed ",wSpeed);
+        } 
 
   @Override
   public void simulationPeriodic() {
