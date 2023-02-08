@@ -44,11 +44,11 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
     // This method will be called once per scheduler run
-    int wristPos = WristAnalogInput.getValue();
-    SmartDashboard.putNumber("Wrist angle",wristPos); 
-    double wSpeed = wristPos/4000.0;
-    WristFalcon.set(wSpeed);
-    SmartDashboard.putNumber("Speed ",wSpeed);
+    //int wristPos = WristAnalogInput.getValue();
+    //SmartDashboard.putNumber("Wrist angle",wristPos); 
+    //double wSpeed = wristPos/4000.0;
+    //WristFalcon.set(wSpeed);
+    //SmartDashboard.putNumber("Speed ",wSpeed);
         } 
 
   @Override
