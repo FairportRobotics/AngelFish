@@ -4,20 +4,20 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class ExampleCommand extends CommandBase {
+public class ArmCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  private final ExampleSubsystem m_subsystem;
+  private final ArmSubsystem m_subsystem;
 
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ExampleCommand(ExampleSubsystem subsystem) {
+  public ArmCommand(ArmSubsystem subsystem) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -40,4 +40,35 @@ public class ExampleCommand extends CommandBase {
   public boolean isFinished() {
     return false;
   }
+
+  //take many botton's
+  private int moveWristPos() {
+    //input current locations, 
+
+    //could have 4 bottons 
+    //down, up, midle
+
+    //output instructions 
+    return 1;
+  }
+
+  private void wristFollow() {
+   //input:current position
+
+    // keeps the grip parallel to the arm
+
+    // output: instructions
+  }
+
+  public double getWristPos() {
+    //gets the votage 
+  return 0.0;
+  } 
+
+  public void setWristPos() {
+  
+  //  set the wrist postion
+  
+  }
+
 }
