@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -10,6 +11,7 @@ public class GripperSubsystem extends SubsystemBase{
 
     private DoubleSolenoid gripperSolenoid;
     private PneumaticHub ph;
+    private SerialPort lightController;
 
     public GripperSubsystem() {
         // Added some stuff from askar to constants and changed the names, PH as well.
@@ -30,5 +32,9 @@ public class GripperSubsystem extends SubsystemBase{
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
+  }
+
+  public int lightingInfo(String lightingInput) {
+    return lightController.writeString(lightingInput);
   }
 }
