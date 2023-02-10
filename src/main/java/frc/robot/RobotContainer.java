@@ -6,8 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import frc.robot.commands.ExampleCommand;
-import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.ArmCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
@@ -28,12 +28,13 @@ import frc.robot.commands.WristCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private Command m_autoCommand;
+
+  private ArmCommand m_armCommand;
 
   public final GenericHID operator;
-  private ArmSubsystem armSubsystem;
+  private final ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
 
 
@@ -52,12 +53,15 @@ public class RobotContainer {
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
 
     // Configure the button bindings
-    configureButtonBindings();
+    initCommands();
   }
+
   public void initCommands() {
     // Initiate commands.
+    this.m_autoCommand = new WristCommand();
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
+    this.m_armCommand = new ArmCommand(armSubsystem);
 
     this.configureButtonBindings();
   }
@@ -74,7 +78,7 @@ public class RobotContainer {
     gripperToggle = new JoystickButton(operator, Constants.GRIPPER_TOGGLE);
     gripperToggle
           .and(gripperSafety)
-                      .toggleOnTrue(new GripperCommand(gripperSubsystem));
+                      .toggleOnTrue(this.gripperCommand);
   }
 
   /**
