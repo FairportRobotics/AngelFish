@@ -4,10 +4,13 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.MotorCommutation;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -22,12 +25,14 @@ public class ArmSubsystem extends SubsystemBase {
   private AnalogInput ShoulderAnalogInput;
   private WPI_TalonSRX WristFalcon;
   private WPI_TalonFX ShoulderFalcon;
+  private PIDController wristPIDController;
 
     public ArmSubsystem() {
-    ShoulderAnalogInput = new AnalogInput(Constants.SHOULDER_PE_ID);
-    WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
-    ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
-    WristFalcon = new WPI_TalonSRX(Constants.WRIST_FALCON_ID);
+       ShoulderAnalogInput = new AnalogInput(Constants.SHOULDER_PE_ID);
+        WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
+        ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
+        WristFalcon = new WPI_TalonSRX(Constants.WRIST_FALCON_ID);
+        wristPIDController = new PIDController(.2, .2,.2);
      this.setName("ArmSubsystem");
     }
     public void armMovePosition (){
@@ -39,18 +44,24 @@ public class ArmSubsystem extends SubsystemBase {
     }
     
     public double getArmPosition (){
-      // .getvoltage shoulderAnalogInput;
+      int wristPos2 = WristAnalogInput.getValue();
       return 0.0;
+    }
+
+    public double getwristPosition (){
+       return WristAnalogInput.getValue();
     }
 
     @Override
     public void periodic() {
+      WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(getwristPosition()));
+
     // This method will be called once per scheduler run
     int wristPos2 = WristAnalogInput.getValue();
     //SmartDashboard.putNumber("Wrist angle",wristPos); 
     //double wSpeed = wristPos/4000.0;
     //WristFalcon.set(wSpeed);
-    loop();
+  
     SmartDashboard.putNumber("Speed ",wristPos2);
         } 
 
@@ -59,52 +70,7 @@ public class ArmSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
   }
 
-  int kd = 10;
-  int kp = 2;
-  int ki = 3500;
-  float wristSetPoint = 21; //where we want the robot 
-  float PID_p, PID_i, PID_d, PID_total, time = 0;
-  float currentWristpos = 0, distPreviousWristError = 0, wristDistance_error = 0;
-  float  period = 50;
 
-  public void pid() {
- 
-
-  }
-  
-  void loop() {
-
-    if (millis() > time+period) //makes internal clock aka refresh rate
-    {
-      time = millis();    
-      currentWristpos = get_dist(100);  // reads analog input  
-      System.out.println(millis()); 
-      wristDistance_error = wristSetPoint - currentWristpos;   //(where we want to be) - (current pos)
-      PID_p = kp * wristDistance_error; 
-      float dist_diference = wristDistance_error - distPreviousWristError;     
-      PID_d = kd*((wristDistance_error - distPreviousWristError)/period);
-        
-      if(-3 < wristDistance_error && wristDistance_error < 3)
-      {
-        PID_i = PID_i + (ki * wristDistance_error);
-      }
-      else
-      {
-        PID_i = 0;
-      }
-    
-      PID_total = PID_p + PID_i + PID_d;  
-     // PID_total = map(PID_total, -150, 150, 0, 150); dont know 
-    
-      if(PID_total < 20){PID_total = 20;}
-      if(PID_total > 160) {PID_total = 160; } 
-    
-      WristFalcon.set(PID_total+30);  
-      distPreviousWristError = wristDistance_error;
-    }
-  }
-  
-  
   
   
   float get_dist(int n)
@@ -124,15 +90,6 @@ public class ArmSubsystem extends SubsystemBase {
     return(wSpeed);
   }
 
-  public long millis()
-  {
-    Clock clock = Clock.systemDefaultZone();
- 
-        // get Instant Object of Clock object
-        // in milliseconds using millis() method
-        long milliseconds = clock.millis();
-        return (milliseconds);
-  }
 
 
 }
