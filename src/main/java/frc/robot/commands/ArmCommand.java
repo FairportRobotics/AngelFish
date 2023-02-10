@@ -61,7 +61,7 @@ public class ArmCommand extends CommandBase {
   }
 
   public double getWristPos() {
-    //gets the votage 
+    //int wristPos = WristAnalogInput.getValue();
   return 0.0;
   } 
 
