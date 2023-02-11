@@ -26,6 +26,7 @@ public class ArmSubsystem extends SubsystemBase {
   private WPI_TalonSRX WristFalcon;
   private WPI_TalonFX ShoulderFalcon;
   private PIDController wristPIDController;
+  private PIDController armPIDController;
 
     public ArmSubsystem() {
        ShoulderAnalogInput = new AnalogInput(Constants.SHOULDER_PE_ID);
@@ -33,6 +34,7 @@ public class ArmSubsystem extends SubsystemBase {
         ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
         WristFalcon = new WPI_TalonSRX(Constants.WRIST_FALCON_ID);
         wristPIDController = new PIDController(.2, .2,.2);
+        armPIDController = new PIDController(.2, .2,.2);
      this.setName("ArmSubsystem");
     }
     public void armMovePosition (){
@@ -44,7 +46,6 @@ public class ArmSubsystem extends SubsystemBase {
     }
     
     public double getArmPosition (){
-      int wristPos2 = WristAnalogInput.getValue();
       return 0.0;
     }
 
@@ -54,14 +55,9 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-      WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(getwristPosition()));
-
-    // This method will be called once per scheduler run
+      // This method will be called once per scheduler run
+      WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(getwristPosition() / 4000, 10));
     int wristPos2 = WristAnalogInput.getValue();
-    //SmartDashboard.putNumber("Wrist angle",wristPos); 
-    //double wSpeed = wristPos/4000.0;
-    //WristFalcon.set(wSpeed);
-  
     SmartDashboard.putNumber("Speed ",wristPos2);
         } 
 
@@ -69,27 +65,5 @@ public class ArmSubsystem extends SubsystemBase {
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
-
-
-  
-  
-  float get_dist(int n)
-  {
-    long wristPos=0;
-    for(int i=0;i<n;i++)
-    {
-      wristPos = wristPos + WristAnalogInput.getValue();
-    }  
-     float wSpeed = wristPos/4000;
-    //float adc=wristPos/n; not needed
-    //float volts = analogRead(adc)*0.0048828125;  // value from sensor * (5/1024)
-    //float volts = sum*0.003222656;  // value from sensor * (3.3/1024) EXTERNAL analog refference
-  
-    //float distance_cm = 17569.7 * pow(adc, -1.2062); not needed
-    //float distance_cm = 13*pow(volts, -1); 
-    return(wSpeed);
-  }
-
-
 
 }
