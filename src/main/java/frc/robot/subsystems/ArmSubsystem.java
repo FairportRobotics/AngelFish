@@ -21,7 +21,7 @@ public class ArmSubsystem extends SubsystemBase {
   private AnalogInput WristAnalogInput;
   private AnalogInput ShoulderAnalogInput;
 
-  private WPI_TalonSRX WristFalcon;
+  private WPI_TalonFX WristFalcon;
   private WPI_TalonFX ShoulderFalcon;
 
   private PIDController wristPIDController;
@@ -32,7 +32,7 @@ public class ArmSubsystem extends SubsystemBase {
         WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
 
         ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
-        WristFalcon = new WPI_TalonSRX(Constants.WRIST_FALCON_ID);
+        WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
 
         ShoulderPIDController = new PIDController(.2, .2,.2);
         wristPIDController = new PIDController(.2, .2,.2);

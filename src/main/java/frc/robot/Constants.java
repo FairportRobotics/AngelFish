@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  */
 public final class Constants {
 
-    public static final int SHOULDER_FALCON_ID = 17;
+    public static final int SHOULDER_FALCON_ID = 34;
     public static final int WRIST_FALCON_ID = 16;
     public static final int SHOULDER_PE_ID = 3;
     public static final int WRIST_PE_ID = 0;
