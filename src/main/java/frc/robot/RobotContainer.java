@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ExampleCommand;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.commands.ArmCommand;
+import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -33,14 +35,15 @@ import frc.robot.commands.WristCommand;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final ExampleSubsystem m_exampleSubsystem = new ExampleSubsystem();
 
-  private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
+  private Command m_autoCommand;
+
+  private ArmCommand m_armCommand;
 
   public final GenericHID operator;
   public final CommandXboxController controller;
 
-  private ArmSubsystem armSubsystem;
+  private final ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
   public DriveSubsystem driveSubsystem;
   private GyroSubsystem gyroSubsystem;
@@ -65,15 +68,17 @@ public class RobotContainer {
     this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
 
     // Configure the button bindings
-    configureButtonBindings();
+    initCommands();
   }
 
   /** Initialize the commands */
   public void initCommands() {
     // Initiate commands.
+    this.m_autoCommand = new WristCommand();
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
     this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
+    this.m_armCommand = new ArmCommand(armSubsystem);
 
     this.configureButtonBindings();
   }

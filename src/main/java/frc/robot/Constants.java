@@ -58,6 +58,12 @@ public final class Constants {
     public static final double SWERVE_STEER_P = 0.2;
     public static final double SWERVE_STEER_I = 0.0;
     public static final double SWERVE_STEER_D = 0.0;
+
+    public static final int SHOULDER_FALCON_ID = 0;
+    public static final int WRIST_FALCON_ID = 1;
+    public static final int SHOULDER_PE_ID = 3;
+    public static final int WRIST_PE_ID = 2;
+    // Not final id's
     
     // Gripper Pneumatics
     public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;
@@ -69,7 +75,7 @@ public final class Constants {
     public static final int OPERATOR_CONTROLLER = 1;
 
     // Buttons
-    public static final int GRIPPER_TOGGLE = 0; // Talk to operator on if held
+    public static final int GRIPPER_TOGGLE = 2; // Talk to operator on if held
     public static final int GRIPPER_SAFETY = 1; 
     public static final int UNDERFINED_BUTTON_3 = 2; // Implement some sort of wrist reset
     public static final int UNDERFINED_BUTTON_4 = 3;
