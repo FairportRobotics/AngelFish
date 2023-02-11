@@ -48,6 +48,7 @@ public class RobotContainer {
   public RobotContainer() {
     
     this.armSubsystem = new ArmSubsystem();
+    this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
 
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
@@ -61,7 +62,7 @@ public class RobotContainer {
     this.m_autoCommand = new WristCommand();
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
-    this.m_armCommand = new ArmCommand(armSubsystem);
+    this.m_armCommand = new ArmCommand(armSubsystem, 0);
 
     this.configureButtonBindings();
   }

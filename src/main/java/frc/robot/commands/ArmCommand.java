@@ -11,13 +11,13 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 public class ArmCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_subsystem;
-
+private double setAngle;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArmCommand(ArmSubsystem subsystem) {
+  public ArmCommand(ArmSubsystem subsystem, double setAngle) {
     m_subsystem = subsystem;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
@@ -25,11 +25,15 @@ public class ArmCommand extends CommandBase {
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    m_subsystem.armMovePosition(setAngle);
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -40,35 +44,4 @@ public class ArmCommand extends CommandBase {
   public boolean isFinished() {
     return false;
   }
-
-  //take many botton's
-  private int moveWristPos() {
-    //input current locations, 
-
-    //could have 4 bottons 
-    //down, up, midle
-
-    //output instructions 
-    return 1;
-  }
-
-  private void wristFollow() {
-   //input:current position
-
-    // keeps the grip parallel to the arm
-
-    // output: instructions
-  }
-
-  public double getWristPos() {
-    //int wristPos = WristAnalogInput.getValue();
-  return 0.0;
-  } 
-
-  public void setWristPos() {
-  
-  //  set the wrist postion
-  
-  }
-
 }

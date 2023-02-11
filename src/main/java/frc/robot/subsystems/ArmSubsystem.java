@@ -17,53 +17,54 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import java.time.*;
-
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
   private AnalogInput WristAnalogInput;
   private AnalogInput ShoulderAnalogInput;
+
   private WPI_TalonSRX WristFalcon;
   private WPI_TalonFX ShoulderFalcon;
+
   private PIDController wristPIDController;
-  private PIDController armPIDController;
+  private PIDController ShoulderPIDController;
 
     public ArmSubsystem() {
        ShoulderAnalogInput = new AnalogInput(Constants.SHOULDER_PE_ID);
         WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
+
         ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
         WristFalcon = new WPI_TalonSRX(Constants.WRIST_FALCON_ID);
-        wristPIDController = new PIDController(.2, .2,.2);
-        armPIDController = new PIDController(.2, .2,.2);
-     this.setName("ArmSubsystem");
-    }
-    public void armMovePosition (){
-      //  for(int getArmPosition=1; 1<50;i++);
-      // need range of voltage/ range of motion of Arm
-      // need exact voltage value of 3 or 4 possitons
-      // some sort of if statement will be used to
-      // move the arm to a new possition
-    }
-    
-    public double getArmPosition (){
-      return 0.0;
-    }
 
-    public double getwristPosition (){
-       return WristAnalogInput.getValue();
+        ShoulderPIDController = new PIDController(.2, .2,.2);
+        wristPIDController = new PIDController(.2, .2,.2);
+        this.setName("ArmSubsystem");
     }
 
     @Override
     public void periodic() {
       // This method will be called once per scheduler run
-      WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(getwristPosition() / 4000, 10));
-    int wristPos2 = WristAnalogInput.getValue();
-    SmartDashboard.putNumber("Speed ",wristPos2);
-        } 
-
-  @Override
-  public void simulationPeriodic() {
+      ShoulderFalcon.set(ControlMode.PercentOutput, ShoulderPIDController.calculate(getArmPosition())/ Constants.Shoulder_SPEED_CONTROL);
+      WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(WristAnalogInput.getValue())/ Constants.WRIST_SPEED_CONTROL);
+      
+      // used for grug 
+      int wristPos2 = WristAnalogInput.getValue();
+      SmartDashboard.putNumber("Pos ",wristPos2);
+      SmartDashboard.putData(ShoulderPIDController);
+    }
+      
+    @Override
+    public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-  }
+    }
 
+    public void armMovePosition (double armAngle){   
+      ShoulderPIDController.setSetpoint(armAngle);
+      wristPIDController.setSetpoint(armAngle - 180);
+   }
+
+    public double getArmPosition (){    
+    return ShoulderAnalogInput.getValue();
+    } 
+
+  
 }
