@@ -87,7 +87,7 @@ public class SwerveModule {
      * @param state target state for the swerve module to be in.
      */
     public void fromModuleState(SwerveModuleState state) {
-		state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(getAngle()));
+        state = SwerveModuleState.optimize(state, Rotation2d.fromDegrees(getAngle()));
         double driveFalconVoltage = driveController.calculate(getVelocity(),state.speedMetersPerSecond);
         double swerveFalconVoltage = swerveController.calculate(getAngle(), state.angle.getDegrees()) + swerveFeedForward.calculate(swerveController.getSetpoint().velocity);
         
