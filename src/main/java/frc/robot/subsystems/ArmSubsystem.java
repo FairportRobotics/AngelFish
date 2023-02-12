@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
@@ -19,22 +20,24 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
   private AnalogInput WristAnalogInput;
-  private AnalogInput ShoulderAnalogInput;
+  private AnalogInput armAnalogInput;
 
   private WPI_TalonFX WristFalcon;
-  private WPI_TalonFX ShoulderFalcon;
+  private WPI_TalonFX armFalcon;
 
   private PIDController wristPIDController;
-  private PIDController ShoulderPIDController;
+  private PIDController armPIDController;
 
     public ArmSubsystem() {
-       ShoulderAnalogInput = new AnalogInput(Constants.SHOULDER_PE_ID);
+       armAnalogInput = new AnalogInput(Constants.ARM_PE_ID);
         WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
 
-        ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
+        armFalcon = new WPI_TalonFX(Constants.ARM_FALCON_ID);
+        armFalcon.setNeutralMode(NeutralMode.Brake);
         WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
+        WristFalcon.setNeutralMode(NeutralMode.Brake);
 
-        ShoulderPIDController = new PIDController(.2, .2,.2);
+        armPIDController = new PIDController(.2, .2,.2);
         wristPIDController = new PIDController(.2, .2,.2);
         this.setName("ArmSubsystem");
     }
@@ -42,13 +45,18 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
       // This method will be called once per scheduler run
-      ShoulderFalcon.set(ControlMode.PercentOutput, ShoulderPIDController.calculate(getArmPosition())/ Constants.Shoulder_SPEED_CONTROL);
-      WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(WristAnalogInput.getValue())/ Constants.WRIST_SPEED_CONTROL);
+     // armFalcon.set(ControlMode.PercentOutput, armPIDController.calculate(getArmPosition())/ Constants.Shoulder_SPEED_CONTROL);
+     // WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(WristAnalogInput.getValue())/ Constants.WRIST_SPEED_CONTROL);
       
       // used for grug 
       int wristPos2 = WristAnalogInput.getValue();
-      SmartDashboard.putNumber("Pos ",wristPos2);
-      SmartDashboard.putData(ShoulderPIDController);
+      SmartDashboard.putNumber("Poswrist ",wristPos2);
+      SmartDashboard.putData(armPIDController);
+
+      int armPos2 = armAnalogInput.getValue();
+      SmartDashboard.putNumber("Posarm ",armPos2);
+      SmartDashboard.putData(armPIDController);
+
     }
       
     @Override
@@ -56,13 +64,19 @@ public class ArmSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run during simulation
     }
 
+    public void setArmSpeed(double speed )
+    {
+      //armFalcon.set(ControlMode.PercentOutput, speed);
+      WristFalcon.set(ControlMode.PercentOutput, speed);
+    }
+
     public void armMovePosition (double armAngle){   
-      ShoulderPIDController.setSetpoint(armAngle);
+      armPIDController.setSetpoint(armAngle);
       wristPIDController.setSetpoint(armAngle - 180);
    }
 
     public double getArmPosition (){    
-    return ShoulderAnalogInput.getValue();
+    return armAnalogInput.getValue();
     } 
   
 }

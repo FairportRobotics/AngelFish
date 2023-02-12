@@ -16,18 +16,29 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
  */
 public final class Constants {
 
-    public static final int SHOULDER_FALCON_ID = 34;
-    public static final int WRIST_FALCON_ID = 16;
-    public static final int SHOULDER_PE_ID = 3;
+    public static final int ARM_FALCON_ID = 34;
+    public static final int WRIST_FALCON_ID = 20;
+
+    public static final int ARM_PE_ID = 1;
     public static final int WRIST_PE_ID = 0;
+
     public static final int  WRIST_SPEED_CONTROL = 4000;
-    public static final int  Shoulder_SPEED_CONTROL = 4000;
-    // Not final id's
+    public static final int  ARM_SPEED_CONTROL = 4000;
+
+    public static final int WRIST_MIN = 617;
+    public static final int WRIST_MAX = 3737;
+
+    public static final int ARM_MIN = 249;
+    public static final int ARM_MAX = 1886;
+
+    public static final int ARM_UP_BTN = 8;
+    public static final int ARM_DOWN_BTN = 7;
+        // Not final id's
     
     // Gripper Pneumatics
     public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;
     public static final int PH_GRIPPER_CLOSE = 2;
-    public static final int PH_GRIPPER_OPEN = 3;
+    public static final int PH_GRIPPER_OPEN = 0;
     public static final int PH_CAN_ID = 18;
     // Controller
     public static final int OPERATOR_CONTROLLER = 1;
@@ -41,6 +52,7 @@ public final class Constants {
     public static final int UNDERFINED_BUTTON_6 = 5;
     public static final int UNDERFINED_BUTTON_7 = 6;
     // add more if needed
+    
 
 
 

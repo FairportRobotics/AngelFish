@@ -7,6 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArmCommand;
+import frc.robot.commands.ArmManualCommond;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -32,6 +33,9 @@ public class RobotContainer {
   private Command m_autoCommand;
 
   private ArmCommand m_armCommand;
+  private ArmManualCommond armUpCommand;
+  private ArmManualCommond armDownCommand;
+  private ArmManualCommond armStop;
 
   public final GenericHID operator;
   private final ArmSubsystem armSubsystem;
@@ -43,6 +47,9 @@ public class RobotContainer {
 
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
+
+  private JoystickButton armMoveUpBtn;
+  private JoystickButton armMoveDownBtn;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -64,6 +71,10 @@ public class RobotContainer {
     this.wristCommand = new WristCommand();
     this.m_armCommand = new ArmCommand(armSubsystem, 0);
 
+    this.armDownCommand = new ArmManualCommond(armSubsystem, -0.2);
+    this.armUpCommand = new ArmManualCommond(armSubsystem, 0.2);
+    this.armStop = new ArmManualCommond(armSubsystem, 0);
+
     this.configureButtonBindings();
   }
 
@@ -80,6 +91,14 @@ public class RobotContainer {
     gripperToggle
           .and(gripperSafety)
                       .toggleOnTrue(this.gripperCommand);
+
+    armMoveUpBtn = new JoystickButton(operator, Constants.ARM_UP_BTN);
+    armMoveDownBtn = new JoystickButton(operator, Constants.ARM_DOWN_BTN);
+
+    armMoveUpBtn.whileTrue(this.armUpCommand);
+    armMoveUpBtn.whileFalse(armStop);
+    armMoveDownBtn.whileTrue(this.armDownCommand);
+    armMoveDownBtn.whileFalse(armStop);
   }
 
   /**

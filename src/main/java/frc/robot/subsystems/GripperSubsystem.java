@@ -13,11 +13,13 @@ public class GripperSubsystem extends SubsystemBase{
 
     private DoubleSolenoid gripperSolenoid;
     private PneumaticHub ph;
+    private Compressor phCompressor;
 
     public GripperSubsystem() {
         // Added some stuff from askar to constants and changed the names, PH as well.
         ph = new PneumaticHub(Constants.PH_CAN_ID);
-        Compressor phCompressor = new Compressor(1, Constants.PH);
+        phCompressor = ph.makeCompressor();
+        phCompressor.enableDigital();
 
         gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
         gripperSolenoid.set(Value.kForward);
@@ -25,7 +27,7 @@ public class GripperSubsystem extends SubsystemBase{
 
     // Pistons that push/pull gripper claws -- toggles position
     public void GripperToggle() {
-      if (!ph.getPressureSwitch() && ph.getCompressor())
+      //if (!ph.getPressureSwitch() && ph.getCompressor())
         if(gripperSolenoid.get() == Value.kOff){
           gripperSolenoid.set(Value.kForward);
         }else {
@@ -37,6 +39,7 @@ public class GripperSubsystem extends SubsystemBase{
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putData(gripperSolenoid);
+    SmartDashboard.putData(phCompressor);
   }
 
   @Override
