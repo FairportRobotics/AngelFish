@@ -7,7 +7,6 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArmCommand;
-import frc.robot.commands.ArmManualCommond;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
@@ -33,11 +32,8 @@ public class RobotContainer {
   private Command m_autoCommand;
 
   private ArmCommand m_armCommand;
-  private ArmManualCommond armUpCommand;
-  private ArmManualCommond armDownCommand;
-  private ArmManualCommond armStop;
 
-  public final GenericHID operator;
+  public final XboxController operator;
   private final ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
 
@@ -58,7 +54,7 @@ public class RobotContainer {
     this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
 
-    this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
+    this.operator = new XboxController(Constants.OPERATOR_CONTROLLER);
 
     // Configure the button bindings
     initCommands();
@@ -70,10 +66,6 @@ public class RobotContainer {
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
     this.m_armCommand = new ArmCommand(armSubsystem, 0);
-
-    this.armDownCommand = new ArmManualCommond(armSubsystem, -0.2);
-    this.armUpCommand = new ArmManualCommond(armSubsystem, 0.2);
-    this.armStop = new ArmManualCommond(armSubsystem, 0);
 
     this.configureButtonBindings();
   }
@@ -94,11 +86,6 @@ public class RobotContainer {
 
     armMoveUpBtn = new JoystickButton(operator, Constants.ARM_UP_BTN);
     armMoveDownBtn = new JoystickButton(operator, Constants.ARM_DOWN_BTN);
-
-    armMoveUpBtn.whileTrue(this.armUpCommand);
-    armMoveUpBtn.whileFalse(armStop);
-    armMoveDownBtn.whileTrue(this.armDownCommand);
-    armMoveDownBtn.whileFalse(armStop);
   }
 
   /**
