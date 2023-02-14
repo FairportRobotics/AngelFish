@@ -53,7 +53,7 @@ public class RobotContainer {
   public RobotContainer() {
     
     this.armSubsystem = new ArmSubsystem();
-    this.armSubsystem.armMovePosition(2048);
+    //this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
 
     this.operator = new XboxController(Constants.OPERATOR_CONTROLLER);
@@ -69,8 +69,8 @@ public class RobotContainer {
     this.wristCommand = new WristCommand();
     this.m_armCommand = new ArmCommand(armSubsystem, false, 0);
 
-    this.armDownCommand = new ArmCommand(armSubsystem, true, -0.2);
-    this.armUpCommand = new ArmCommand(armSubsystem, true, 0.2);
+    this.armDownCommand = new ArmCommand(armSubsystem, true, -10);
+    this.armUpCommand = new ArmCommand(armSubsystem, true, 10);
 
     this.configureButtonBindings();
   }
@@ -91,6 +91,9 @@ public class RobotContainer {
 
     armMoveUpBtn = new JoystickButton(operator, Constants.ARM_UP_BTN);
     armMoveDownBtn = new JoystickButton(operator, Constants.ARM_DOWN_BTN);
+
+    armMoveDownBtn.onTrue(armDownCommand);
+    armMoveUpBtn.onTrue(armUpCommand);
   }
 
   /**
