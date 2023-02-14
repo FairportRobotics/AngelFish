@@ -1,5 +1,6 @@
 package frc.robot.subsystems.swerve;
 
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -11,7 +12,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.GyroSubsystem;
 
 public class DriveSubsystem extends SubsystemBase {
 
@@ -20,17 +20,17 @@ public class DriveSubsystem extends SubsystemBase {
     private SwerveModule leftBackModule;
     private SwerveModule rightBackModule;
 
+    private AHRS gyro;
+
     private SwerveDriveKinematics kinematics;
-    private GyroSubsystem gyro;
-
     private SwerveDriveOdometry odometry;
-
     /**
      * Construct a drive subsystem to drive the robot.
      * @param gyro Gyro to use to do odometry.
      */
-    public DriveSubsystem(GyroSubsystem gyro) {
-        this.gyro = gyro;
+    public DriveSubsystem() {
+
+        gyro = new AHRS();
 
         leftFrontModule = new SwerveModule(Constants.FRONT_LEFT_DRIVE_ID, Constants.FRONT_LEFT_SWERVE_ID, Constants.FRONT_LEFT_ENCODER_ID, "Front Left", Constants.FRONT_LEFT_SWERVE_OFFSET);
         leftBackModule = new SwerveModule(Constants.BACK_LEFT_DRIVE_ID, Constants.BACK_LEFT_SWERVE_ID, Constants.BACK_LEFT_ENCODER_ID, "Front Right", Constants.FRONT_RIGHT_SWERVE_OFFSET);
@@ -103,9 +103,23 @@ public class DriveSubsystem extends SubsystemBase {
       * @return Approximation of the speed.
       */
      public double getAverageVelocity() {
-         return (Math.abs( leftFrontModule.getVelocity()) +
-                 Math.abs(rightFrontModule.getVelocity()) + 
-                 Math.abs(  leftBackModule.getVelocity()) +
-                 Math.abs( rightBackModule.getVelocity()))/4;
-     }
-}
+        return (Math.abs( leftFrontModule.getVelocity()) +
+            Math.abs(rightFrontModule.getVelocity()) + 
+            Math.abs(  leftBackModule.getVelocity()) +
+            Math.abs( rightBackModule.getVelocity()))/4;
+     }    
+        /**
+         * Get the current yaw of the gyroscope.
+         * @return current yaw in degrees.
+         */
+    public double getYaw() {
+        return gyro.getYaw();
+    }
+    
+        /**
+         * Set the gyro's current direction to zero.
+         */
+        public void resetGyro() {
+            gyro.reset();
+        }
+    }

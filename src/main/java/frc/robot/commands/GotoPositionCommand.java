@@ -5,13 +5,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
-import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class GotoPositionCommand extends CommandBase {
 
     private DriveSubsystem driveSubsystem;
-    private GyroSubsystem gyro;
+    private DriveSubsystem gyro;
     private double x;
     private double y;
     ProfiledPIDController xController;
@@ -24,7 +23,7 @@ public class GotoPositionCommand extends CommandBase {
      * @param x Target X position.
      * @param y Target Y position.
      */
-    public GotoPositionCommand(DriveSubsystem driveSubsystem, GyroSubsystem gyro, double x, double y) {
+    public GotoPositionCommand(DriveSubsystem driveSubsystem, DriveSubsystem gyro, double x, double y) {
         this.gyro = gyro;
         this.driveSubsystem = driveSubsystem;
         this.x = x;
@@ -44,7 +43,7 @@ public class GotoPositionCommand extends CommandBase {
         Pose2d currLoc = driveSubsystem.getPosition();
         double outX = xController.getSetpoint().velocity + xController.calculate(currLoc.getX(), x);
         double outY = yController.getSetpoint().velocity + yController.calculate(currLoc.getY(), y);
-        driveSubsystem.drive(outX, outY, 0, gyro.getYaw());
+        driveSubsystem.drive(outX, outY, 0, gyro.getYaw()); //Turned red after transferring GyroSubsytem into DriveSubsytem. Method seems to call itself in DriveSubsystem.
     }
 
 

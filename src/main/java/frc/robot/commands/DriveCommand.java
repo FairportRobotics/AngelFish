@@ -6,21 +6,18 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
 
     private DriveSubsystem driveSubsystem;
-    private GyroSubsystem gyroSubsystem;
     private CommandXboxController controller;
 
     /**
      * Construct a new drive command.
      */
-    public DriveCommand(CommandXboxController controller, GyroSubsystem gyroSubsystem, DriveSubsystem driveSubsystem) {
+    public DriveCommand(CommandXboxController controller, DriveSubsystem driveSubsystem) {
         this.controller = controller;
-        this.gyroSubsystem = gyroSubsystem;
         this.driveSubsystem = driveSubsystem;
         addRequirements(driveSubsystem);
     }
@@ -36,7 +33,7 @@ public class DriveCommand extends CommandBase {
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);
         rotate *= Math.abs(rotate);
-        driveSubsystem.drive(forward * 5, strafe * 5, rotate, gyroSubsystem.getYaw());
+        driveSubsystem.drive(forward * 5, strafe * 5, rotate, driveSubsystem.getYaw());
     }
 
     /**
