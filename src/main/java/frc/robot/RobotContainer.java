@@ -33,9 +33,8 @@ public class RobotContainer {
   private Command m_autoCommand;
 
   private ArmCommand m_armCommand;
-  private ArmManualCommond armUpCommand;
-  private ArmManualCommond armDownCommand;
-  private ArmManualCommond armStop;
+  private ArmCommand armUpCommand;
+  private ArmCommand armDownCommand;
 
   public final GenericHID operator;
   private final ArmSubsystem armSubsystem;
@@ -71,9 +70,8 @@ public class RobotContainer {
     this.wristCommand = new WristCommand();
     this.m_armCommand = new ArmCommand(armSubsystem, 0);
 
-    this.armDownCommand = new ArmManualCommond(armSubsystem, -0.2);
-    this.armUpCommand = new ArmManualCommond(armSubsystem, 0.2);
-    this.armStop = new ArmManualCommond(armSubsystem, 0);
+    this.armDownCommand = new ArmCommand(armSubsystem, true, -0.2);
+    this.armUpCommand = new ArmCommand(armSubsystem, true, 0.2);
 
     this.configureButtonBindings();
   }

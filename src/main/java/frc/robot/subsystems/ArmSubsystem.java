@@ -38,14 +38,16 @@ public class ArmSubsystem extends SubsystemBase {
         WristFalcon.setNeutralMode(NeutralMode.Brake);
 
         armPIDController = new PIDController(.2, .2,.2);
+        armPIDController.setSetpoint(armAnalogInput.getValue());
         wristPIDController = new PIDController(.2, .2,.2);
+        wristPIDController.setSetpoint(WristAnalogInput.getValue());
         this.setName("ArmSubsystem");
     }
 
     @Override
     public void periodic() {
       // This method will be called once per scheduler run
-     // armFalcon.set(ControlMode.PercentOutput, armPIDController.calculate(getArmPosition())/ Constants.Shoulder_SPEED_CONTROL);
+      armFalcon.set(ControlMode.PercentOutput, armPIDController.calculate(getArmPosition()) / Constants.ARM_SPEED_CONTROL);
      // WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(WristAnalogInput.getValue())/ Constants.WRIST_SPEED_CONTROL);
       
       // used for grug 
@@ -70,8 +72,12 @@ public class ArmSubsystem extends SubsystemBase {
       WristFalcon.set(ControlMode.PercentOutput, speed);
     }
 
-    public void armMovePosition (double armAngle){   
+    public void armMovePosition(double armAngle){
+
       armPIDController.setSetpoint(armAngle);
+   }
+
+   public void wristMovePosition(double wristAngle){
       wristPIDController.setSetpoint(armAngle - 180);
    }
 

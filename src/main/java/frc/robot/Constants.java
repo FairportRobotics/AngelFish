@@ -22,8 +22,8 @@ public final class Constants {
     public static final int ARM_PE_ID = 1;
     public static final int WRIST_PE_ID = 0;
 
-    public static final int  WRIST_SPEED_CONTROL = 4000;
-    public static final int  ARM_SPEED_CONTROL = 4000;
+    public static final int  WRIST_SPEED_CONTROL = 40000;
+    public static final int  ARM_SPEED_CONTROL = 40000;
 
     public static final int WRIST_MIN = 617;
     public static final int WRIST_MAX = 3737;
