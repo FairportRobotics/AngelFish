@@ -78,7 +78,7 @@ public class ArmSubsystem extends SubsystemBase {
    }
 
    public void wristMovePosition(double wristAngle){
-      wristPIDController.setSetpoint(armAngle - 180);
+      wristPIDController.setSetpoint(wristAngle - 180);
    }
 
     public double getArmPosition (){    

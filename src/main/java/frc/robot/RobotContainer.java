@@ -67,7 +67,7 @@ public class RobotContainer {
     this.m_autoCommand = new WristCommand();
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
-    this.m_armCommand = new ArmCommand(armSubsystem, 0);
+    this.m_armCommand = new ArmCommand(armSubsystem, false, 0);
 
     this.armDownCommand = new ArmCommand(armSubsystem, true, -0.2);
     this.armUpCommand = new ArmCommand(armSubsystem, true, 0.2);

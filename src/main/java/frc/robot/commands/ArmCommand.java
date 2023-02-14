@@ -20,6 +20,7 @@ private double setAngle;
    */
   public ArmCommand(ArmSubsystem subsystem, boolean relative, double setAngle) {
     m_subsystem = subsystem;
+    this.relative = relative;
     // Use addRequirements() here to declare subsystem dependencies.
     //if boolean is false then armpos=setangle 
     //if boolean is true then arpos=setangle+currentangle
