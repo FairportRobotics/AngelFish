@@ -119,7 +119,15 @@ public class DriveSubsystem extends SubsystemBase {
         /**
          * Set the gyro's current direction to zero.
          */
-        public void resetGyro() {
-            gyro.reset();
-        }
+    public void resetGyro() {
+        gyro.reset();
     }
+
+    public float getPitch(){
+        return gyro.getPitch();
+    }
+
+    public float getRoll(){
+        return gyro.getRoll();
+    }
+}
