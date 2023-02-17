@@ -58,7 +58,6 @@ public class RobotContainer {
 
   public void initCommands() {
     // Initiate commands.
-    this.m_autoCommand = new WristCommand();
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
     this.m_armCommand = new ArmCommand(armSubsystem);
