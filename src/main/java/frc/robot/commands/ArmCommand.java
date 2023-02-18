@@ -32,9 +32,9 @@ private double setAngle;
   @Override
   public void execute() {
     if (relative == true) {
-      m_subsystem.armMovePosition(setAngle + m_subsystem.getArmPosition());
+      m_subsystem.setArmPoistion(setAngle + m_subsystem.getArmPosition());
     } else {
-      m_subsystem.armMovePosition(setAngle);
+      m_subsystem.setArmPoistion(setAngle);
     }
     System.out.println("WEE");
   }

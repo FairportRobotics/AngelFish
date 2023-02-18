@@ -16,78 +16,84 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSubsystem extends SubsystemBase {
-  /** Creates a new ArmSubsystem. */
 
-  private double armTargetAngle = 0.0;
-
-  private AnalogInput WristAnalogInput;
+  private AnalogInput wristAnalogInput;
   private AnalogInput armAnalogInput;
 
-  private WPI_TalonFX WristFalcon;
+  private WPI_TalonFX wristFalcon;
   private WPI_TalonFX armFalcon;
 
   private PIDController wristPIDController;
   private PIDController armPIDController;
 
-    public ArmSubsystem() {
-       armAnalogInput = new AnalogInput(Constants.ARM_PE_ID);
-        WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
+  /**
+   * Create a new ArmSubsystem.
+   */
+  public ArmSubsystem() {
+    armAnalogInput = new AnalogInput(Constants.ARM_PE_ID);
+    wristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
 
-        armFalcon = new WPI_TalonFX(Constants.ARM_FALCON_ID);
-        armFalcon.setNeutralMode(NeutralMode.Brake);
-        WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
-        WristFalcon.setNeutralMode(NeutralMode.Brake);
+    armFalcon = new WPI_TalonFX(Constants.ARM_FALCON_ID);
+    armFalcon.setNeutralMode(NeutralMode.Brake);
 
-        armPIDController = new PIDController(.001, 0,0);
-        armTargetAngle = 1000;
-        wristPIDController = new PIDController(.2, .2,.2);
-        wristPIDController.setSetpoint(WristAnalogInput.getValue());
-        this.setName("ArmSubsystem");
-    }
+    wristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
+    wristFalcon.setNeutralMode(NeutralMode.Brake);
 
-    @Override
-    public void periodic() {
-      // This method will be called once per scheduler run
-      armFalcon.set(ControlMode.PercentOutput, Math.max(-0.25, Math.min(armPIDController.calculate(armAnalogInput.getValue()), 0.25)));
-     // WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(WristAnalogInput.getValue())/ Constants.WRIST_SPEED_CONTROL);
-      
-      // used for grug 
-      int wristPos2 = WristAnalogInput.getValue();
-      SmartDashboard.putNumber("Poswrist ",wristPos2);
-      SmartDashboard.putData(armPIDController);
-      SmartDashboard.putData(armFalcon);
-      SmartDashboard.putNumber("PIDOutput", armPIDController.calculate(armAnalogInput.getValue(), armTargetAngle));
+    armPIDController = new PIDController(.001, 0, 0);
+    wristPIDController = new PIDController(.2, .2, .2);
 
-      int armPos2 = armAnalogInput.getValue();
-      SmartDashboard.putNumber("Posarm ",armPos2);
-      SmartDashboard.putData(armPIDController);
+    wristPIDController.setSetpoint(wristAnalogInput.getValue());
+    armPIDController.setSetpoint(armAnalogInput.getValue());
+    this.setName("ArmSubsystem");
+  }
 
-    }
-      
-    @Override
-    public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-    }
+  @Override
+  public void periodic() {
+    double armPower = armPIDController.calculate(armAnalogInput.getValue());
+    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue());
 
-    public void setArmSpeed(double speed )
-    {
-      //armFalcon.set(ControlMode.PercentOutput, speed);
-      WristFalcon.set(ControlMode.PercentOutput, speed);
-    }
+    armPower = Math.max(Math.min(armPower, 0.25), -0.25);
+    wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
 
-    public void armMovePosition(double armAngle){
-      armTargetAngle = armAngle;
-      armPIDController.setSetpoint(armTargetAngle);
-      System.out.println(armAngle);
-   }
+    SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
+    SmartDashboard.putNumber("Arm Power", armPower);
 
-   public void wristMovePosition(double wristAngle){
-      wristPIDController.setSetpoint(wristAngle - 180);
-   }
+    SmartDashboard.putNumber("Wrist Position", wristAnalogInput.getValue());
+    SmartDashboard.putNumber("Wrist Power", wristPower);
 
-    public double getArmPosition (){    
-    return armTargetAngle;
-    } 
-  
+    armFalcon.set(ControlMode.PercentOutput, armPower);
+    // wristFalcon.set(ControlMode.PercentOutput, wristPower);
+  }
+
+  /**
+   * Set the target arm position.
+   * @param armAngle ranges from 0 to 4000
+   */
+  public void setArmPoistion(double armAngle) {
+    armPIDController.setSetpoint(armAngle);
+  }
+
+  /**
+   * Set the target wrist position.
+   * @param wristAngle ranges from 0 to 4000
+   */
+  public void wristMovePosition(double wristAngle) {
+    wristPIDController.setSetpoint(wristAngle - 180);
+  }
+
+  /**
+   * Get the current arm position.
+   * @return ranges from 0 to 4000
+   */
+  public double getArmPosition() {
+    return armAnalogInput.getValue();
+  }
+
+  /**
+   * Get the current wrist position.
+   * @return ranges from 0 to 4000
+   */
+  public double getWristPosition() {
+    return wristAnalogInput.getValue();
+  }
 }
-
