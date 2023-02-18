@@ -4,60 +4,92 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import org.opencv.core.Mat;
+
+import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
+
+  private double armTargetAngle = 0.0;
+
   private AnalogInput WristAnalogInput;
-  private AnalogInput ShoulderAnalogInput;
+  private AnalogInput armAnalogInput;
+
   private WPI_TalonFX WristFalcon;
-  private WPI_TalonFX ShoulderFalcon;
+  private WPI_TalonFX armFalcon;
+
+  private PIDController wristPIDController;
+  private PIDController armPIDController;
 
     public ArmSubsystem() {
-    ShoulderAnalogInput = new AnalogInput(Constants.SHOULDER_PE_ID);
-    WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
-    ShoulderFalcon = new WPI_TalonFX(Constants.SHOULDER_FALCON_ID);
-    WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
-     this.setName("ArmSubsystem");
-    }
-    public void armMovePosition (){
-      //  for(int getArmPosition=1; 1<50;i++);
-      // need range of voltage/ range of motion of Arm
-      // need exact voltage value of 3 or 4 possitons
-      // some sort of if statement will be used to
-      // move the arm to a new possition
-    }
-    
-    public double getArmPosition (){
-      // .getvoltage shoulderAnalogInput;
-      return 0.0;
+       armAnalogInput = new AnalogInput(Constants.ARM_PE_ID);
+        WristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
+
+        armFalcon = new WPI_TalonFX(Constants.ARM_FALCON_ID);
+        armFalcon.setNeutralMode(NeutralMode.Brake);
+        WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
+        WristFalcon.setNeutralMode(NeutralMode.Brake);
+
+        armPIDController = new PIDController(.1, 0,0);
+        armTargetAngle = armAnalogInput.getValue();
+        wristPIDController = new PIDController(.2, .2,.2);
+        wristPIDController.setSetpoint(WristAnalogInput.getValue());
+        this.setName("ArmSubsystem");
     }
 
     @Override
     public void periodic() {
-    // This method will be called once per scheduler run
-  }
+      // This method will be called once per scheduler run
+      armFalcon.set(ControlMode.PercentOutput, Math.max(-0.25, Math.min(armPIDController.calculate(armAnalogInput.getValue()), 0.25)));
+     // WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(WristAnalogInput.getValue())/ Constants.WRIST_SPEED_CONTROL);
+      
+      // used for grug 
+      int wristPos2 = WristAnalogInput.getValue();
+      SmartDashboard.putNumber("Poswrist ",wristPos2);
+      SmartDashboard.putData(armPIDController);
+      SmartDashboard.putData(armFalcon);
+      SmartDashboard.putNumber("PIDOutput", armPIDController.calculate(armAnalogInput.getValue(), armTargetAngle));
 
-  @Override
-  public void simulationPeriodic() {
+      int armPos2 = armAnalogInput.getValue();
+      SmartDashboard.putNumber("Posarm ",armPos2);
+      SmartDashboard.putData(armPIDController);
+
+    }
+      
+    @Override
+    public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
-  }
+    }
 
+    public void setArmSpeed(double speed )
+    {
+      //armFalcon.set(ControlMode.PercentOutput, speed);
+      WristFalcon.set(ControlMode.PercentOutput, speed);
+    }
 
-  public void pid() {
-    //error = (|currentPostion - exact location| / exact location) *100
-    // kp = distance(from the pmeter) * error 
-    //ki = time = PID_i = PID_i + ki * error
-    //kd = speed = dx/dt(distance/time)
+    public void armMovePosition(double armAngle){
+      armTargetAngle = armAngle;
+   }
 
-    //PID_pd= kp*error + kd*(error-pervious_error)/time
+   public void wristMovePosition(double wristAngle){
+      wristPIDController.setSetpoint(wristAngle - 180);
+   }
 
-    //PID = kp*error + PID_i + Ki*error + kd(error-pervious_error)/time
-  }
+    public double getArmPosition (){    
+    return armTargetAngle;
+    } 
   
 }
+

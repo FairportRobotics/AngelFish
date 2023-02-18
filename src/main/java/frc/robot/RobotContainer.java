@@ -6,12 +6,17 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.interfaces.Gyro;
+import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
+import frc.robot.subsystems.GyroSubsystem;
+import frc.robot.subsystems.swerve.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 
 import frc.robot.commands.GripperCommand;
@@ -32,36 +37,55 @@ public class RobotContainer {
   private Command m_autoCommand;
 
   private ArmCommand m_armCommand;
+  private ArmCommand armUpCommand;
+  private ArmCommand armDownCommand;
 
   public final GenericHID operator;
+  public final CommandXboxController controller;
+
   private final ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
+  public DriveSubsystem driveSubsystem;
+  private GyroSubsystem gyroSubsystem;
 
 
   private GripperCommand gripperCommand;
   private WristCommand wristCommand;
+  public DriveCommand driveCommand;
 
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
+
+  private JoystickButton armMoveUpBtn;
+  private JoystickButton armMoveDownBtn;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     
     this.armSubsystem = new ArmSubsystem();
+    //this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
+    this.gyroSubsystem = new GyroSubsystem();
+    this.driveSubsystem = new DriveSubsystem(gyroSubsystem);
 
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
+    this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
 
     // Configure the button bindings
     initCommands();
   }
 
+  /** Initialize the commands */
   public void initCommands() {
     // Initiate commands.
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
-    this.m_armCommand = new ArmCommand(armSubsystem);
+    this.m_armCommand = new ArmCommand(armSubsystem, false, 0);
 
+    this.armDownCommand = new ArmCommand(armSubsystem, true, -0.2);
+    this.armUpCommand = new ArmCommand(armSubsystem, true, 0.2);
+    this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
+  
     this.configureButtonBindings();
   }
 
@@ -78,6 +102,12 @@ public class RobotContainer {
     gripperToggle
           .and(gripperSafety)
                       .toggleOnTrue(this.gripperCommand);
+
+    armMoveUpBtn = new JoystickButton(operator, Constants.ARM_UP_BTN);
+    armMoveDownBtn = new JoystickButton(operator, Constants.ARM_DOWN_BTN);
+
+    armMoveDownBtn.onTrue(armDownCommand);
+    armMoveUpBtn.onTrue(armUpCommand);
   }
 
   /**
