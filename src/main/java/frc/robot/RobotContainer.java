@@ -37,6 +37,8 @@ public class RobotContainer {
   private Command m_autoCommand;
 
   private ArmCommand m_armCommand;
+  private ArmCommand armUpCommand;
+  private ArmCommand armDownCommand;
 
   public final GenericHID operator;
   public final CommandXboxController controller;
@@ -54,10 +56,14 @@ public class RobotContainer {
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
 
+  private JoystickButton armMoveUpBtn;
+  private JoystickButton armMoveDownBtn;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     
     this.armSubsystem = new ArmSubsystem();
+    //this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
     this.gyroSubsystem = new GyroSubsystem();
     this.driveSubsystem = new DriveSubsystem(gyroSubsystem);
@@ -75,9 +81,12 @@ public class RobotContainer {
     this.m_autoCommand = new WristCommand();
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
-    this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
-    this.m_armCommand = new ArmCommand(armSubsystem);
+    this.m_armCommand = new ArmCommand(armSubsystem, false, 0);
 
+    this.armDownCommand = new ArmCommand(armSubsystem, true, -0.2);
+    this.armUpCommand = new ArmCommand(armSubsystem, true, 0.2);
+    this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
+  
     this.configureButtonBindings();
   }
 
@@ -94,6 +103,12 @@ public class RobotContainer {
     gripperToggle
           .and(gripperSafety)
                       .toggleOnTrue(this.gripperCommand);
+
+    armMoveUpBtn = new JoystickButton(operator, Constants.ARM_UP_BTN);
+    armMoveDownBtn = new JoystickButton(operator, Constants.ARM_DOWN_BTN);
+
+    armMoveDownBtn.onTrue(armDownCommand);
+    armMoveUpBtn.onTrue(armUpCommand);
   }
 
   /**
