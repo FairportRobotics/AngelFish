@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+import org.opencv.core.Mat;
+
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -19,6 +21,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSubsystem extends SubsystemBase {
   /** Creates a new ArmSubsystem. */
+
+  private double armTargetAngle = 0.0;
+
   private AnalogInput WristAnalogInput;
   private AnalogInput armAnalogInput;
 
@@ -37,8 +42,8 @@ public class ArmSubsystem extends SubsystemBase {
         WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
         WristFalcon.setNeutralMode(NeutralMode.Brake);
 
-        armPIDController = new PIDController(.2, .2,.2);
-        armPIDController.setSetpoint(armAnalogInput.getValue());
+        armPIDController = new PIDController(.1, 0,0);
+        armTargetAngle = armAnalogInput.getValue();
         wristPIDController = new PIDController(.2, .2,.2);
         wristPIDController.setSetpoint(WristAnalogInput.getValue());
         this.setName("ArmSubsystem");
@@ -47,13 +52,15 @@ public class ArmSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
       // This method will be called once per scheduler run
-      armFalcon.set(ControlMode.PercentOutput, armPIDController.calculate(getArmPosition()) / Constants.ARM_SPEED_CONTROL);
+      armFalcon.set(ControlMode.PercentOutput, Math.max(-0.25, Math.min(armPIDController.calculate(armAnalogInput.getValue()), 0.25)));
      // WristFalcon.set(ControlMode.PercentOutput, wristPIDController.calculate(WristAnalogInput.getValue())/ Constants.WRIST_SPEED_CONTROL);
       
       // used for grug 
       int wristPos2 = WristAnalogInput.getValue();
       SmartDashboard.putNumber("Poswrist ",wristPos2);
       SmartDashboard.putData(armPIDController);
+      SmartDashboard.putData(armFalcon);
+      SmartDashboard.putNumber("PIDOutput", armPIDController.calculate(armAnalogInput.getValue(), armTargetAngle));
 
       int armPos2 = armAnalogInput.getValue();
       SmartDashboard.putNumber("Posarm ",armPos2);
@@ -73,8 +80,7 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void armMovePosition(double armAngle){
-
-      armPIDController.setSetpoint(armAngle);
+      armTargetAngle = armAngle;
    }
 
    public void wristMovePosition(double wristAngle){
@@ -82,7 +88,7 @@ public class ArmSubsystem extends SubsystemBase {
    }
 
     public double getArmPosition (){    
-    return armAnalogInput.getValue();
+    return armTargetAngle;
     } 
   
 }

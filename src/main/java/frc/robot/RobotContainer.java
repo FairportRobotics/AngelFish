@@ -63,7 +63,7 @@ public class RobotContainer {
   public RobotContainer() {
     
     this.armSubsystem = new ArmSubsystem();
-    this.armSubsystem.armMovePosition(2048);
+    //this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
     this.gyroSubsystem = new GyroSubsystem();
     this.driveSubsystem = new DriveSubsystem(gyroSubsystem);
@@ -106,6 +106,9 @@ public class RobotContainer {
 
     armMoveUpBtn = new JoystickButton(operator, Constants.ARM_UP_BTN);
     armMoveDownBtn = new JoystickButton(operator, Constants.ARM_DOWN_BTN);
+
+    armMoveDownBtn.onTrue(armDownCommand);
+    armMoveUpBtn.onTrue(armUpCommand);
   }
 
   /**

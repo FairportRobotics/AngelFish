@@ -21,6 +21,7 @@ private double setAngle;
   public ArmCommand(ArmSubsystem subsystem, boolean relative, double setAngle) {
     m_subsystem = subsystem;
     this.relative = relative;
+    this.setAngle = setAngle;
     // Use addRequirements() here to declare subsystem dependencies.
     //if boolean is false then armpos=setangle 
     //if boolean is true then arpos=setangle+currentangle
@@ -35,6 +36,7 @@ private double setAngle;
     } else {
       m_subsystem.armMovePosition(setAngle);
     }
+    System.out.println("WEE");
   }
 
   // Called every time the scheduler runs while the command is scheduled.
