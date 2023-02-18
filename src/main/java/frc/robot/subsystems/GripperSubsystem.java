@@ -56,6 +56,14 @@ public class GripperSubsystem extends SubsystemBase{
       CUBE
     }
 
+    public void setOpen() {
+      gripperSolenoid.set(Value.kForward);
+    }
+
+    public void setClosed() {
+      gripperSolenoid.set(Value.kReverse);
+    }
+
     // Pistons that push/pull gripper claws -- toggles position
     public void GripperToggle() {
       //if (!ph.getPressureSwitch() && ph.getCompressor())

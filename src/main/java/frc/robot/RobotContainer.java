@@ -18,7 +18,7 @@ import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 
-import frc.robot.commands.GripperCommand;
+import frc.robot.commands.GripperOpenCommand;
 import frc.robot.commands.WristCommand;
 
 
@@ -35,26 +35,22 @@ public class RobotContainer {
 
   private Command m_autoCommand;
 
-  private ArmCommand m_armCommand;
   private ArmCommand armUpCommand;
   private ArmCommand armDownCommand;
 
-  public final GenericHID operator;
   public final CommandXboxController controller;
+  public final CommandXboxController operator;
 
   private final ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
   public DriveSubsystem driveSubsystem;
 
-  private GripperCommand gripperCommand;
-  private WristCommand wristCommand;
+  private GripperOpenCommand openGripperCommand;
+  private GripperOpenCommand closeGripperCommand;
   public DriveCommand driveCommand;
 
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
-
-  private JoystickButton armMoveUpBtn;
-  private JoystickButton armMoveDownBtn;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -64,8 +60,8 @@ public class RobotContainer {
     this.gripperSubsystem = new GripperSubsystem();
     this.driveSubsystem = new DriveSubsystem();
 
-    this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
     this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
+    this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
 
     // Configure the button bindings
     initCommands();
@@ -74,11 +70,9 @@ public class RobotContainer {
   /** Initialize the commands */
   public void initCommands() {
     // Initiate commands.
-    this.gripperCommand = new GripperCommand(gripperSubsystem);
-    this.wristCommand = new WristCommand();
-    this.m_armCommand = new ArmCommand(armSubsystem, false, 0);
+    this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
+    this.closeGripperCommand = new GripperOpenCommand(gripperSubsystem, false);
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
-
     this.armDownCommand = new ArmCommand(armSubsystem, true, -50);
     this.armUpCommand = new ArmCommand(armSubsystem, true, 50);
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
@@ -94,17 +88,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    gripperSafety = new JoystickButton(operator, Constants.GRIPPER_SAFETY);
-    gripperToggle = new JoystickButton(operator, Constants.GRIPPER_TOGGLE);
-    gripperToggle
-          .and(gripperSafety)
-                      .toggleOnTrue(this.gripperCommand);
-
-    armMoveUpBtn = new JoystickButton(operator, Constants.ARM_UP_BTN);
-    armMoveDownBtn = new JoystickButton(operator, Constants.ARM_DOWN_BTN);
-
-    armMoveDownBtn.onTrue(armDownCommand);
-    armMoveUpBtn.onTrue(armUpCommand);
+    operator.leftBumper().onTrue(openGripperCommand);
+    operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
+    operator.y().onTrue(armUpCommand);
+    operator.b().onTrue(armDownCommand);
   }
 
   /**
