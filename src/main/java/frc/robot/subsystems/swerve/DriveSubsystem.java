@@ -97,37 +97,46 @@ public class DriveSubsystem extends SubsystemBase {
          return odometry.getPoseMeters();
      }
 
-     /**
-      * Approximation of the robot's current speed.
-      * It approaches 0 when the robot's speed approaches 0
-      * @return Approximation of the speed.
-      */
-     public double getAverageVelocity() {
+    /**
+     * Approximation of the robot's current speed.
+     * It approaches 0 when the robot's speed approaches 0
+     * @return Approximation of the speed.
+     */
+    public double getAverageVelocity() {
         return (Math.abs( leftFrontModule.getVelocity()) +
             Math.abs(rightFrontModule.getVelocity()) + 
             Math.abs(  leftBackModule.getVelocity()) +
             Math.abs( rightBackModule.getVelocity()))/4;
-     }    
-        /**
-         * Get the current yaw of the gyroscope.
-         * @return current yaw in degrees.
-         */
+    }
+    
+    /**
+     * Get the current yaw of the gyroscope.
+     * @return current yaw in degrees.
+     */
     public double getYaw() {
         return gyro.getYaw();
     }
-    
-        /**
-         * Set the gyro's current direction to zero.
-         */
-    public void resetGyro() {
-        gyro.reset();
-    }
 
+    /**
+     * Get the current pitch of the gyroscope.
+     * @return current pitch in degrees.
+     */
     public float getPitch(){
         return gyro.getPitch();
     }
 
+    /**
+     * Get the current roll of the gyroscope.
+     * @return current roll in degrees.
+     */
     public float getRoll(){
         return gyro.getRoll();
+    }
+    
+    /**
+     * Set the gyro's current direction to zero.
+     */
+    public void resetGyro() {
+        gyro.reset();
     }
 }
