@@ -26,6 +26,8 @@ public class ArmSubsystem extends SubsystemBase {
   private PIDController wristPIDController;
   private PIDController armPIDController;
 
+  private double wristOffset;
+
   /**
    * Create a new ArmSubsystem.
    */
@@ -44,13 +46,16 @@ public class ArmSubsystem extends SubsystemBase {
 
     wristPIDController.setSetpoint(wristAnalogInput.getValue());
     armPIDController.setSetpoint(armAnalogInput.getValue());
+
+    wristOffset = Constants.WRIST_OFFSET;
+
     this.setName("ArmSubsystem");
   }
 
   @Override
   public void periodic() {
     double armPower = armPIDController.calculate(armAnalogInput.getValue());
-    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue());
+    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()-armAnalogInput.getValue()+wristOffset);
 
     armPower = Math.max(Math.min(armPower, 0.25), -0.25);
     wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
@@ -77,8 +82,8 @@ public class ArmSubsystem extends SubsystemBase {
    * Set the target wrist position.
    * @param wristAngle ranges from 0 to 4000
    */
-  public void wristMovePosition(double wristAngle) {
-    wristPIDController.setSetpoint(wristAngle - 180);
+  public void setWristOffset(double wristOffset) {
+    this.wristOffset = wristOffset;
   }
 
   /**

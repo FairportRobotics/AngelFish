@@ -20,6 +20,8 @@ public final class Constants {
 
     public static final int ARM_UP_BTN = 4;
     public static final int ARM_DOWN_BTN = 1;
+
+    public static final double WRIST_OFFSET = 0;
         // Not final id's
     // TODO mesaure wheel base and recalculate offsets
     public static final double WHEEL_BASE = 20;
