@@ -9,14 +9,10 @@ import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-import org.opencv.core.Mat;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -42,8 +38,8 @@ public class ArmSubsystem extends SubsystemBase {
         WristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
         WristFalcon.setNeutralMode(NeutralMode.Brake);
 
-        armPIDController = new PIDController(.1, 0,0);
-        armTargetAngle = armAnalogInput.getValue();
+        armPIDController = new PIDController(.001, 0,0);
+        armTargetAngle = 1000;
         wristPIDController = new PIDController(.2, .2,.2);
         wristPIDController.setSetpoint(WristAnalogInput.getValue());
         this.setName("ArmSubsystem");
@@ -81,6 +77,8 @@ public class ArmSubsystem extends SubsystemBase {
 
     public void armMovePosition(double armAngle){
       armTargetAngle = armAngle;
+      armPIDController.setSetpoint(armTargetAngle);
+      System.out.println(armAngle);
    }
 
    public void wristMovePosition(double wristAngle){

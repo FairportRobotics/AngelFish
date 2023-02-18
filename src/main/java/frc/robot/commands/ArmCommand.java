@@ -30,18 +30,13 @@ private double setAngle;
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {
+  public void execute() {
     if (relative == true) {
       m_subsystem.armMovePosition(setAngle + m_subsystem.getArmPosition());
     } else {
       m_subsystem.armMovePosition(setAngle);
     }
     System.out.println("WEE");
-  }
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {
   }
 
   // Called once the command ends or is interrupted.

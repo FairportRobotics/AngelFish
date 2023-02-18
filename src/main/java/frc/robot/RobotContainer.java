@@ -82,8 +82,8 @@ public class RobotContainer {
     this.wristCommand = new WristCommand();
     this.m_armCommand = new ArmCommand(armSubsystem, false, 0);
 
-    this.armDownCommand = new ArmCommand(armSubsystem, true, -0.2);
-    this.armUpCommand = new ArmCommand(armSubsystem, true, 0.2);
+    this.armDownCommand = new ArmCommand(armSubsystem, true, -50);
+    this.armUpCommand = new ArmCommand(armSubsystem, true, 50);
     this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
   
     this.configureButtonBindings();

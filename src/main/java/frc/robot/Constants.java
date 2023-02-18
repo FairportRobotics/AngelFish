@@ -3,8 +3,8 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public final class Constants {
 
-    public static final int ARM_FALCON_ID = 20;
-    public static final int WRIST_FALCON_ID = 34;
+    public static final int ARM_FALCON_ID = 58;
+    public static final int WRIST_FALCON_ID = 20;
 
     public static final int ARM_PE_ID = 1;
     public static final int WRIST_PE_ID = 0;
@@ -18,8 +18,8 @@ public final class Constants {
     public static final int ARM_MIN = 249;
     public static final int ARM_MAX = 1886;
 
-    public static final int ARM_UP_BTN = 8;
-    public static final int ARM_DOWN_BTN = 7;
+    public static final int ARM_UP_BTN = 4;
+    public static final int ARM_DOWN_BTN = 1;
         // Not final id's
     // TODO mesaure wheel base and recalculate offsets
     public static final double WHEEL_BASE = 20;
