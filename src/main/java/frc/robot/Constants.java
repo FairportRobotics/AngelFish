@@ -28,23 +28,23 @@ public final class Constants {
     public static final int FRONT_LEFT_DRIVE_ID = 1;
     public static final int FRONT_LEFT_SWERVE_ID = 2;
     public static final int FRONT_LEFT_ENCODER_ID = 3;
-    public static final double FRONT_LEFT_SWERVE_OFFSET = -263.203;
+    public static final double FRONT_LEFT_SWERVE_OFFSET = 104.062;
 
     public static final int FRONT_RIGHT_DRIVE_ID = 4;
     public static final int FRONT_RIGHT_SWERVE_ID = 5;
     public static final int FRONT_RIGHT_ENCODER_ID = 6;
-    public static final double FRONT_RIGHT_SWERVE_OFFSET = -335.391;
+    public static final double FRONT_RIGHT_SWERVE_OFFSET = -12.393;
 
 
     public static final int BACK_LEFT_DRIVE_ID = 7;
     public static final int BACK_LEFT_SWERVE_ID = 8;
     public static final int BACK_LEFT_ENCODER_ID = 9;
-    public static final double BACK_LEFT_SWERVE_OFFSET = 198.896;
+    public static final double BACK_LEFT_SWERVE_OFFSET = -161.895  ;
 
     public static final int BACK_RIGHT_DRIVE_ID = 10;
     public static final int BACK_RIGHT_SWERVE_ID = 11;
     public static final int BACK_RIGHT_ENCODER_ID = 12;
-    public static final double BACK_RIGHT_SWERVE_OFFSET = -107.402;
+    public static final double BACK_RIGHT_SWERVE_OFFSET = 291.533 ;
 
     public static final double WHEEL_RADIUS = .04;// in meters
     public static final double DRIVE_RATIO = 8.14;
@@ -93,14 +93,9 @@ public final class Constants {
     // Buttons
     public static final int GRIPPER_TOGGLE = 2; // Talk to operator on if held
     public static final int GRIPPER_SAFETY = 1; 
-    public static final int UNDERFINED_BUTTON_3 = 2; // Implement some sort of wrist reset
-    public static final int UNDERFINED_BUTTON_4 = 3;
-    public static final int UNDERFINED_BUTTON_5 = 4;
-    public static final int UNDERFINED_BUTTON_6 = 5;
-    public static final int UNDERFINED_BUTTON_7 = 6;
-    // add more if needed
-    
-
-
-
+    public static final int WRIST_RESET = 3; // Implement some sort of wrist reset
+    public static final int UNDERFINED_BUTTON_4 = 4;
+    public static final int UNDERFINED_BUTTON_5 = 5;
+    public static final int UNDERFINED_BUTTON_6 = 6;
+    public static final int UNDERFINED_BUTTON_7 = 7;
 }

@@ -15,7 +15,6 @@ import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
-import frc.robot.subsystems.GyroSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
 
@@ -46,8 +45,6 @@ public class RobotContainer {
   private final ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
   public DriveSubsystem driveSubsystem;
-  private GyroSubsystem gyroSubsystem;
-
 
   private GripperCommand gripperCommand;
   private WristCommand wristCommand;
@@ -65,8 +62,7 @@ public class RobotContainer {
     this.armSubsystem = new ArmSubsystem();
     //this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
-    this.gyroSubsystem = new GyroSubsystem();
-    this.driveSubsystem = new DriveSubsystem(gyroSubsystem);
+    this.driveSubsystem = new DriveSubsystem();
 
     this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
     this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
@@ -81,10 +77,11 @@ public class RobotContainer {
     this.gripperCommand = new GripperCommand(gripperSubsystem);
     this.wristCommand = new WristCommand();
     this.m_armCommand = new ArmCommand(armSubsystem, false, 0);
+    this.driveCommand = new DriveCommand(controller, driveSubsystem);
 
     this.armDownCommand = new ArmCommand(armSubsystem, true, -50);
     this.armUpCommand = new ArmCommand(armSubsystem, true, 50);
-    this.driveCommand = new DriveCommand(controller, gyroSubsystem, driveSubsystem);
+    this.driveCommand = new DriveCommand(controller, driveSubsystem);
   
     this.configureButtonBindings();
   }
