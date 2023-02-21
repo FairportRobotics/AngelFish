@@ -101,7 +101,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-
     return driveSubsystem.followTrajectoryCommand(PathPlanner.loadPath("test", new PathConstraints(4, 3)), true);
   }
 

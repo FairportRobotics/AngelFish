@@ -82,8 +82,8 @@ public class DriveSubsystem extends SubsystemBase {
     public void setModuleStates(ChassisSpeeds velocity){
         SwerveModuleState[] moduleStates = kinematics.toSwerveModuleStates(velocity);
         leftFrontModule.fromModuleState(moduleStates[0]);
-        leftBackModule.fromModuleState(moduleStates[1]);
-        rightFrontModule.fromModuleState(moduleStates[2]);
+        rightFrontModule.fromModuleState(moduleStates[1]);
+        leftBackModule.fromModuleState(moduleStates[2]);
         rightBackModule.fromModuleState(moduleStates[3]);
     }
 
