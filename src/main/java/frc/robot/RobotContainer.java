@@ -37,6 +37,7 @@ public class RobotContainer {
 
   private ArmCommand armUpCommand;
   private ArmCommand armDownCommand;
+  public WristCommand wristCommand;
 
   public final CommandXboxController controller;
   public final CommandXboxController operator;
@@ -75,6 +76,7 @@ public class RobotContainer {
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
     this.armDownCommand = new ArmCommand(armSubsystem, true, -50);
     this.armUpCommand = new ArmCommand(armSubsystem, true, 50);
+    this.wristCommand = new WristCommand(operator, armSubsystem);
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
   
     this.configureButtonBindings();
@@ -91,7 +93,7 @@ public class RobotContainer {
     operator.leftBumper().onTrue(openGripperCommand);
     operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
     operator.y().onTrue(armUpCommand);
-    operator.b().onTrue(armDownCommand);
+    operator.a().onTrue(armDownCommand);
   }
 
   /**

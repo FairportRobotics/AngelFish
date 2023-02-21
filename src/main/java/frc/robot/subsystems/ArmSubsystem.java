@@ -42,7 +42,7 @@ public class ArmSubsystem extends SubsystemBase {
     wristFalcon.setNeutralMode(NeutralMode.Brake);
 
     armPIDController = new PIDController(.001, 0, 0);
-    wristPIDController = new PIDController(.2, .2, .2);
+    wristPIDController = new PIDController(.001, 0, 0);
 
     wristPIDController.setSetpoint(wristAnalogInput.getValue());
     armPIDController.setSetpoint(armAnalogInput.getValue());
@@ -55,7 +55,7 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     double armPower = armPIDController.calculate(armAnalogInput.getValue());
-    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()-armAnalogInput.getValue()+wristOffset);
+    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()+armAnalogInput.getValue()+wristOffset);
 
     armPower = Math.max(Math.min(armPower, 0.25), -0.25);
     wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
@@ -67,7 +67,7 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist Power", wristPower);
 
     armFalcon.set(ControlMode.PercentOutput, armPower);
-    // wristFalcon.set(ControlMode.PercentOutput, wristPower);
+    wristFalcon.set(ControlMode.PercentOutput, wristPower);
   }
 
   /**
@@ -76,14 +76,16 @@ public class ArmSubsystem extends SubsystemBase {
    */
   public void setArmPoistion(double armAngle) {
     armPIDController.setSetpoint(armAngle);
+    SmartDashboard.putNumber("Arm Setpoint", armAngle);
   }
 
   /**
    * Set the target wrist position.
    * @param wristAngle ranges from 0 to 4000
    */
-  public void setWristOffset(double wristOffset) {
-    this.wristOffset = wristOffset;
+  public void adjustWristOffset(double offsetAdjustment) {
+    wristOffset = Math.max(Math.min(wristOffset + offsetAdjustment, 2000), 0);
+    SmartDashboard.putNumber("Wrist Offset", wristOffset);
   }
 
   /**
@@ -94,6 +96,13 @@ public class ArmSubsystem extends SubsystemBase {
     return armAnalogInput.getValue();
   }
 
+  /**
+   * Get the current arm setpoint.
+   * @return current arm setpoint
+   */
+  public double getArmSetpoint() {
+    return armPIDController.getSetpoint();
+  }
   /**
    * Get the current wrist position.
    * @return ranges from 0 to 4000

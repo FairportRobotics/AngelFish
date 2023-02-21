@@ -80,6 +80,7 @@ public class Robot extends TimedRobot {
       m_autonomousCommand.cancel();
     }
     m_robotContainer.driveSubsystem.setDefaultCommand(m_robotContainer.driveCommand);
+    m_robotContainer.wristCommand.schedule();
   }
 
   /** This function is called periodically during operator control. */
