@@ -40,8 +40,8 @@ public class DriveSubsystem extends SubsystemBase {
         this.gyro = gyro;
 
         leftFrontModule = new SwerveModule(Constants.FRONT_LEFT_DRIVE_ID, Constants.FRONT_LEFT_SWERVE_ID, Constants.FRONT_LEFT_ENCODER_ID, "Front Left", Constants.FRONT_LEFT_SWERVE_OFFSET);
-        leftBackModule = new SwerveModule(Constants.BACK_LEFT_DRIVE_ID, Constants.BACK_LEFT_SWERVE_ID, Constants.BACK_LEFT_ENCODER_ID, "Front Right", Constants.FRONT_RIGHT_SWERVE_OFFSET);
-        rightFrontModule = new SwerveModule(Constants.FRONT_RIGHT_DRIVE_ID, Constants.FRONT_RIGHT_SWERVE_ID, Constants.FRONT_RIGHT_ENCODER_ID, "Back Left", Constants.BACK_LEFT_SWERVE_OFFSET);
+        leftBackModule = new SwerveModule(Constants.BACK_LEFT_DRIVE_ID, Constants.BACK_LEFT_SWERVE_ID, Constants.BACK_LEFT_ENCODER_ID, "Back Left", Constants.FRONT_RIGHT_SWERVE_OFFSET);
+        rightFrontModule = new SwerveModule(Constants.FRONT_RIGHT_DRIVE_ID, Constants.FRONT_RIGHT_SWERVE_ID, Constants.FRONT_RIGHT_ENCODER_ID, "Front Right", Constants.BACK_LEFT_SWERVE_OFFSET);
         rightBackModule = new SwerveModule(Constants.BACK_RIGHT_DRIVE_ID, Constants.BACK_RIGHT_SWERVE_ID, Constants.BACK_RIGHT_ENCODER_ID, "Back Right", Constants.BACK_RIGHT_SWERVE_OFFSET);
 
         Translation2d frontLeftLocation = new Translation2d(11.25, 10);
