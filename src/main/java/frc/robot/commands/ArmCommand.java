@@ -9,10 +9,11 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class ArmCommand extends CommandBase {
+
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_subsystem;
   private final boolean relative;
-private double setAngle;
+  public double setAngle;
   /**
    * Creates a new ExampleCommand.
    *

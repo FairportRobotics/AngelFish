@@ -47,7 +47,7 @@ public class ArmSubsystem extends SubsystemBase {
     wristPIDController.setSetpoint(wristAnalogInput.getValue());
     armPIDController.setSetpoint(armAnalogInput.getValue());
 
-    wristOffset = Constants.WRIST_OFFSET;
+    wristOffset = Constants.NEUTRAL_WRIST_OFFSET;
 
     this.setName("ArmSubsystem");
   }

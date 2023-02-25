@@ -21,7 +21,17 @@ public final class Constants {
     public static final int ARM_UP_BTN = 4;
     public static final int ARM_DOWN_BTN = 1;
 
-    public static final double WRIST_OFFSET = 0;
+    public static final double NEUTRAL_WRIST_OFFSET = 0;
+
+    public static final double SUBSTATION_ANGLE = 1000;
+    
+    public static final double CONE_LOW_ANGLE = 1000;
+    public static final double CONE_MID_ANGLE = 1000;
+    public static final double CONE_HIGH_ANGLE = 1000;
+
+    public static final double CUBE_LOW_ANGLE = 1000;
+    public static final double CUBE_MID_ANGLE = 1000;
+    public static final double CUBE_HIGH_ANGLE = 1000;
         // Not final id's
     // TODO mesaure wheel base and recalculate offsets
     public static final double WHEEL_BASE = 20;
