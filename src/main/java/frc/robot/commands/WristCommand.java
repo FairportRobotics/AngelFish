@@ -19,8 +19,20 @@ public class WristCommand extends CommandBase {
     @Override
     public void execute() {
         long delta = System.currentTimeMillis() - previousTime;
-        armSubsystem.adjustWristOffset(delta*operator.getRightY());
         previousTime = System.currentTimeMillis();
+        armSubsystem.adjustWristLevel(-delta*deadband(operator.getLeftY(), 0.1)/10);
+    }
+
+    private static double deadband(double value, double deadband) {
+        if(Math.abs(value) > deadband) {
+            if(value > 0.0) {
+                return (value - deadband) / (1.0 - deadband);
+            } else {
+                return (value + deadband) / (1.0 - deadband);
+            }
+        } else {
+            return 0.0;
+        }
     }
     
 }

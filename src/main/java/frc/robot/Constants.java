@@ -12,8 +12,10 @@ public final class Constants {
     public static final int  WRIST_SPEED_CONTROL = 4000;
     public static final int  ARM_SPEED_CONTROL = 4000;
 
-    public static final int WRIST_MIN = 617;
-    public static final int WRIST_MAX = 3737;
+    public static final int WRIST_MIN = 2000;
+    public static final int WRIST_MAX = 2500;
+
+    public static final int NEUTRAL_WRIST_OFFSET = 3750;
 
     public static final int ARM_MIN = 249;
     public static final int ARM_MAX = 1886;
@@ -21,7 +23,15 @@ public final class Constants {
     public static final int ARM_UP_BTN = 4;
     public static final int ARM_DOWN_BTN = 1;
 
-    public static final double WRIST_OFFSET = 0;
+    public static final double SUBSTATION_ANGLE = 1000;
+    
+    public static final double CONE_LOW_ANGLE = 325;
+    public static final double CONE_MID_ANGLE = 1380;
+    public static final double CONE_HIGH_ANGLE = 1610;
+
+    public static final double CUBE_LOW_ANGLE = 325;
+    public static final double CUBE_MID_ANGLE = 1050;
+    public static final double CUBE_HIGH_ANGLE = 1370;
         // Not final id's
     // TODO mesaure wheel base and recalculate offsets
     public static final double WHEEL_BASE = 20;

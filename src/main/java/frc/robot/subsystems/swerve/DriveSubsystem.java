@@ -45,8 +45,8 @@ public class DriveSubsystem extends SubsystemBase {
         rightBackModule = new SwerveModule(Constants.BACK_RIGHT_DRIVE_ID, Constants.BACK_RIGHT_SWERVE_ID, Constants.BACK_RIGHT_ENCODER_ID, "Back Right", Constants.BACK_RIGHT_SWERVE_OFFSET);
 
         Translation2d frontLeftLocation = new Translation2d(Constants.WHEEL_BASE/2, Constants.TRACK_WIDTH/2);
-        Translation2d frontRightLocation = new Translation2d(-Constants.WHEEL_BASE/2, Constants.TRACK_WIDTH/2);
-        Translation2d backLeftLocation = new Translation2d(Constants.WHEEL_BASE/2, -Constants.TRACK_WIDTH/2);
+        Translation2d frontRightLocation = new Translation2d(Constants.WHEEL_BASE/2, -Constants.TRACK_WIDTH/2);
+        Translation2d backLeftLocation = new Translation2d(-Constants.WHEEL_BASE/2, Constants.TRACK_WIDTH/2);
         Translation2d backRightLocation = new Translation2d(-Constants.WHEEL_BASE/2, -Constants.TRACK_WIDTH/2);
 
         kinematics = new SwerveDriveKinematics(

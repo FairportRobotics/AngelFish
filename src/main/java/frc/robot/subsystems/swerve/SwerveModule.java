@@ -95,13 +95,13 @@ public class SwerveModule {
         swerveFalcon.setVoltage(swerveFalconVoltage);
 
         
-        SmartDashboard.putNumber(name + " Swerve Voltage", swerveFalconVoltage);
-        SmartDashboard.putNumber(name + " Drive Voltage", driveFalconVoltage);
-        SmartDashboard.putNumber(name + " Current Angle", getAngle() );
-        SmartDashboard.putNumber(name + " Current Velocity", getVelocity() );
-        SmartDashboard.putNumber(name + " Target Angle", state.angle.getDegrees());
-        SmartDashboard.putNumber(name + " Target Velocity", state.speedMetersPerSecond);
-        SmartDashboard.putNumber(name + " Swerve Target Velocity", (swerveController.getSetpoint().velocity));
+        //SmartDashboard.putNumber(name + " Swerve Voltage", swerveFalconVoltage);
+       // SmartDashboard.putNumber(name + " Drive Voltage", driveFalconVoltage);
+       // SmartDashboard.putNumber(name + " Current Angle", getAngle() );
+       // SmartDashboard.putNumber(name + " Current Velocity", getVelocity() );
+       // SmartDashboard.putNumber(name + " Target Angle", state.angle.getDegrees());
+      //  SmartDashboard.putNumber(name + " Target Velocity", state.speedMetersPerSecond);
+       // SmartDashboard.putNumber(name + " Swerve Target Velocity", (swerveController.getSetpoint().velocity));
     }
 
 }
