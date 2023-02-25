@@ -21,7 +21,7 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.commands.GripperOpenCommand;
 import frc.robot.commands.WristCommand;
 
-
+import frc.robot.commands.TimedMoveCommand;
 
 
 /**
@@ -53,6 +53,8 @@ public class RobotContainer {
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
 
+  public TimedMoveCommand timedMoveCommand;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     
@@ -78,6 +80,7 @@ public class RobotContainer {
     this.armUpCommand = new ArmCommand(armSubsystem, true, 50);
     this.wristCommand = new WristCommand(operator, armSubsystem);
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
+    this.timedMoveCommand = new TimedMoveCommand(0.25, 0.25, 30000, driveSubsystem);
   
     this.configureButtonBindings();
   }
