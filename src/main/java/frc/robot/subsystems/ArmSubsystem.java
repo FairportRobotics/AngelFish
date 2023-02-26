@@ -36,18 +36,18 @@ public class ArmSubsystem extends SubsystemBase {
     wristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
 
     armFalcon = new WPI_TalonFX(Constants.ARM_FALCON_ID);
-    armFalcon.setNeutralMode(NeutralMode.Brake);
+    armFalcon.setNeutralMode(NeutralMode.Coast);
 
     wristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
-    wristFalcon.setNeutralMode(NeutralMode.Brake);
+    wristFalcon.setNeutralMode(NeutralMode.Coast);
 
     armPIDController = new PIDController(.001, 0, 0);
     wristPIDController = new PIDController(.001, 0, 0);
 
-    wristPIDController.setSetpoint(wristAnalogInput.getValue());
-    armPIDController.setSetpoint(armAnalogInput.getValue());
+    wristPIDController.setSetpoint(0);
+    armPIDController.setSetpoint(Constants.CUBE_LOW_ANGLE);
 
-    wristOffset = Constants.WRIST_OFFSET;
+    this.wristOffset = Constants.NEUTRAL_WRIST_OFFSET;
 
     this.setName("ArmSubsystem");
   }
@@ -55,7 +55,7 @@ public class ArmSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     double armPower = armPIDController.calculate(armAnalogInput.getValue());
-    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()+armAnalogInput.getValue()+wristOffset);
+    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()+armAnalogInput.getValue()-wristOffset);
 
     armPower = Math.max(Math.min(armPower, 0.25), -0.25);
     wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
@@ -63,11 +63,28 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
     SmartDashboard.putNumber("Arm Power", armPower);
 
-    SmartDashboard.putNumber("Wrist Position", wristAnalogInput.getValue());
+    SmartDashboard.putNumber("Wrist Position", wristAnalogInput.getValue()+armAnalogInput.getValue()-wristOffset);
     SmartDashboard.putNumber("Wrist Power", wristPower);
 
-    armFalcon.set(ControlMode.PercentOutput, armPower);
-    wristFalcon.set(ControlMode.PercentOutput, wristPower);
+    //armFalcon.set(ControlMode.PercentOutput, armPower);
+    //wristFalcon.set(ControlMode.PercentOutput, wristPower);
+
+    if(armAnalogInput.getValue() < Constants.ARM_MIN){
+      armPower = Math.max(armPower, 0);
+    }
+
+    if(armAnalogInput.getValue() > Constants.ARM_MAX){
+      armPower = Math.min(armPower, 0);
+    }
+
+    if(wristAnalogInput.getValue() < Constants.WRIST_MIN){
+      wristPower = Math.max(wristPower, 0);
+    }
+
+    if(wristAnalogInput.getValue() > Constants.WRIST_MAX){
+      wristPower = Math.min(wristPower, 0);
+    }
+
   }
 
   /**
@@ -79,13 +96,9 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Arm Setpoint", armAngle);
   }
 
-  /**
-   * Set the target wrist position.
-   * @param wristAngle ranges from 0 to 4000
-   */
-  public void adjustWristOffset(double offsetAdjustment) {
-    wristOffset = Math.max(Math.min(wristOffset + offsetAdjustment, 2000), 0);
-    SmartDashboard.putNumber("Wrist Offset", wristOffset);
+  public void adjustWristLevel(double offsetAdjustment) {
+    System.out.println(offsetAdjustment);
+    wristOffset += offsetAdjustment;
   }
 
   /**
@@ -103,6 +116,7 @@ public class ArmSubsystem extends SubsystemBase {
   public double getArmSetpoint() {
     return armPIDController.getSetpoint();
   }
+
   /**
    * Get the current wrist position.
    * @return ranges from 0 to 4000

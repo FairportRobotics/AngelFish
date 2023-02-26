@@ -4,25 +4,25 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.swerve.DriveSubsystem;
-import frc.robot.subsystems.ArmSubsystem;
 
 import frc.robot.commands.GripperOpenCommand;
 import frc.robot.commands.WristCommand;
 
-
-
+import frc.robot.commands.TimedMoveCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,8 +35,6 @@ public class RobotContainer {
 
   private Command m_autoCommand;
 
-  private ArmCommand armUpCommand;
-  private ArmCommand armDownCommand;
   public WristCommand wristCommand;
 
   public final CommandXboxController controller;
@@ -48,10 +46,20 @@ public class RobotContainer {
 
   private GripperOpenCommand openGripperCommand;
   private GripperOpenCommand closeGripperCommand;
+
+  private ArmCommand substationArmCommand;
+
+  private ArmCommand lowArmCommand;
+  private ArmCommand midArmCommand;
+  private ArmCommand highArmCommand;
+
   public DriveCommand driveCommand;
 
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
+
+  private boolean targetingCones;
+  public TimedMoveCommand timedMoveCommand;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -64,6 +72,8 @@ public class RobotContainer {
     this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
     this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
 
+    this.targetingCones = true;
+
     // Configure the button bindings
     initCommands();
   }
@@ -73,11 +83,17 @@ public class RobotContainer {
     // Initiate commands.
     this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
     this.closeGripperCommand = new GripperOpenCommand(gripperSubsystem, false);
+
+    this.substationArmCommand = new ArmCommand(armSubsystem, false, Constants.SUBSTATION_ANGLE);
+
+    this.lowArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_LOW_ANGLE);
+    this.midArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_MID_ANGLE);
+    this.highArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE);
+
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
-    this.armDownCommand = new ArmCommand(armSubsystem, true, -50);
-    this.armUpCommand = new ArmCommand(armSubsystem, true, 50);
     this.wristCommand = new WristCommand(operator, armSubsystem);
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
+    this.timedMoveCommand = new TimedMoveCommand(0.25, 0.25, 30000, driveSubsystem);
   
     this.configureButtonBindings();
   }
@@ -92,8 +108,30 @@ public class RobotContainer {
 
     operator.leftBumper().onTrue(openGripperCommand);
     operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
-    operator.y().onTrue(armUpCommand);
-    operator.a().onTrue(armDownCommand);
+
+    operator.rightBumper().onTrue(highArmCommand);
+    operator.axisGreaterThan(3, 0.75).onTrue(midArmCommand);
+    operator.povDown().onTrue(lowArmCommand);
+    operator.povUp().onTrue(substationArmCommand);
+    
+    operator.y().onTrue(Commands.runOnce(()->{
+      lowArmCommand.setAngle = Constants.CONE_LOW_ANGLE;
+      midArmCommand.setAngle = Constants.CONE_MID_ANGLE;
+      highArmCommand.setAngle = Constants.CONE_HIGH_ANGLE;
+    }));
+    operator.x().onTrue(Commands.runOnce(()->{
+      lowArmCommand.setAngle = Constants.CUBE_LOW_ANGLE;
+      midArmCommand.setAngle = Constants.CUBE_MID_ANGLE;
+      highArmCommand.setAngle = Constants.CUBE_HIGH_ANGLE;
+    }));
+  }
+
+  /**
+   * Get the type of cargo that the robot is targeting
+   * @return true if the robot is in cone mode
+   */
+  public boolean getTargetCargo() {
+    return targetingCones;
   }
 
   /**
@@ -102,7 +140,6 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
-  }
+    return driveSubsystem.followTrajectoryCommand(PathPlanner.loadPath("test", new PathConstraints(4, 3)), true);
+  }  
 }
