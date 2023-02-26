@@ -57,33 +57,42 @@ public class ArmSubsystem extends SubsystemBase {
     double armPower = armPIDController.calculate(armAnalogInput.getValue());
     double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()+armAnalogInput.getValue()-wristOffset);
 
-    armPower = Math.max(Math.min(armPower, 0.25), -0.25);
+    armPower = Math.max(Math.min(armPower, 0.50), -0.50);
     wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
+
+    if(armAnalogInput.getValue() < Constants.ARM_MIN){
+      armPower = Math.max(armPower, 0);
+      System.out.println("Limit Arm Power Positive");
+
+    }
+
+    if(armAnalogInput.getValue() > Constants.ARM_MAX){
+      armPower = Math.min(armPower, 0);
+      System.out.println("Limit Arm Power Negative");
+    }
+
+    if(wristAnalogInput.getValue() < Constants.WRIST_MIN){
+      wristPower = Math.max(wristPower, 0);
+      System.out.println("Limit Wrist Power Positive");
+    }
+
+    if(wristAnalogInput.getValue() > Constants.WRIST_MAX){
+      wristPower = Math.min(wristPower, 0);
+      System.out.println("Limit Wrist Power Negative");
+    }
 
     SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
     SmartDashboard.putNumber("Arm Power", armPower);
 
     SmartDashboard.putNumber("Wrist Position", wristAnalogInput.getValue()+armAnalogInput.getValue()-wristOffset);
     SmartDashboard.putNumber("Wrist Power", wristPower);
+    SmartDashboard.putNumber("Wrist Potentiometer", wristAnalogInput.getValue());
+    SmartDashboard.putNumber("Wrist Offset", wristOffset);
 
-    //armFalcon.set(ControlMode.PercentOutput, armPower);
-    //wristFalcon.set(ControlMode.PercentOutput, wristPower);
+    armFalcon.set(ControlMode.PercentOutput, armPower);
+    wristFalcon.set(ControlMode.PercentOutput, wristPower);
 
-    if(armAnalogInput.getValue() < Constants.ARM_MIN){
-      armPower = Math.max(armPower, 0);
-    }
 
-    if(armAnalogInput.getValue() > Constants.ARM_MAX){
-      armPower = Math.min(armPower, 0);
-    }
-
-    if(wristAnalogInput.getValue() < Constants.WRIST_MIN){
-      wristPower = Math.max(wristPower, 0);
-    }
-
-    if(wristAnalogInput.getValue() > Constants.WRIST_MAX){
-      wristPower = Math.min(wristPower, 0);
-    }
 
   }
 

@@ -14,6 +14,7 @@ import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
@@ -140,6 +141,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return driveSubsystem.followTrajectoryCommand(PathPlanner.loadPath("test", new PathConstraints(4, 3)), true);
+    return new SequentialCommandGroup(
+      new GripperOpenCommand(gripperSubsystem, true),
+      new TimedMoveCommand(0.25, 0, 1000, driveSubsystem)
+    );
   }  
 }

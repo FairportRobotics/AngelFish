@@ -12,8 +12,8 @@ public final class Constants {
     public static final int  WRIST_SPEED_CONTROL = 4000;
     public static final int  ARM_SPEED_CONTROL = 4000;
 
-    public static final int WRIST_MIN = 2000;
-    public static final int WRIST_MAX = 2500;
+    public static final int WRIST_MIN = 1800;
+    public static final int WRIST_MAX = 4000;
 
     public static final int NEUTRAL_WRIST_OFFSET = 3750;
 

@@ -20,7 +20,7 @@ public class WristCommand extends CommandBase {
     public void execute() {
         long delta = System.currentTimeMillis() - previousTime;
         previousTime = System.currentTimeMillis();
-        armSubsystem.adjustWristLevel(-delta*deadband(operator.getLeftY(), 0.1)/10);
+        armSubsystem.adjustWristLevel(-delta*deadband(operator.getLeftY(), 0.1)/2);
     }
 
     private static double deadband(double value, double deadband) {
