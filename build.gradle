@@ -81,7 +81,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 
-    implementation 'org.fairportrobotics.poe:potential-octo-eureka-library-java:2023.1.0-SNAPSHOT'
+    implementation 'org.fairportrobotics.poe:potential-octo-eureka-library-java:2023.1.0-RALLY'
 }
 
 // Simulation configuration (e.g. environment variables).

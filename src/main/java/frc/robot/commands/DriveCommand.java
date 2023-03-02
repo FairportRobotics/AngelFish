@@ -30,10 +30,11 @@ public class DriveCommand extends CommandBase {
         forward = deadband(forward, Constants.DEADBAND_TRANSLATE);
         strafe = deadband(strafe, Constants.DEADBAND_TRANSLATE);
         rotate = deadband(rotate, Constants.DEADBAND_ROTATE);
-        forward = Math.pow(forward, 5);
-        strafe = Math.pow(strafe, 5);
+        forward *= Math.abs(forward);
+        strafe *= Math.abs(strafe);
         rotate *= Math.abs(rotate);
-        driveSubsystem.drive(forward * 5, strafe * 5, rotate, driveSubsystem.getYaw());
+        double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.MAX_SPEED : Constants.SLOW_SPEED;
+        driveSubsystem.drive(forward * speed, strafe * speed, rotate, driveSubsystem.getYaw());
     }
 
     /**

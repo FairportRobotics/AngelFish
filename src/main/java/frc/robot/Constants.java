@@ -76,6 +76,9 @@ public final class Constants {
     public static final double MAX_ANG_VEL = 360;
     public static final double MAX_ANG_ACC = 3600;
 
+    public static final double MAX_SPEED = 3;
+    public static final double SLOW_SPEED = 2;
+
     public static final double ENCODER_TICKS_PER_METER = DRIVE_ENCODER_RESOLUTION * DRIVE_RATIO / (2 * Math.PI * WHEEL_RADIUS);
 
     public static final double GO_TO_POSITION_ERROR = 0.3;
