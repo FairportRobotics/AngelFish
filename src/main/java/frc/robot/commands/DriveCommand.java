@@ -7,7 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.subsystems.swerve.DriveSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
 
@@ -34,7 +34,7 @@ public class DriveCommand extends CommandBase {
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);
         rotate *= Math.abs(rotate);
-        double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.SLOW_SPEED : Constants.FAST_SPEED;
+        double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.FAST_SPEED : Constants.SLOW_SPEED;
         ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(forward * speed, strafe * speed, rotate, driveSubsystem.getRotation());
         driveSubsystem.drive(chassisSpeed);
     }

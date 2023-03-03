@@ -3,6 +3,36 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public final class Constants {
 
+    public static final int ARM_FALCON_ID = 58;
+    public static final int WRIST_FALCON_ID = 20;
+
+    public static final int ARM_PE_ID = 1;
+    public static final int WRIST_PE_ID = 0;
+
+    public static final int  WRIST_SPEED_CONTROL = 4000;
+    public static final int  ARM_SPEED_CONTROL = 4000;
+
+    public static final int WRIST_MIN = 1800;
+    public static final int WRIST_MAX = 4000;
+
+    public static final int NEUTRAL_WRIST_OFFSET = 3750;
+
+    public static final int ARM_MIN = 249;
+    public static final int ARM_MAX = 1886;
+
+    public static final int ARM_UP_BTN = 4;
+    public static final int ARM_DOWN_BTN = 1;
+
+    public static final double SUBSTATION_ANGLE = 1000;
+    
+    public static final double CONE_LOW_ANGLE = 325;
+    public static final double CONE_MID_ANGLE = 1380;
+    public static final double CONE_HIGH_ANGLE = 1610;
+
+    public static final double CUBE_LOW_ANGLE = 325;
+    public static final double CUBE_MID_ANGLE = 1050;
+    public static final double CUBE_HIGH_ANGLE = 1370;
+
     public static final double DRIVETRAIN_WHEELBASE_METERS = 1; //TODO
     public static final double DRIVETRAIN_TRACKWIDTH_METERS = 1;
 
@@ -50,27 +80,14 @@ public final class Constants {
 
     public static final double ENCODER_TICKS_PER_METER = DRIVE_ENCODER_RESOLUTION * DRIVE_RATIO / (2 * Math.PI * WHEEL_RADIUS);
 
-    public static final double GO_TO_POSITION_ERROR = 0.3;
-    public static final double GO_TO_VELOCITY_ERROR = 0.1;
-
-    public static final double SWERVE_DRIVE_P = 0.3;
-    public static final double SWERVE_DRIVE_I = 0.0;
-    public static final double SWERVE_DRIVE_D = 0.0;
-
-    public static final double SWERVE_STEER_P = 0.2;
-    public static final double SWERVE_STEER_I = 0.0;
-    public static final double SWERVE_STEER_D = 0.0;
-
     public static final int SHOULDER_FALCON_ID = 0;
-    public static final int WRIST_FALCON_ID = 1;
     public static final int SHOULDER_PE_ID = 3;
-    public static final int WRIST_PE_ID = 2;
     // Not final id's
     
     // Gripper Pneumatics
     public static final PneumaticsModuleType PH = PneumaticsModuleType.REVPH;
     public static final int PH_GRIPPER_CLOSE = 2;
-    public static final int PH_GRIPPER_OPEN = 3;
+    public static final int PH_GRIPPER_OPEN = 0;
     public static final int PH_CAN_ID = 18;
     // Controller
     public static final int DRIVER_CONTROLLER = 0;

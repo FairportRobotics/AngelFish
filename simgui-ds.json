@@ -90,6 +90,13 @@
     }
   ],
   "robotJoysticks": [
+<<<<<<< HEAD
+    {
+      "guid": "78696e70757401000000000000000000",
+      "useGamepad": true
+    },
+=======
+>>>>>>> origin/swerve
     {
       "guid": "78696e70757401000000000000000000",
       "useGamepad": true

@@ -4,25 +4,26 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.interfaces.Gyro;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
-import frc.robot.subsystems.swerve.DriveSubsystem;
-import frc.robot.subsystems.ArmSubsystem;
-
-import frc.robot.commands.GripperCommand;
+import frc.robot.subsystems.LightingSubsystem;
+import frc.robot.commands.GripperOpenCommand;
 import frc.robot.commands.WristCommand;
 
-
-
+import frc.robot.commands.TimedMoveCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -35,31 +36,47 @@ public class RobotContainer {
 
   private Command m_autoCommand;
 
-  private ArmCommand m_armCommand;
+  public WristCommand wristCommand;
 
-  public final GenericHID operator;
   public final CommandXboxController controller;
+  public final CommandXboxController operator;
 
   private final ArmSubsystem armSubsystem;
   private GripperSubsystem gripperSubsystem;
   public DriveSubsystem driveSubsystem;
+  public LightingSubsystem lightingSubsystem;
 
-  private GripperCommand gripperCommand;
-  private WristCommand wristCommand;
+  private GripperOpenCommand openGripperCommand;
+  private GripperOpenCommand closeGripperCommand;
+
+  private ArmCommand substationArmCommand;
+
+  private ArmCommand lowArmCommand;
+  private ArmCommand midArmCommand;
+  private ArmCommand highArmCommand;
+
   public DriveCommand driveCommand;
 
   public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
   public JoystickButton gripperSafety;
 
+  private boolean targetingCones;
+  public TimedMoveCommand timedMoveCommand;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     
     this.armSubsystem = new ArmSubsystem();
+    //this.armSubsystem.armMovePosition(2048);
     this.gripperSubsystem = new GripperSubsystem();
     this.driveSubsystem = new DriveSubsystem();
 
-    this.operator = new GenericHID(Constants.OPERATOR_CONTROLLER);
+    this.lightingSubsystem = new LightingSubsystem();
+
     this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
+    this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
+
+    this.targetingCones = true;
 
     // Configure the button bindings
     initCommands();
@@ -68,12 +85,20 @@ public class RobotContainer {
   /** Initialize the commands */
   public void initCommands() {
     // Initiate commands.
-    this.m_autoCommand = new WristCommand();
-    this.gripperCommand = new GripperCommand(gripperSubsystem);
-    this.wristCommand = new WristCommand();
-    this.driveCommand = new DriveCommand(controller, driveSubsystem);
-    this.m_armCommand = new ArmCommand(armSubsystem);
+    this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
+    this.closeGripperCommand = new GripperOpenCommand(gripperSubsystem, false);
 
+    this.substationArmCommand = new ArmCommand(armSubsystem, false, Constants.SUBSTATION_ANGLE);
+
+    this.lowArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_LOW_ANGLE);
+    this.midArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_MID_ANGLE);
+    this.highArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE);
+
+    this.driveCommand = new DriveCommand(controller, driveSubsystem);
+    this.wristCommand = new WristCommand(operator, armSubsystem);
+    this.driveCommand = new DriveCommand(controller, driveSubsystem);
+    this.timedMoveCommand = new TimedMoveCommand(0.25, 0.25, 30000, driveSubsystem);
+  
     this.configureButtonBindings();
   }
 
@@ -85,11 +110,34 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
 
-    gripperSafety = new JoystickButton(operator, Constants.GRIPPER_SAFETY);
-    gripperToggle = new JoystickButton(operator, Constants.GRIPPER_TOGGLE);
-    gripperToggle
-          .and(gripperSafety)
-                      .toggleOnTrue(this.gripperCommand);
+    operator.leftBumper().onTrue(openGripperCommand);
+    operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
+
+    operator.rightBumper().onTrue(highArmCommand);
+    operator.axisGreaterThan(3, 0.75).onTrue(midArmCommand);
+    operator.povDown().onTrue(lowArmCommand);
+    operator.povUp().onTrue(substationArmCommand);
+    
+    operator.y().onTrue(Commands.runOnce(()->{
+      lightingSubsystem.setConeColor();
+      lowArmCommand.setAngle = Constants.CONE_LOW_ANGLE;
+      midArmCommand.setAngle = Constants.CONE_MID_ANGLE;
+      highArmCommand.setAngle = Constants.CONE_HIGH_ANGLE;
+    }));
+    operator.x().onTrue(Commands.runOnce(()->{
+      lightingSubsystem.setCubeColor();
+      lowArmCommand.setAngle = Constants.CUBE_LOW_ANGLE;
+      midArmCommand.setAngle = Constants.CUBE_MID_ANGLE;
+      highArmCommand.setAngle = Constants.CUBE_HIGH_ANGLE;
+    }));
+  }
+
+  /**
+   * Get the type of cargo that the robot is targeting
+   * @return true if the robot is in cone mode
+   */
+  public boolean getTargetCargo() {
+    return targetingCones;
   }
 
   /**
@@ -98,7 +146,9 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An ExampleCommand will run in autonomous
-    return m_autoCommand;
-  }
+    return new SequentialCommandGroup(
+      new GripperOpenCommand(gripperSubsystem, true),
+      new TimedMoveCommand(0.25, 0, 1000, driveSubsystem)
+    );
+  }  
 }

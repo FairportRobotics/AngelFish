@@ -1,5 +1,5 @@
-// Copyright (c) FIRST and other WPILib contributors.
 // Open Source Software; you can modify and/or share it under the terms of
+// Copyright (c) FIRST and other WPILib contributors.
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot.commands;
@@ -9,27 +9,35 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class ArmCommand extends CommandBase {
+
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final ArmSubsystem m_subsystem;
-
+  private final boolean relative;
+  public double setAngle;
   /**
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
    */
-  public ArmCommand(ArmSubsystem subsystem) {
+  public ArmCommand(ArmSubsystem subsystem, boolean relative, double setAngle) {
     m_subsystem = subsystem;
+    this.relative = relative;
+    this.setAngle = setAngle;
     // Use addRequirements() here to declare subsystem dependencies.
+    //if boolean is false then armpos=setangle 
+    //if boolean is true then arpos=setangle+currentangle
     addRequirements(subsystem);
   }
 
-  // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
-
-  // Called every time the scheduler runs while the command is scheduled.
-  @Override
-  public void execute() {}
+  public void execute() {
+    if (relative == true) {
+      m_subsystem.setArmPoistion(setAngle + m_subsystem.getArmSetpoint());
+    } else {
+      m_subsystem.setArmPoistion(setAngle);
+    }
+    System.out.println("WEE");
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -38,37 +46,8 @@ public class ArmCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    return true;
   }
 
-  //take many botton's
-  private int moveWristPos() {
-    //input current locations, 
-
-    //could have 4 bottons 
-    //down, up, midle
-
-    //output instructions 
-    return 1;
-  }
-
-  private void wristFollow() {
-   //input:current position
-
-    // keeps the grip parallel to the arm
-
-    // output: instructions
-  }
-
-  public double getWristPos() {
-    //gets the votage 
-  return 0.0;
-  } 
-
-  public void setWristPos() {
   
-  //  set the wrist postion
-  
-  }
-
 }
