@@ -4,8 +4,12 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,8 +26,6 @@ import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.commands.GripperOpenCommand;
 import frc.robot.commands.WristCommand;
-
-import frc.robot.commands.TimedMoveCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -61,7 +63,7 @@ public class RobotContainer {
   public JoystickButton gripperSafety;
 
   private boolean targetingCones;
-  public TimedMoveCommand timedMoveCommand;
+  private HashMap<String, Command> eventMap = new HashMap();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -80,6 +82,11 @@ public class RobotContainer {
 
     // Configure the button bindings
     initCommands();
+    eventMap.put("openGripper", openGripperCommand);
+    eventMap.put("closeGripper", closeGripperCommand);
+    eventMap.put("armLow", lowArmCommand);
+    eventMap.put("armMid", midArmCommand);
+    eventMap.put("armHigh", highArmCommand);
   }
 
   /** Initialize the commands */
@@ -97,7 +104,6 @@ public class RobotContainer {
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
     this.wristCommand = new WristCommand(operator, armSubsystem);
     this.driveCommand = new DriveCommand(controller, driveSubsystem);
-    this.timedMoveCommand = new TimedMoveCommand(0.25, 0.25, 30000, driveSubsystem);
   
     this.configureButtonBindings();
   }
@@ -146,9 +152,11 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    return new SequentialCommandGroup(
-      new GripperOpenCommand(gripperSubsystem, true),
-      new TimedMoveCommand(0.25, 0, 1000, driveSubsystem)
+    PathPlannerTrajectory traj = PathPlanner.loadPath("Circle", new PathConstraints(4, 3));
+    return new FollowPathWithEvents(
+      driveSubsystem.followTrajectoryCommand(traj, true),
+      traj.getMarkers(),
+      eventMap      
     );
   }  
 }
