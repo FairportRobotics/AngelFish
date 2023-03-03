@@ -72,7 +72,7 @@ public class RobotContainer {
     this.gripperSubsystem = new GripperSubsystem();
     this.driveSubsystem = new DriveSubsystem();
 
-    //this.lightingSubsystem = new LightingSubsystem();
+    this.lightingSubsystem = new LightingSubsystem();
 
     this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
     this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
@@ -120,13 +120,13 @@ public class RobotContainer {
     operator.povUp().onTrue(substationArmCommand);
     
     operator.y().onTrue(Commands.runOnce(()->{
-      //lightingSubsystem.setConeColor();
+      lightingSubsystem.setConeColor();
       lowArmCommand.setAngle = Constants.CONE_LOW_ANGLE;
       midArmCommand.setAngle = Constants.CONE_MID_ANGLE;
       highArmCommand.setAngle = Constants.CONE_HIGH_ANGLE;
     }));
     operator.x().onTrue(Commands.runOnce(()->{
-      //lightingSubsystem.setCubeColor();
+      lightingSubsystem.setCubeColor();
       lowArmCommand.setAngle = Constants.CUBE_LOW_ANGLE;
       midArmCommand.setAngle = Constants.CUBE_MID_ANGLE;
       highArmCommand.setAngle = Constants.CUBE_HIGH_ANGLE;
