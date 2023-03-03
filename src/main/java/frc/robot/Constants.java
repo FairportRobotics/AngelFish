@@ -3,9 +3,11 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 public final class Constants {
 
-    // TODO mesaure wheel base and recalculate offsets
-    public static final double WHEEL_BASE = 20;
-    public static final double TRACK_WIDTH = 20;
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 1; //TODO
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 1;
+
+    public static final double FAST_SPEED = 4;
+    public static final double SLOW_SPEED = 2;
 
     public static final int FRONT_LEFT_DRIVE_ID = 1;
     public static final int FRONT_LEFT_SWERVE_ID = 2;

@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
@@ -33,7 +34,9 @@ public class DriveCommand extends CommandBase {
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);
         rotate *= Math.abs(rotate);
-        driveSubsystem.drive(forward * 5, strafe * 5, rotate, driveSubsystem.getYaw());
+        double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.SLOW_SPEED : Constants.FAST_SPEED;
+        ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(forward * speed, strafe * speed, rotate, driveSubsystem.getRotation());
+        driveSubsystem.drive(chassisSpeed);
     }
 
     /**
