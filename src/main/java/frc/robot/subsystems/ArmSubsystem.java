@@ -5,12 +5,17 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.simulation.AnalogInputSim;
+import edu.wpi.first.wpilibj.simulation.PWMSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.TalonFXSimCollection;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
@@ -20,16 +25,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSubsystem extends SubsystemBase {
 
-    private AnalogInput wristAnalogInput;
     private AnalogInput armAnalogInput;
+    private AnalogInput wristAnalogInput;
 
-    private WPI_TalonFX wristFalcon;
+    private AnalogInputSim armAnalogInputSim;
+    private AnalogInputSim wristAnalogInputSim;
+
     private WPI_TalonFX armFalcon;
+    private WPI_TalonFX wristFalcon;
 
-    private PIDController wristPIDController;
     private PIDController armPIDController;
+    private PIDController wristPIDController;
 
     private double wristOffset;
+
+    private SingleJointedArmSim armSim;
+    private SingleJointedArmSim wristSim;
 
     private Mechanism2d mechanism;
     private MechanismRoot2d root;
@@ -43,6 +54,9 @@ public class ArmSubsystem extends SubsystemBase {
     public ArmSubsystem() {
         this.armAnalogInput = new AnalogInput(Constants.ARM_PE_ID);
         this.wristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
+
+        this.armAnalogInputSim = new AnalogInputSim(armAnalogInput);
+        this.wristAnalogInputSim = new AnalogInputSim(wristAnalogInput);
 
         this.armFalcon = new WPI_TalonFX(Constants.ARM_FALCON_ID);
         this.armFalcon.setNeutralMode(NeutralMode.Coast);
@@ -64,6 +78,28 @@ public class ArmSubsystem extends SubsystemBase {
         this.arm = support.append(new MechanismLigament2d("arm", 2, 135));
         this.wrist = arm.append(new MechanismLigament2d("wrist", 1, -45));
 
+        this.armSim = new SingleJointedArmSim(
+            DCMotor.getFalcon500(1),
+            300,
+            10,
+            1,
+            0,
+            3,
+            1,
+            true
+        );
+
+        this.wristSim = new SingleJointedArmSim(
+            DCMotor.getFalcon500(1),
+            100,
+            1,
+            0.1,
+            -3,
+            7,
+            1,
+            false
+        );
+
         this.setName("ArmSubsystem");
     }
 
@@ -75,8 +111,8 @@ public class ArmSubsystem extends SubsystemBase {
         double wristPower = wristPIDController.calculate(wristAnalogInput.getValue() + armAnalogInput.getValue() - wristOffset);
 
         // Limit Arm & Wrist Power
-        armPower = Math.max(Math.min(armPower, 0.50), -0.50);
-        wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
+        //armPower = Math.max(Math.min(armPower, 0.50), -0.50);
+        //wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
 
         // If the arm is past its limits, don't allow it to go further
         if (armAnalogInput.getValue() < Constants.ARM_MIN) { armPower = Math.max(armPower, 0); }
@@ -100,7 +136,7 @@ public class ArmSubsystem extends SubsystemBase {
 
         // Display the current arm state
         arm.setAngle(((double) armAnalogInput.getValue() - Constants.ARM_MIN) / ((double) Constants.ARM_MAX - (double) Constants.ARM_MIN) * -135 + 180);
-        wrist.setAngle(((double) wristAnalogInput.getValue() - Constants.WRIST_MIN) / ((double) Constants.WRIST_MAX - (double) Constants.WRIST_MIN) * 270);
+        wrist.setAngle(((double) wristAnalogInput.getValue() - Constants.WRIST_MIN) / ((double) Constants.WRIST_MAX - (double) Constants.WRIST_MIN) * 180 - 90);
     }
 
     public void setArmPoistion(double armAngle) {
@@ -109,7 +145,6 @@ public class ArmSubsystem extends SubsystemBase {
     }
 
     public void adjustWristLevel(double offsetAdjustment) {
-        System.out.println(offsetAdjustment);
         wristOffset += offsetAdjustment;
     }
 
@@ -123,5 +158,17 @@ public class ArmSubsystem extends SubsystemBase {
 
     public double getWristPosition() {
         return wristAnalogInput.getValue();
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        System.out.println(armSim.getAngleRads()+", "+wristSim.getAngleRads());
+        armSim.setInputVoltage(armFalcon.getMotorOutputVoltage());
+        wristSim.setInputVoltage(wristFalcon.getMotorOutputVoltage()+1.5);
+        armAnalogInputSim.setVoltage(armSim.getAngleRads());
+        wristAnalogInputSim.setVoltage(wristSim.getAngleRads());
+
+        armSim.update(0.02);
+        wristSim.update(0.02);
     }
 }
