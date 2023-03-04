@@ -43,11 +43,14 @@ public class DriveSubsystem extends SubsystemBase {
     private final AHRS gyro = new AHRS();
 
     private final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
-            new Translation2d(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
-            new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0, -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0)
-    );
+            new Translation2d(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+            new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
+                    -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0));
     private final SwerveDriveOdometry odometry;
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -58,53 +61,58 @@ public class DriveSubsystem extends SubsystemBase {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
 
         frontLeftModule = new MkSwerveModuleBuilder()
-                .withLayout(shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
-                        .withSize(2, 4)
-                        .withPosition(0, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                .withDriveMotor(MotorType.FALCON, Constants.FRONT_LEFT_DRIVE_ID)
-                .withSteerMotor(MotorType.FALCON, Constants.FRONT_LEFT_SWERVE_ID)
-                .withSteerEncoderPort(Constants.FRONT_LEFT_ENCODER_ID)
-                .withSteerOffset(Constants.FRONT_LEFT_SWERVE_OFFSET)
-                .build();
+            .withLayout(shuffleboardTab.getLayout("Front Left Module", BuiltInLayouts.kList)
+                .withSize(2, 4)
+                .withPosition(0, 0))
+            .withGearRatio(SdsModuleConfigurations.MK4I_L1)
+            .withDriveMotor(MotorType.FALCON, Constants.FRONT_LEFT_DRIVE_ID)
+            .withSteerMotor(MotorType.FALCON, Constants.FRONT_LEFT_SWERVE_ID)
+            .withSteerEncoderPort(Constants.FRONT_LEFT_ENCODER_ID)
+            .withSteerOffset(Constants.FRONT_LEFT_SWERVE_OFFSET)
+            .build();
 
         frontRightModule = new MkSwerveModuleBuilder()
-                .withLayout(shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                        .withSize(2, 4)
-                        .withPosition(2, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                .withDriveMotor(MotorType.FALCON, Constants.FRONT_RIGHT_DRIVE_ID)
-                .withSteerMotor(MotorType.FALCON, Constants.FRONT_RIGHT_SWERVE_ID)
-                .withSteerEncoderPort(Constants.FRONT_RIGHT_ENCODER_ID)
-                .withSteerOffset(Constants.FRONT_RIGHT_SWERVE_OFFSET)
-                .build();
+            .withLayout(shuffleboardTab.getLayout("Front Right Module", BuiltInLayouts.kList)
+                .withSize(2, 4)
+                .withPosition(2, 0))
+            .withGearRatio(SdsModuleConfigurations.MK4I_L1)
+            .withDriveMotor(MotorType.FALCON, Constants.FRONT_RIGHT_DRIVE_ID)
+            .withSteerMotor(MotorType.FALCON, Constants.FRONT_RIGHT_SWERVE_ID)
+            .withSteerEncoderPort(Constants.FRONT_RIGHT_ENCODER_ID)
+            .withSteerOffset(Constants.FRONT_RIGHT_SWERVE_OFFSET)
+            .build();
 
         backLeftModule = new MkSwerveModuleBuilder()
-                .withLayout(shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                        .withSize(2, 4)
-                        .withPosition(4, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                .withDriveMotor(MotorType.FALCON, Constants.BACK_LEFT_DRIVE_ID)
-                .withSteerMotor(MotorType.FALCON, Constants.BACK_LEFT_SWERVE_ID)
-                .withSteerEncoderPort(Constants.BACK_LEFT_ENCODER_ID)
-                .withSteerOffset(Constants.BACK_LEFT_SWERVE_OFFSET)
-                .build();
+            .withLayout(shuffleboardTab.getLayout("Back Left Module", BuiltInLayouts.kList)
+                .withSize(2, 4)
+                .withPosition(4, 0))
+            .withGearRatio(SdsModuleConfigurations.MK4I_L1)
+            .withDriveMotor(MotorType.FALCON, Constants.BACK_LEFT_DRIVE_ID)
+            .withSteerMotor(MotorType.FALCON, Constants.BACK_LEFT_SWERVE_ID)
+            .withSteerEncoderPort(Constants.BACK_LEFT_ENCODER_ID)
+            .withSteerOffset(Constants.BACK_LEFT_SWERVE_OFFSET)
+            .build();
 
         backRightModule = new MkSwerveModuleBuilder()
-                .withLayout(shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                        .withSize(2, 4)
-                        .withPosition(6, 0))
-                .withGearRatio(SdsModuleConfigurations.MK4I_L1)
-                .withDriveMotor(MotorType.FALCON, Constants.BACK_RIGHT_DRIVE_ID)
-                .withSteerMotor(MotorType.FALCON, Constants.BACK_RIGHT_SWERVE_ID)
-                .withSteerEncoderPort(Constants.BACK_RIGHT_ENCODER_ID)
-                .withSteerOffset(Constants.BACK_RIGHT_SWERVE_OFFSET)
-                .build();
+            .withLayout(shuffleboardTab.getLayout("Back Right Module", BuiltInLayouts.kList)
+                .withSize(2, 4)
+                .withPosition(6, 0))
+            .withGearRatio(SdsModuleConfigurations.MK4I_L1)
+            .withDriveMotor(MotorType.FALCON, Constants.BACK_RIGHT_DRIVE_ID)
+            .withSteerMotor(MotorType.FALCON, Constants.BACK_RIGHT_SWERVE_ID)
+            .withSteerEncoderPort(Constants.BACK_RIGHT_ENCODER_ID)
+            .withSteerOffset(Constants.BACK_RIGHT_SWERVE_OFFSET)
+            .build();
 
         odometry = new SwerveDriveOdometry(
-                kinematics,
-                Rotation2d.fromDegrees(gyro.getYaw()),
-                new SwerveModulePosition[]{ frontLeftModule.getPosition(), frontRightModule.getPosition(), backLeftModule.getPosition(), backRightModule.getPosition() }
+            kinematics,
+            Rotation2d.fromDegrees(gyro.getYaw()),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            }
         );
 
         shuffleboardTab.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
@@ -115,17 +123,27 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void zeroGyroscope() {
         odometry.resetPosition(
-                Rotation2d.fromDegrees(gyro.getYaw()),
-                new SwerveModulePosition[]{ frontLeftModule.getPosition(), frontRightModule.getPosition(), backLeftModule.getPosition(), backRightModule.getPosition() },
-                new Pose2d(odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0.0))
+            Rotation2d.fromDegrees(gyro.getYaw()),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition() },
+            new Pose2d(odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0.0)
+            )
         );
     }
 
     public void resetOdometry(Pose2d newPosition) {
         odometry.resetPosition(
-                Rotation2d.fromDegrees(gyro.getYaw()),
-                new SwerveModulePosition[]{ frontLeftModule.getPosition(), frontRightModule.getPosition(), backLeftModule.getPosition(), backRightModule.getPosition() },
-                new Pose2d(odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0.0))
+            Rotation2d.fromDegrees(gyro.getYaw()),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition() },
+            new Pose2d(newPosition.getTranslation(), Rotation2d.fromDegrees(0.0)
+            )
         );
     }
 
@@ -144,8 +162,13 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         odometry.update(
-                Rotation2d.fromDegrees(gyro.getYaw()),
-                new SwerveModulePosition[]{ frontLeftModule.getPosition(), frontRightModule.getPosition(), backLeftModule.getPosition(), backRightModule.getPosition() }
+            Rotation2d.fromDegrees(gyro.getYaw()),
+            new SwerveModulePosition[] {
+                frontLeftModule.getPosition(),
+                frontRightModule.getPosition(),
+                backLeftModule.getPosition(),
+                backRightModule.getPosition()
+            }
         );
 
         SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
@@ -156,16 +179,16 @@ public class DriveSubsystem extends SubsystemBase {
         backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         m_field.setRobotPose(getPose());
     }
-    
+
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
         return new SequentialCommandGroup(
-             new InstantCommand(() -> {
-               // Reset odometry for the first path you run during auto
-               if(isFirstPath){
-                   this.resetOdometry(traj.getInitialHolonomicPose());
-               }
-             }),
-             new PPSwerveControllerCommand(
+            new InstantCommand(() -> {
+                // Reset odometry for the first path you run during auto
+                if (isFirstPath) {
+                    this.resetOdometry(traj.getInitialHolonomicPose());
+                }
+            }),
+            new PPSwerveControllerCommand(
                 traj,
                 this::getPose,
                 new PIDController(0, 0, 0), // X controller
@@ -174,7 +197,7 @@ public class DriveSubsystem extends SubsystemBase {
                 this::drive,
                 true,
                 this
-             )
+            )
         );
-     }
+    }
 }

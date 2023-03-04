@@ -16,6 +16,7 @@ public class WristCommand extends CommandBase {
         this.armSubsystem = armSubsystem;
         this.previousTime = System.currentTimeMillis();
     }
+    
     @Override
     public void execute() {
         long delta = System.currentTimeMillis() - previousTime;

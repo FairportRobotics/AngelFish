@@ -4,6 +4,18 @@
       "window": {
         "visible": true
       }
+    },
+    "Other Devices": {
+      "Talon FX[20]": {
+        "header": {
+          "open": true
+        }
+      },
+      "Talon FX[58]": {
+        "header": {
+          "open": true
+        }
+      }
     }
   },
   "NTProvider": {
@@ -29,7 +41,8 @@
       "/LiveWindow/Ungrouped/Talon FX [8]": "Motor Controller",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Arm Widget": "Mechanism2d",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/Gripper": "Mechanism2d"
     },
     "windows": {
       "/SmartDashboard/Arm Widget": {
@@ -38,6 +51,12 @@
         }
       },
       "/SmartDashboard/Field": {
+        "image": "/home/yit/Documents/robotics/AngelFish/field.png",
+        "window": {
+          "visible": true
+        }
+      },
+      "/SmartDashboard/Gripper": {
         "window": {
           "visible": true
         }
@@ -62,5 +81,8 @@
         "open": true
       }
     }
+  },
+  "NetworkTables View": {
+    "visible": false
   }
 }

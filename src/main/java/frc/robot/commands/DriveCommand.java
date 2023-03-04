@@ -1,12 +1,9 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
@@ -28,14 +25,19 @@ public class DriveCommand extends CommandBase {
         double forward = controller.getLeftY();
         double strafe = controller.getLeftX();
         double rotate = controller.getRightX();
+
         forward = deadband(forward, Constants.DEADBAND_TRANSLATE);
         strafe = deadband(strafe, Constants.DEADBAND_TRANSLATE);
         rotate = deadband(rotate, Constants.DEADBAND_ROTATE);
+
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);
         rotate *= Math.abs(rotate);
+
         double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.FAST_SPEED : Constants.SLOW_SPEED;
+
         ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(forward * speed, strafe * speed, rotate, driveSubsystem.getRotation());
+        
         driveSubsystem.drive(chassisSpeed);
     }
 

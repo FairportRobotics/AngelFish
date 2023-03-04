@@ -124,7 +124,19 @@
     {
       "position": 1.5012340198863638,
       "names": [
-        "event"
+        "test"
+      ]
+    },
+    {
+      "position": 2.2114524147727277,
+      "names": [
+        "closeGripper"
+      ]
+    },
+    {
+      "position": 1.1930841619318182,
+      "names": [
+        "openGripper"
       ]
     }
   ]

@@ -11,152 +11,134 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
 import frc.robot.commands.GripperOpenCommand;
 import frc.robot.commands.WristCommand;
 
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
 
-  private Command m_autoCommand;
+    public final WristCommand wristCommand;
 
-  public WristCommand wristCommand;
+    public final CommandXboxController controller;
+    public final CommandXboxController operator;
 
-  public final CommandXboxController controller;
-  public final CommandXboxController operator;
+    private final ArmSubsystem armSubsystem;
+    private final GripperSubsystem gripperSubsystem;
+    public final DriveSubsystem driveSubsystem;
+    public final LightingSubsystem lightingSubsystem;
 
-  private final ArmSubsystem armSubsystem;
-  private GripperSubsystem gripperSubsystem;
-  public DriveSubsystem driveSubsystem;
-  public LightingSubsystem lightingSubsystem;
+    private final GripperOpenCommand openGripperCommand;
+    private final GripperOpenCommand closeGripperCommand;
 
-  private GripperOpenCommand openGripperCommand;
-  private GripperOpenCommand closeGripperCommand;
+    private final ArmCommand substationArmCommand;
 
-  private ArmCommand substationArmCommand;
+    private final ArmCommand lowArmCommand;
+    private final ArmCommand midArmCommand;
+    private final ArmCommand highArmCommand;
 
-  private ArmCommand lowArmCommand;
-  private ArmCommand midArmCommand;
-  private ArmCommand highArmCommand;
+    public final DriveCommand driveCommand;
 
-  public DriveCommand driveCommand;
+    private boolean targetingCones;
+    private HashMap<String, Command> eventMap = new HashMap<String, Command>();
 
-  public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
-  public JoystickButton gripperSafety;
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
 
-  private boolean targetingCones;
-  private HashMap<String, Command> eventMap = new HashMap();
+        // Controllers
+        this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
+        this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    
-    this.armSubsystem = new ArmSubsystem();
-    //this.armSubsystem.armMovePosition(2048);
-    this.gripperSubsystem = new GripperSubsystem();
-    this.driveSubsystem = new DriveSubsystem();
+        // Subsystems
+        this.armSubsystem = new ArmSubsystem();
+        this.gripperSubsystem = new GripperSubsystem();
+        this.driveSubsystem = new DriveSubsystem();
+        this.lightingSubsystem = new LightingSubsystem();
 
-    this.lightingSubsystem = new LightingSubsystem();
+        // Commands
+        this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
+        this.closeGripperCommand = new GripperOpenCommand(gripperSubsystem, false);
 
-    this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
-    this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
+        this.substationArmCommand = new ArmCommand(armSubsystem, false, Constants.SUBSTATION_ANGLE);
+        this.lowArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_LOW_ANGLE);
+        this.midArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_MID_ANGLE);
+        this.highArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE);
 
-    this.targetingCones = true;
+        this.wristCommand = new WristCommand(operator, armSubsystem);
 
-    // Configure the button bindings
-    initCommands();
-    eventMap.put("openGripper", openGripperCommand);
-    eventMap.put("closeGripper", closeGripperCommand);
-    eventMap.put("armLow", lowArmCommand);
-    eventMap.put("armMid", midArmCommand);
-    eventMap.put("armHigh", highArmCommand);
-  }
+        this.driveCommand = new DriveCommand(controller, driveSubsystem);
 
-  /** Initialize the commands */
-  public void initCommands() {
-    // Initiate commands.
-    this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
-    this.closeGripperCommand = new GripperOpenCommand(gripperSubsystem, false);
+        // Bindings
+        operator.leftBumper().onTrue(openGripperCommand);
+        operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
 
-    this.substationArmCommand = new ArmCommand(armSubsystem, false, Constants.SUBSTATION_ANGLE);
+        operator.rightBumper().onTrue(highArmCommand);
+        operator.axisGreaterThan(3, 0.75).onTrue(midArmCommand);
+        operator.povDown().onTrue(lowArmCommand);
+        operator.povUp().onTrue(substationArmCommand);
 
-    this.lowArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_LOW_ANGLE);
-    this.midArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_MID_ANGLE);
-    this.highArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE);
+        operator.y().onTrue(Commands.runOnce(() -> {
+            lightingSubsystem.setConeColor();
+            lowArmCommand.setTargetAngle(Constants.CONE_LOW_ANGLE);
+            midArmCommand.setTargetAngle(Constants.CONE_MID_ANGLE);
+            highArmCommand.setTargetAngle(Constants.CONE_HIGH_ANGLE);
+        }));
+        operator.x().onTrue(Commands.runOnce(() -> {
+            lightingSubsystem.setCubeColor();
+            lowArmCommand.setTargetAngle(Constants.CUBE_LOW_ANGLE);
+            midArmCommand.setTargetAngle(Constants.CUBE_MID_ANGLE);
+            highArmCommand.setTargetAngle(Constants.CUBE_HIGH_ANGLE);
+        }));
 
-    this.driveCommand = new DriveCommand(controller, driveSubsystem);
-    this.wristCommand = new WristCommand(operator, armSubsystem);
-    this.driveCommand = new DriveCommand(controller, driveSubsystem);
-  
-    this.configureButtonBindings();
-  }
+        // PathPlanner event hashmap
+        eventMap.put("openGripper", openGripperCommand);
+        eventMap.put("closeGripper", closeGripperCommand);
+        eventMap.put("test", new PrintCommand("test"));
+        eventMap.put("armLow", lowArmCommand);
+        eventMap.put("armMid", midArmCommand);
+        eventMap.put("armHigh", highArmCommand);
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
+        this.targetingCones = true;
+    }
 
-    operator.leftBumper().onTrue(openGripperCommand);
-    operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
+    /**
+     * Get the type of cargo that the robot is targeting
+     * 
+     * @return true if the robot is in cone mode
+     */
+    public boolean getTargetCargo() {
+        return targetingCones;
+    }
 
-    operator.rightBumper().onTrue(highArmCommand);
-    operator.axisGreaterThan(3, 0.75).onTrue(midArmCommand);
-    operator.povDown().onTrue(lowArmCommand);
-    operator.povUp().onTrue(substationArmCommand);
-    
-    operator.y().onTrue(Commands.runOnce(()->{
-      lightingSubsystem.setConeColor();
-      lowArmCommand.setAngle = Constants.CONE_LOW_ANGLE;
-      midArmCommand.setAngle = Constants.CONE_MID_ANGLE;
-      highArmCommand.setAngle = Constants.CONE_HIGH_ANGLE;
-    }));
-    operator.x().onTrue(Commands.runOnce(()->{
-      lightingSubsystem.setCubeColor();
-      lowArmCommand.setAngle = Constants.CUBE_LOW_ANGLE;
-      midArmCommand.setAngle = Constants.CUBE_MID_ANGLE;
-      highArmCommand.setAngle = Constants.CUBE_HIGH_ANGLE;
-    }));
-  }
-
-  /**
-   * Get the type of cargo that the robot is targeting
-   * @return true if the robot is in cone mode
-   */
-  public boolean getTargetCargo() {
-    return targetingCones;
-  }
-
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    PathPlannerTrajectory traj = PathPlanner.loadPath("Circle", new PathConstraints(4, 3));
-    return new FollowPathWithEvents(
-      driveSubsystem.followTrajectoryCommand(traj, true),
-      traj.getMarkers(),
-      eventMap      
-    );
-  }  
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        PathPlannerTrajectory traj = PathPlanner.loadPath("Circle", new PathConstraints(4, 3));
+        return new FollowPathWithEvents(
+                driveSubsystem.followTrajectoryCommand(traj, true),
+                traj.getMarkers(),
+                eventMap);
+    }
 }
