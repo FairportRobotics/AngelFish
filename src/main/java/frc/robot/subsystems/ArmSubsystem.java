@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.simulation.PWMSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
+import frc.robot.Util;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
@@ -100,6 +102,11 @@ public class ArmSubsystem extends SubsystemBase {
             false
         );
 
+        if (Robot.isSimulation()) {
+            armAnalogInputSim.setVoltage(0.3);
+            wristAnalogInputSim.setVoltage(0.7);
+        }
+
         this.setName("ArmSubsystem");
     }
 
@@ -135,8 +142,8 @@ public class ArmSubsystem extends SubsystemBase {
         wristFalcon.set(ControlMode.PercentOutput, wristPower);
 
         // Display the current arm state
-        arm.setAngle(((double) armAnalogInput.getValue() - Constants.ARM_MIN) / ((double) Constants.ARM_MAX - (double) Constants.ARM_MIN) * -135 + 180);
-        wrist.setAngle(((double) wristAnalogInput.getValue() - Constants.WRIST_MIN) / ((double) Constants.WRIST_MAX - (double) Constants.WRIST_MIN) * 180 - 90);
+        arm.setAngle(Util.map(armAnalogInput.getValue(), Constants.ARM_MIN, Constants.ARM_MAX, 180, 0));
+        wrist.setAngle(Util.map(wristAnalogInput.getValue(), Constants.WRIST_MIN, Constants.WRIST_MAX, 90, -90));
     }
 
     public void setArmPoistion(double armAngle) {
@@ -162,11 +169,10 @@ public class ArmSubsystem extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
-        System.out.println(armSim.getAngleRads()+", "+wristSim.getAngleRads());
         armSim.setInputVoltage(armFalcon.getMotorOutputVoltage());
-        wristSim.setInputVoltage(wristFalcon.getMotorOutputVoltage()+1.5);
-        armAnalogInputSim.setVoltage(armSim.getAngleRads());
-        wristAnalogInputSim.setVoltage(wristSim.getAngleRads());
+        wristSim.setInputVoltage(wristFalcon.getMotorOutputVoltage());
+        armAnalogInputSim.setVoltage(Util.map(armSim.getAngleRads(), 0, Math.PI, 0.3, 2.3));
+        wristAnalogInputSim.setVoltage(Util.map(wristSim.getAngleRads(), -Math.PI/2, Math.PI/2, 2.1, 4.8));
 
         armSim.update(0.02);
         wristSim.update(0.02);

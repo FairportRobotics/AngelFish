@@ -36,8 +36,10 @@ public final class Constants {
     public static final double CUBE_HIGH_ANGLE = 1370;
 
     // Swerve
-    public static final double FAST_SPEED = 4;
-    public static final double SLOW_SPEED = 2;
+    public static final double FAST_SPEED = 4; // Meters per second
+    public static final double SLOW_SPEED = 2; // Meters per second
+
+    public static final double ROTATION_RATE = 4; // Radians per second
 
     public static final double DEADBAND_TRANSLATE = 0.05;
     public static final double DEADBAND_ROTATE = 0.05;

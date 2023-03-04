@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Util;
 import frc.robot.subsystems.ArmSubsystem;
 
 public class WristCommand extends CommandBase {
@@ -21,19 +22,6 @@ public class WristCommand extends CommandBase {
     public void execute() {
         long delta = System.currentTimeMillis() - previousTime;
         previousTime = System.currentTimeMillis();
-        armSubsystem.adjustWristLevel(-delta*deadband(operator.getLeftY(), 0.1)/2);
-    }
-
-    private static double deadband(double value, double deadband) {
-        if(Math.abs(value) > deadband) {
-            if(value > 0.0) {
-                return (value - deadband) / (1.0 - deadband);
-            } else {
-                return (value + deadband) / (1.0 - deadband);
-            }
-        } else {
-            return 0.0;
-        }
-    }
-    
+        armSubsystem.adjustWristLevel(-delta*Util.deadband(operator.getLeftY(), 0.1)/2);
+    }   
 }

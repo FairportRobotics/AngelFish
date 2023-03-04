@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.Robot;
 
 public class DriveSubsystem extends SubsystemBase {
     private static final double MAX_VOLTAGE = 12.0;
@@ -136,14 +137,14 @@ public class DriveSubsystem extends SubsystemBase {
 
     public void resetOdometry(Pose2d newPosition) {
         odometry.resetPosition(
-            Rotation2d.fromDegrees(gyro.getYaw()),
+            newPosition.getRotation(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
                 backLeftModule.getPosition(),
-                backRightModule.getPosition() },
-            new Pose2d(newPosition.getTranslation(), Rotation2d.fromDegrees(0.0)
-            )
+                backRightModule.getPosition()
+            },
+            new Pose2d(newPosition.getTranslation(), newPosition.getRotation())
         );
     }
 
@@ -162,7 +163,7 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         odometry.update(
-            Rotation2d.fromDegrees(gyro.getYaw()),
+            Robot.isReal() ? Rotation2d.fromDegrees(gyro.getYaw()) : getRotation(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
@@ -199,5 +200,28 @@ public class DriveSubsystem extends SubsystemBase {
                 this
             )
         );
+    }
+
+    @Override
+    public void simulationPeriodic() {
+        double x = getPose().getX();
+        double y = getPose().getY();
+        Rotation2d rotation = getRotation();
+
+        System.out.println(chassisSpeeds);
+
+        double dx = (chassisSpeeds.vxMetersPerSecond*Math.cos(-rotation.getRadians())+chassisSpeeds.vyMetersPerSecond*Math.sin(-rotation.getRadians()))*0.02;
+        double dy = (chassisSpeeds.vxMetersPerSecond*Math.sin(-rotation.getRadians())-chassisSpeeds.vyMetersPerSecond*Math.cos(-rotation.getRadians()))*0.02;
+        Rotation2d dRotation = Rotation2d.fromRadians(-chassisSpeeds.omegaRadiansPerSecond*0.02);
+
+        System.out.println(rotation);
+
+        x += dx;
+        y += dy;
+        rotation = rotation.rotateBy(dRotation);
+
+        System.out.println(rotation);
+
+        this.resetOdometry(new Pose2d(x, y, rotation));
     }
 }

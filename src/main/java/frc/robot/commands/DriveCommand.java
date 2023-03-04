@@ -4,6 +4,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
+import frc.robot.Util;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
@@ -26,9 +27,9 @@ public class DriveCommand extends CommandBase {
         double strafe = controller.getLeftX();
         double rotate = controller.getRightX();
 
-        forward = deadband(forward, Constants.DEADBAND_TRANSLATE);
-        strafe = deadband(strafe, Constants.DEADBAND_TRANSLATE);
-        rotate = deadband(rotate, Constants.DEADBAND_ROTATE);
+        forward = Util.deadband(forward, Constants.DEADBAND_TRANSLATE);
+        strafe = Util.deadband(strafe, Constants.DEADBAND_TRANSLATE);
+        rotate = Util.deadband(rotate, Constants.DEADBAND_ROTATE);
 
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);
@@ -36,27 +37,9 @@ public class DriveCommand extends CommandBase {
 
         double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.FAST_SPEED : Constants.SLOW_SPEED;
 
-        ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(forward * speed, strafe * speed, rotate, driveSubsystem.getRotation());
+        ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(-forward * speed, strafe * speed, rotate * Constants.ROTATION_RATE, driveSubsystem.getRotation());
         
         driveSubsystem.drive(chassisSpeed);
-    }
-
-    /**
-     * Remove small inputs from the controllers.
-     * @param value current controller value.
-     * @param deadband cutoff for deadband.
-     * @return deadbanded value.
-     */
-    private static double deadband(double value, double deadband) {
-        if(Math.abs(value) > deadband) {
-            if(value > 0.0) {
-                return (value - deadband) / (1.0 - deadband);
-            } else {
-                return (value + deadband) / (1.0 - deadband);
-            }
-        } else {
-            return 0.0;
-        }
     }
 
     @Override

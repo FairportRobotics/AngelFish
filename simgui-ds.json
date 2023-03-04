@@ -96,10 +96,10 @@
   ],
   "robotJoysticks": [
     {
+      "guid": "030000006f0e00004603000030040000",
       "useGamepad": true
     },
     {
-      "guid": "030000006f0e00004603000030040000",
       "useGamepad": true
     }
   ]
