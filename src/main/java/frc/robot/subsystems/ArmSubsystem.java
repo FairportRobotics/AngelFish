@@ -13,6 +13,9 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
+import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ArmSubsystem extends SubsystemBase {
@@ -27,6 +30,12 @@ public class ArmSubsystem extends SubsystemBase {
   private PIDController armPIDController;
 
   private double wristOffset;
+
+  private Mechanism2d mechanism;
+  MechanismRoot2d root;
+  MechanismLigament2d support;
+  MechanismLigament2d arm;
+  MechanismLigament2d wrist;
 
   /**
    * Create a new ArmSubsystem.
@@ -49,6 +58,12 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.wristOffset = Constants.NEUTRAL_WRIST_OFFSET;
 
+    mechanism = new Mechanism2d(5,5);
+    root = mechanism.getRoot("support", 4, 0);
+    support = root.append(new MechanismLigament2d("support", 2, 90));
+    arm = support.append(new MechanismLigament2d("arm", 2, 135));
+    wrist = arm.append(new MechanismLigament2d("wrist", 1, -45));
+
     this.setName("ArmSubsystem");
   }
 
@@ -62,23 +77,18 @@ public class ArmSubsystem extends SubsystemBase {
 
     if(armAnalogInput.getValue() < Constants.ARM_MIN){
       armPower = Math.max(armPower, 0);
-      System.out.println("Limit Arm Power Positive");
-
     }
 
     if(armAnalogInput.getValue() > Constants.ARM_MAX){
       armPower = Math.min(armPower, 0);
-      System.out.println("Limit Arm Power Negative");
     }
 
     if(wristAnalogInput.getValue() < Constants.WRIST_MIN){
       wristPower = Math.max(wristPower, 0);
-      System.out.println("Limit Wrist Power Positive");
     }
 
     if(wristAnalogInput.getValue() > Constants.WRIST_MAX){
       wristPower = Math.min(wristPower, 0);
-      System.out.println("Limit Wrist Power Negative");
     }
 
     SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
@@ -89,11 +99,17 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist Potentiometer", wristAnalogInput.getValue());
     SmartDashboard.putNumber("Wrist Offset", wristOffset);
 
+    SmartDashboard.putData("Arm Widget", mechanism);
+
     armFalcon.set(ControlMode.PercentOutput, armPower);
     wristFalcon.set(ControlMode.PercentOutput, wristPower);
 
-
-
+    arm.setAngle(
+      ((double) armAnalogInput.getValue() - Constants.ARM_MIN)/((double) Constants.ARM_MAX - (double) Constants.ARM_MIN) * -135 + 180
+    );
+    wrist.setAngle(
+      ((double) wristAnalogInput.getValue() - Constants.WRIST_MIN)/((double) Constants.WRIST_MAX - (double) Constants.WRIST_MIN) * 270
+    );
   }
 
   /**
