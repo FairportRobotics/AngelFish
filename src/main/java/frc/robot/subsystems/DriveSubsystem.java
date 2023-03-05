@@ -197,9 +197,9 @@ public class DriveSubsystem extends SubsystemBase {
             new PPSwerveControllerCommand(
                 traj,
                 this::getPose,
-                new PIDController(0, 0, 0), // X controller
-                new PIDController(0, 0, 0), // Y controller
-                new PIDController(0, 0, 0), // Rotation controller
+                new PIDController(0.1, 0, 0), // X controller
+                new PIDController(0.1, 0, 0), // Y controller
+                new PIDController(0.1, 0, 0), // Rotation controller
                 this::drive,
                 true,
                 this
@@ -213,19 +213,13 @@ public class DriveSubsystem extends SubsystemBase {
         double y = getPose().getY();
         Rotation2d rotation = getRotation();
 
-        System.out.println(chassisSpeeds);
-
-        double targetVelX = (chassisSpeeds.vxMetersPerSecond*Math.cos(-rotation.getRadians())+chassisSpeeds.vyMetersPerSecond*Math.sin(-rotation.getRadians()));
-        double targetVelY = (chassisSpeeds.vxMetersPerSecond*Math.sin(-rotation.getRadians())-chassisSpeeds.vyMetersPerSecond*Math.cos(-rotation.getRadians()));
+        double targetVelX = (chassisSpeeds.vxMetersPerSecond*Math.cos(rotation.getRadians())-chassisSpeeds.vyMetersPerSecond*Math.sin(rotation.getRadians()));
+        double targetVelY = (chassisSpeeds.vxMetersPerSecond*Math.sin(rotation.getRadians())+chassisSpeeds.vyMetersPerSecond*Math.cos(rotation.getRadians()));
         Rotation2d dRotation = Rotation2d.fromRadians(-chassisSpeeds.omegaRadiansPerSecond*0.02);
-
-        System.out.println(rotation);
 
         x += simVelocityX.calculate(targetVelX)*0.02;
         y += simVelocityY.calculate(targetVelY)*0.02;
         rotation = rotation.rotateBy(dRotation);
-
-        System.out.println(rotation);
 
         this.resetOdometry(new Pose2d(x, y, rotation));
     }

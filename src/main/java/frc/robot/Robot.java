@@ -55,14 +55,14 @@ public class Robot extends TimedRobot {
         if (m_autonomousCommand != null) {
             m_autonomousCommand.cancel();
         }
-        m_robotContainer.driveSubsystem.setDefaultCommand(m_robotContainer.driveCommand);
-        m_robotContainer.wristCommand.schedule();
+        m_robotContainer.getDriveSubsystem().setDefaultCommand(m_robotContainer.getDriveCommand());
+        m_robotContainer.getWristCommand().schedule();
     }
 
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        m_robotContainer.wristCommand.schedule();
+        m_robotContainer.getWristCommand().schedule();
     }
 
     @Override
