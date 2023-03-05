@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.PigeonIMU;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -10,6 +9,7 @@ import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -57,6 +57,9 @@ public class DriveSubsystem extends SubsystemBase {
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
     private final Field2d m_field = new Field2d();
+
+    private SlewRateLimiter simVelocityX;
+    private SlewRateLimiter simVelocityY;
 
     public DriveSubsystem() {
         ShuffleboardTab shuffleboardTab = Shuffleboard.getTab("Drivetrain");
@@ -120,6 +123,8 @@ public class DriveSubsystem extends SubsystemBase {
         shuffleboardTab.addNumber("Pose X", () -> odometry.getPoseMeters().getX());
         shuffleboardTab.addNumber("Pose Y", () -> odometry.getPoseMeters().getY());
         SmartDashboard.putData("Field", m_field);
+        simVelocityX = new SlewRateLimiter(10);
+        simVelocityY = new SlewRateLimiter(10);
     }
 
     public void zeroGyroscope() {
@@ -210,14 +215,14 @@ public class DriveSubsystem extends SubsystemBase {
 
         System.out.println(chassisSpeeds);
 
-        double dx = (chassisSpeeds.vxMetersPerSecond*Math.cos(-rotation.getRadians())+chassisSpeeds.vyMetersPerSecond*Math.sin(-rotation.getRadians()))*0.02;
-        double dy = (chassisSpeeds.vxMetersPerSecond*Math.sin(-rotation.getRadians())-chassisSpeeds.vyMetersPerSecond*Math.cos(-rotation.getRadians()))*0.02;
+        double targetVelX = (chassisSpeeds.vxMetersPerSecond*Math.cos(-rotation.getRadians())+chassisSpeeds.vyMetersPerSecond*Math.sin(-rotation.getRadians()));
+        double targetVelY = (chassisSpeeds.vxMetersPerSecond*Math.sin(-rotation.getRadians())-chassisSpeeds.vyMetersPerSecond*Math.cos(-rotation.getRadians()));
         Rotation2d dRotation = Rotation2d.fromRadians(-chassisSpeeds.omegaRadiansPerSecond*0.02);
 
         System.out.println(rotation);
 
-        x += dx;
-        y += dy;
+        x += simVelocityX.calculate(targetVelX)*0.02;
+        y += simVelocityY.calculate(targetVelY)*0.02;
         rotation = rotation.rotateBy(dRotation);
 
         System.out.println(rotation);
