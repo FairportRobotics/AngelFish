@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Util;
@@ -22,6 +23,6 @@ public class WristCommand extends CommandBase {
     public void execute() {
         long delta = System.currentTimeMillis() - previousTime;
         previousTime = System.currentTimeMillis();
-        armSubsystem.adjustWristLevel(-delta*Util.deadband(operator.getLeftY(), 0.1)/2);
+        armSubsystem.adjustWristLevel(-delta*MathUtil.applyDeadband(operator.getLeftY(), 0.1)/2);
     }   
 }

@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -27,9 +28,9 @@ public class DriveCommand extends CommandBase {
         double strafe = controller.getLeftX();
         double rotate = controller.getRightX();
 
-        forward = Util.deadband(forward, Constants.DEADBAND_TRANSLATE);
-        strafe = Util.deadband(strafe, Constants.DEADBAND_TRANSLATE);
-        rotate = Util.deadband(rotate, Constants.DEADBAND_ROTATE);
+        forward = MathUtil.applyDeadband(forward, Constants.DEADBAND_TRANSLATE);
+        strafe = MathUtil.applyDeadband(strafe, Constants.DEADBAND_TRANSLATE);
+        rotate = MathUtil.applyDeadband(rotate, Constants.DEADBAND_ROTATE);
 
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);

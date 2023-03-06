@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -118,8 +119,8 @@ public class ArmSubsystem extends SubsystemBase {
         double wristPower = wristPIDController.calculate(wristAnalogInput.getValue() + armAnalogInput.getValue() - wristOffset);
 
         // Limit Arm & Wrist Power
-        //armPower = Math.max(Math.min(armPower, 0.50), -0.50);
-        //wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
+        armPower = MathUtil.clamp(armPower, -0.5, 0.5);
+        wristPower = MathUtil.clamp(wristPower, -0.25, 0.25);
 
         // If the arm is past its limits, don't allow it to go further
         if (armAnalogInput.getValue() < Constants.ARM_MIN) { armPower = Math.max(armPower, 0); }
