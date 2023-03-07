@@ -166,15 +166,15 @@ public class RobotContainer {
         this.insideRouteEnd = new PathPoint(new Translation2d(5.8, 1.0), Rotation2d.fromDegrees(0));
 
         this.nodePositions = new PathPoint[] {
-            new PathPoint(new Translation2d(2,0.4), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,1.0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,1.6), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,2.2), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,2.8), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,3.3), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,3.8), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,4.4), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,5.0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,0.4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,1.6), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,2.2), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,2.8), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,3.3), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,3.8), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,4.4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,5.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
         };
         this.startingCargoPositions = new PathPoint[] {
             new PathPoint(new Translation2d(6.5,4.5), Rotation2d.fromDegrees(0)),
@@ -233,7 +233,7 @@ public class RobotContainer {
             driveSubsystem.followTrajectoryCommand(outbound, true),
             new GripperOpenCommand(gripperSubsystem, false),
             driveSubsystem.followTrajectoryCommand(inbound, false),
-            highArmCommand,
+            new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE),
             new WaitCommand(2),
             new GripperOpenCommand(gripperSubsystem, true)
         );
