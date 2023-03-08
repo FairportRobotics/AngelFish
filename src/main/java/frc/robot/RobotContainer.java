@@ -4,152 +4,264 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
+import javax.swing.text.TabSet;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.PathPoint;
+import com.pathplanner.lib.commands.FollowPathWithEvents;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.DriveSubsystem;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.util.sendable.Sendable;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.subsystems.GripperSubsystem;
 import frc.robot.subsystems.LightingSubsystem;
-import frc.robot.subsystems.swerve.DriveSubsystem;
-
 import frc.robot.commands.GripperOpenCommand;
 import frc.robot.commands.WristCommand;
 
-import frc.robot.commands.TimedMoveCommand;
-
 /**
- * This class is where the bulk of the robot should be declared. Since Command-based is a
- * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
- * periodic methods (other than the scheduler calls). Instead, the structure of the robot (including
+ * This class is where the bulk of the robot should be declared. Since
+ * Command-based is a
+ * "declarative" paradigm, very little robot logic should actually be handled in
+ * the {@link Robot}
+ * periodic methods (other than the scheduler calls). Instead, the structure of
+ * the robot (including
  * subsystems, commands, and button mappings) should be declared here.
  */
 public class RobotContainer {
-  // The robot's subsystems and commands are defined here...
 
-  private Command m_autoCommand;
+    public final WristCommand wristCommand;
 
-  public WristCommand wristCommand;
+    private final CommandXboxController controller;
+    private final CommandXboxController operator;
 
-  public final CommandXboxController controller;
-  public final CommandXboxController operator;
+    private final ArmSubsystem armSubsystem;
+    private final GripperSubsystem gripperSubsystem;
+    private final DriveSubsystem driveSubsystem;
+    private final LightingSubsystem lightingSubsystem;
 
-  private final ArmSubsystem armSubsystem;
-  private GripperSubsystem gripperSubsystem;
-  public DriveSubsystem driveSubsystem;
-  public LightingSubsystem lightingSubsystem;
+    private final GripperOpenCommand openGripperCommand;
+    private final GripperOpenCommand closeGripperCommand;
 
-  private GripperOpenCommand openGripperCommand;
-  private GripperOpenCommand closeGripperCommand;
+    private final ArmCommand substationArmCommand;
 
-  private ArmCommand substationArmCommand;
+    private final ArmCommand lowArmCommand;
+    private final ArmCommand midArmCommand;
+    private final ArmCommand highArmCommand;
 
-  private ArmCommand lowArmCommand;
-  private ArmCommand midArmCommand;
-  private ArmCommand highArmCommand;
+    private final DriveCommand driveCommand;
 
-  public DriveCommand driveCommand;
+    private boolean targetingCones;
 
-  public JoystickButton gripperToggle; // MAY WANT THIS TO BE GRIPPER TOGGLE/WHEN HELD
-  public JoystickButton gripperSafety;
+    private final SendableChooser<Boolean> routeChooser;
+    private final SendableChooser<Integer> pickUpCargoChooser;
+    private final SendableChooser<Integer> putDownCargoChooser;
+    private final SendableChooser<Integer> chargingStationChooser;
 
-  private boolean targetingCones;
-  public TimedMoveCommand timedMoveCommand;
+    private final PathPoint insideRouteStart;
+    private final PathPoint insideRouteEnd;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    
-    this.armSubsystem = new ArmSubsystem();
-    //this.armSubsystem.armMovePosition(2048);
-    this.gripperSubsystem = new GripperSubsystem();
-    this.driveSubsystem = new DriveSubsystem();
+    private final PathPoint outsideRouteStart;
+    private final PathPoint outsideRouteEnd;
 
-    this.lightingSubsystem = new LightingSubsystem();
+    private final PathPoint chargingStationStart;
 
-    this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
-    this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
+    private final PathPoint[] nodePositions;
+    private final PathPoint[] startingCargoPositions;
+    private final PathPoint[] chargingStationPos;
 
-    this.targetingCones = true;
+    private HashMap<String, Command> eventMap = new HashMap<String, Command>();
 
-    // Configure the button bindings
-    initCommands();
-  }
+    /**
+     * The container for the robot. Contains subsystems, OI devices, and commands.
+     */
+    public RobotContainer() {
 
-  /** Initialize the commands */
-  public void initCommands() {
-    // Initiate commands.
-    this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
-    this.closeGripperCommand = new GripperOpenCommand(gripperSubsystem, false);
+        // Controllers
+        this.controller = new CommandXboxController(Constants.DRIVER_CONTROLLER);
+        this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
 
-    this.substationArmCommand = new ArmCommand(armSubsystem, false, Constants.SUBSTATION_ANGLE);
+        // Subsystems
+        this.armSubsystem = new ArmSubsystem();
+        this.gripperSubsystem = new GripperSubsystem();
+        this.driveSubsystem = new DriveSubsystem();
+        this.lightingSubsystem = new LightingSubsystem();
 
-    this.lowArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_LOW_ANGLE);
-    this.midArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_MID_ANGLE);
-    this.highArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE);
+        // Commands
+        this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
+        this.closeGripperCommand = new GripperOpenCommand(gripperSubsystem, false);
 
-    this.driveCommand = new DriveCommand(controller, driveSubsystem);
-    this.wristCommand = new WristCommand(operator, armSubsystem);
-    this.driveCommand = new DriveCommand(controller, driveSubsystem);
-    this.timedMoveCommand = new TimedMoveCommand(0.25, 0.25, 30000, driveSubsystem);
-  
-    this.configureButtonBindings();
-  }
+        this.substationArmCommand = new ArmCommand(armSubsystem, false, Constants.SUBSTATION_ANGLE);
+        this.lowArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_LOW_ANGLE);
+        this.midArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_MID_ANGLE);
+        this.highArmCommand = new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE);
 
-  /**
-   * Use this method to define your button->command mappings. Buttons can be created by
-   * instantiating a {@link GenericHID} or one of its subclasses ({@link
-   * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
-   * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-   */
-  private void configureButtonBindings() {
+        this.wristCommand = new WristCommand(operator, armSubsystem);
 
-    operator.leftBumper().onTrue(openGripperCommand);
-    operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
+        this.driveCommand = new DriveCommand(controller, driveSubsystem);
 
-    operator.rightBumper().onTrue(highArmCommand);
-    operator.axisGreaterThan(3, 0.75).onTrue(midArmCommand);
-    operator.povDown().onTrue(lowArmCommand);
-    operator.povUp().onTrue(substationArmCommand);
-    
-    operator.y().onTrue(Commands.runOnce(()->{
-      lightingSubsystem.setConeColor();
-      lowArmCommand.setAngle = Constants.CONE_LOW_ANGLE;
-      midArmCommand.setAngle = Constants.CONE_MID_ANGLE;
-      highArmCommand.setAngle = Constants.CONE_HIGH_ANGLE;
-    }));
-    operator.x().onTrue(Commands.runOnce(()->{
-      lightingSubsystem.setCubeColor();
-      lowArmCommand.setAngle = Constants.CUBE_LOW_ANGLE;
-      midArmCommand.setAngle = Constants.CUBE_MID_ANGLE;
-      highArmCommand.setAngle = Constants.CUBE_HIGH_ANGLE;
-    }));
-  }
+        // Bindings
+        operator.leftBumper().onTrue(openGripperCommand);
+        operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
 
-  /**
-   * Get the type of cargo that the robot is targeting
-   * @return true if the robot is in cone mode
-   */
-  public boolean getTargetCargo() {
-    return targetingCones;
-  }
+        operator.rightBumper().onTrue(highArmCommand);
+        operator.axisGreaterThan(3, 0.75).onTrue(midArmCommand);
+        operator.povDown().onTrue(lowArmCommand);
+        operator.povUp().onTrue(substationArmCommand);
 
-  /**
-   * Use this to pass the autonomous command to the main {@link Robot} class.
-   *
-   * @return the command to run in autonomous
-   */
-  public Command getAutonomousCommand() {
-    return new SequentialCommandGroup(
-      new GripperOpenCommand(gripperSubsystem, true),
-      new TimedMoveCommand(0.25, 0, 1000, driveSubsystem)
-    );
-  }  
+        operator.y().onTrue(Commands.runOnce(() -> {
+            lightingSubsystem.setConeColor();
+            lowArmCommand.setTargetAngle(Constants.CONE_LOW_ANGLE);
+            midArmCommand.setTargetAngle(Constants.CONE_MID_ANGLE);
+            highArmCommand.setTargetAngle(Constants.CONE_HIGH_ANGLE);
+        }));
+        operator.x().onTrue(Commands.runOnce(() -> {
+            lightingSubsystem.setCubeColor();
+            lowArmCommand.setTargetAngle(Constants.CUBE_LOW_ANGLE);
+            midArmCommand.setTargetAngle(Constants.CUBE_MID_ANGLE);
+            highArmCommand.setTargetAngle(Constants.CUBE_HIGH_ANGLE);
+        }));
+
+        // Autonomous options
+        this.routeChooser = new SendableChooser<Boolean>();
+        this.routeChooser.addOption("Inside", false);
+        this.routeChooser.addOption("Outside", true);
+        SmartDashboard.putData("Auto Route", routeChooser);
+
+        this.pickUpCargoChooser = new SendableChooser<Integer>();
+        this.pickUpCargoChooser.addOption("Position 1", 0);
+        this.pickUpCargoChooser.addOption("Position 2", 1);
+        this.pickUpCargoChooser.addOption("Position 3", 2);
+        this.pickUpCargoChooser.addOption("Position 4", 3);
+        SmartDashboard.putData("Cargo Starting Position", pickUpCargoChooser);
+
+        this.putDownCargoChooser = new SendableChooser<Integer>();
+        this.putDownCargoChooser.addOption("Row 1", 0);
+        this.putDownCargoChooser.addOption("Row 2", 1);
+        this.putDownCargoChooser.addOption("Row 3", 2);
+        this.putDownCargoChooser.addOption("Row 4", 3);
+        this.putDownCargoChooser.addOption("Row 5", 4);
+        this.putDownCargoChooser.addOption("Row 6", 5);
+        this.putDownCargoChooser.addOption("Row 7", 6);
+        this.putDownCargoChooser.addOption("Row 8", 7);
+        this.putDownCargoChooser.addOption("Row 9", 8);
+        SmartDashboard.putData("Cargo Destination Row", putDownCargoChooser);
+
+        this.chargingStationChooser = new SendableChooser<Integer>();
+        this.chargingStationChooser.addOption("Position 1", 0);
+        this.chargingStationChooser.addOption("Position 2", 1);
+        this.chargingStationChooser.addOption("Position 3", 2);
+        SmartDashboard.putData("Charging Station Destination", chargingStationChooser);
+
+        // Autonomous on-the-fly generation points
+        this.outsideRouteStart = new PathPoint(new Translation2d(2.1, 4.8), Rotation2d.fromDegrees(0));
+        this.outsideRouteEnd = new PathPoint(new Translation2d(5.8, 4.8), Rotation2d.fromDegrees(0));
+        this.insideRouteStart = new PathPoint(new Translation2d(2.1, 1.0), Rotation2d.fromDegrees(0));
+        this.insideRouteEnd = new PathPoint(new Translation2d(5.8, 1.0), Rotation2d.fromDegrees(0));
+
+        this.chargingStationStart = new PathPoint(new Translation2d(2.6,3.0), Rotation2d.fromDegrees(180));
+        
+        this.nodePositions = new PathPoint[] {
+            new PathPoint(new Translation2d(2,1), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,1.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,2), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,2.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,3), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,3.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,4.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,5.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+        };
+        this.startingCargoPositions = new PathPoint[] {
+            new PathPoint(new Translation2d(6.5,4.5), Rotation2d.fromDegrees(0)),
+            new PathPoint(new Translation2d(6.5,3.4), Rotation2d.fromDegrees(0)),
+            new PathPoint(new Translation2d(6.5,2.1), Rotation2d.fromDegrees(0)),
+            new PathPoint(new Translation2d(6.5,1.0), Rotation2d.fromDegrees(0)),
+        };
+        this.chargingStationPos = new PathPoint[] {
+            new PathPoint(new Translation2d(4.0,3.7), Rotation2d.fromDegrees(0)),
+            new PathPoint(new Translation2d(4.0,3), Rotation2d.fromDegrees(0)),
+            new PathPoint(new Translation2d(4.0,2.2), Rotation2d.fromDegrees(0)),
+        };
+
+        // PathPlanner event hashmap
+        eventMap.put("openGripper", openGripperCommand);
+        eventMap.put("closeGripper", closeGripperCommand);
+        eventMap.put("armLow", lowArmCommand);
+        eventMap.put("armMid", midArmCommand);
+        eventMap.put("armHigh", highArmCommand);
+
+        this.targetingCones = true;
+    }
+
+    /**
+     * Get the type of cargo that the robot is targeting
+     * 
+     * @return true if the robot is in cone mode
+     */
+    public boolean getTargetCargo() {
+        return targetingCones;
+    }
+
+    public Subsystem getDriveSubsystem() { return this.driveSubsystem; }
+
+    public Command getDriveCommand() { return this.driveCommand; }
+    public Command getWristCommand() { return this.wristCommand; }
+
+    /**
+     * Use this to pass the autonomous command to the main {@link Robot} class.
+     *
+     * @return the command to run in autonomous
+     */
+    public Command getAutonomousCommand() {
+        PathPlannerTrajectory outbound = PathPlanner.generatePath(
+            new PathConstraints(4, 3),
+            new PathPoint(new Translation2d(2.5, 2), Rotation2d.fromDegrees(0)),
+            routeChooser.getSelected() ? insideRouteStart : outsideRouteStart,
+            routeChooser.getSelected() ? insideRouteEnd : outsideRouteEnd,
+            startingCargoPositions[pickUpCargoChooser.getSelected()]
+        );
+        PathPlannerTrajectory inbound = PathPlanner.generatePath(
+            new PathConstraints(4, 3),
+            startingCargoPositions[pickUpCargoChooser.getSelected()],
+            routeChooser.getSelected() ? insideRouteEnd : outsideRouteEnd,
+            routeChooser.getSelected() ? insideRouteStart : outsideRouteStart,
+            nodePositions[putDownCargoChooser.getSelected()]
+            
+        );
+        PathPlannerTrajectory station = PathPlanner.generatePath(
+            new PathConstraints(4,3),
+            nodePositions[putDownCargoChooser.getSelected()],
+            chargingStationStart, 
+            chargingStationPos[chargingStationChooser.getSelected()]
+        );
+        return new SequentialCommandGroup(
+            new GripperOpenCommand(gripperSubsystem, true),
+            driveSubsystem.followTrajectoryCommand(outbound, true),
+            new GripperOpenCommand(gripperSubsystem, false),
+            driveSubsystem.followTrajectoryCommand(inbound, false),
+            new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE),
+            new WaitCommand(.5),
+            new GripperOpenCommand(gripperSubsystem, true),
+            new WaitCommand(2),
+            driveSubsystem.followTrajectoryCommand(station, false)
+            
+        );
+    }
 }
