@@ -72,6 +72,7 @@ public class RobotContainer {
     private final SendableChooser<Boolean> routeChooser;
     private final SendableChooser<Integer> pickUpCargoChooser;
     private final SendableChooser<Integer> putDownCargoChooser;
+    private final SendableChooser<Integer> chargingStationChooser;
 
     private final PathPoint insideRouteStart;
     private final PathPoint insideRouteEnd;
@@ -79,8 +80,11 @@ public class RobotContainer {
     private final PathPoint outsideRouteStart;
     private final PathPoint outsideRouteEnd;
 
+    private final PathPoint chargingStationStart;
+
     private final PathPoint[] nodePositions;
     private final PathPoint[] startingCargoPositions;
+    private final PathPoint[] chargingStationPos;
 
     private HashMap<String, Command> eventMap = new HashMap<String, Command>();
 
@@ -159,21 +163,29 @@ public class RobotContainer {
         this.putDownCargoChooser.addOption("Row 9", 8);
         SmartDashboard.putData("Cargo Destination Row", putDownCargoChooser);
 
+        this.chargingStationChooser = new SendableChooser<Integer>();
+        this.chargingStationChooser.addOption("Position 1", 0);
+        this.chargingStationChooser.addOption("Position 2", 1);
+        this.chargingStationChooser.addOption("Position 3", 2);
+        SmartDashboard.putData("Charging Station Destination", chargingStationChooser);
+
         // Autonomous on-the-fly generation points
         this.outsideRouteStart = new PathPoint(new Translation2d(2.1, 4.8), Rotation2d.fromDegrees(0));
         this.outsideRouteEnd = new PathPoint(new Translation2d(5.8, 4.8), Rotation2d.fromDegrees(0));
         this.insideRouteStart = new PathPoint(new Translation2d(2.1, 1.0), Rotation2d.fromDegrees(0));
         this.insideRouteEnd = new PathPoint(new Translation2d(5.8, 1.0), Rotation2d.fromDegrees(0));
 
+        this.chargingStationStart = new PathPoint(new Translation2d(2.6,3.0), Rotation2d.fromDegrees(180));
+        
         this.nodePositions = new PathPoint[] {
-            new PathPoint(new Translation2d(2,0.4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,1.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,1.6), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,2.2), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,2.8), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,3.3), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,3.8), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,4.4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,1), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,1.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,2), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,2.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,3), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,3.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
+            new PathPoint(new Translation2d(2,4.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
             new PathPoint(new Translation2d(2,5.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
         };
         this.startingCargoPositions = new PathPoint[] {
@@ -182,11 +194,15 @@ public class RobotContainer {
             new PathPoint(new Translation2d(6.5,2.1), Rotation2d.fromDegrees(0)),
             new PathPoint(new Translation2d(6.5,1.0), Rotation2d.fromDegrees(0)),
         };
+        this.chargingStationPos = new PathPoint[] {
+            new PathPoint(new Translation2d(4.0,3.7), Rotation2d.fromDegrees(0)),
+            new PathPoint(new Translation2d(4.0,3), Rotation2d.fromDegrees(0)),
+            new PathPoint(new Translation2d(4.0,2.2), Rotation2d.fromDegrees(0)),
+        };
 
         // PathPlanner event hashmap
         eventMap.put("openGripper", openGripperCommand);
         eventMap.put("closeGripper", closeGripperCommand);
-        eventMap.put("test", new PrintCommand("test"));
         eventMap.put("armLow", lowArmCommand);
         eventMap.put("armMid", midArmCommand);
         eventMap.put("armHigh", highArmCommand);
@@ -227,6 +243,13 @@ public class RobotContainer {
             routeChooser.getSelected() ? insideRouteEnd : outsideRouteEnd,
             routeChooser.getSelected() ? insideRouteStart : outsideRouteStart,
             nodePositions[putDownCargoChooser.getSelected()]
+            
+        );
+        PathPlannerTrajectory station = PathPlanner.generatePath(
+            new PathConstraints(4,3),
+            nodePositions[putDownCargoChooser.getSelected()],
+            chargingStationStart, 
+            chargingStationPos[chargingStationChooser.getSelected()]
         );
         return new SequentialCommandGroup(
             new GripperOpenCommand(gripperSubsystem, true),
@@ -234,8 +257,11 @@ public class RobotContainer {
             new GripperOpenCommand(gripperSubsystem, false),
             driveSubsystem.followTrajectoryCommand(inbound, false),
             new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE),
+            new WaitCommand(.5),
+            new GripperOpenCommand(gripperSubsystem, true),
             new WaitCommand(2),
-            new GripperOpenCommand(gripperSubsystem, true)
+            driveSubsystem.followTrajectoryCommand(station, false)
+            
         );
     }
 }

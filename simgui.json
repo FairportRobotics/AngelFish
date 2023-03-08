@@ -51,6 +51,7 @@
       "/SmartDashboard/Auto Route": "String Chooser",
       "/SmartDashboard/Cargo Destination Row": "String Chooser",
       "/SmartDashboard/Cargo Starting Position": "String Chooser",
+      "/SmartDashboard/Charging Station Destination": "String Chooser",
       "/SmartDashboard/Field": "Field2d",
       "/SmartDashboard/Gripper": "Mechanism2d",
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
@@ -81,12 +82,17 @@
           "visible": true
         }
       },
+      "/SmartDashboard/Charging Station Destination": {
+        "window": {
+          "visible": true
+        }
+      },
       "/SmartDashboard/Field": {
         "Robot": {
           "length": 0.5,
           "width": 0.5
         },
-        "image": "/home/yit/Documents/robotics/AngelFish/field.png",
+        "image": "C:\\Users\\TimHortonsakaClinton\\robotics\\Angelfish\\field.png",
         "window": {
           "visible": true
         }
