@@ -88,6 +88,7 @@
       "buttonCount": 0,
       "povCount": 0
     }
+<<<<<<< HEAD
   ],
   "robotJoysticks": [
     {
@@ -97,5 +98,7 @@
     {
       "useGamepad": true
     }
+=======
+>>>>>>> origin/master
   ]
 }

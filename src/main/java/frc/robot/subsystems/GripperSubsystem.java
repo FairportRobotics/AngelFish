@@ -1,8 +1,12 @@
 package frc.robot.subsystems;
 
+import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725;
+import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725.TCS34725_RGB;
+
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -16,6 +20,8 @@ public class GripperSubsystem extends SubsystemBase {
     private DoubleSolenoid gripperSolenoid;
     private PneumaticHub ph;
     private Compressor phCompressor;
+    private TCS34725 colorSensor;
+    private SerialPort lightController;
 
     private Mechanism2d mechanism;
     private MechanismRoot2d rootLeft;
@@ -30,6 +36,8 @@ public class GripperSubsystem extends SubsystemBase {
 
         gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
         gripperSolenoid.set(Value.kForward);
+
+        colorSensor = new TCS34725();
 
         mechanism = new Mechanism2d(3, 2);
 
@@ -75,5 +83,14 @@ public class GripperSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         SmartDashboard.putData("Gripper", mechanism);
+    }
+
+    public int lightingInfo(String lightingInput) {
+        return lightController.writeString(lightingInput);
+    }
+
+    public GamePiece detectGamePiece() {
+        TCS34725_RGB color = colorSensor.getRGB();
+        return checkColors(color.getR(), color.getG(), color.getB());
     }
 }
