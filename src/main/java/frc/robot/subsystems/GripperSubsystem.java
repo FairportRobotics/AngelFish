@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725;
+import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725.TCS34725_RGB;
+
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
@@ -14,6 +17,7 @@ public class GripperSubsystem extends SubsystemBase {
 
   private DoubleSolenoid gripperSolenoid;
   private PneumaticHub ph;
+  private TCS34725 colorSensor;
   private final int MIN_RED_CONE = 205;
   private final int MAX_RED_CONE = 265;
   private final int MIN_GREEN_CONE = 154;
@@ -37,6 +41,8 @@ public class GripperSubsystem extends SubsystemBase {
 
     gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
     gripperSolenoid.set(Value.kForward);
+
+    colorSensor = new TCS34725();
   }
 
   public GamePiece checkColors(int r, int g, int b) {
@@ -88,5 +94,11 @@ public class GripperSubsystem extends SubsystemBase {
 
   public int lightingInfo(String lightingInput) {
     return lightController.writeString(lightingInput);
+  }
+
+  public GamePiece detectGamePiece()
+  {
+    TCS34725_RGB color = colorSensor.getRGB();
+    return checkColors(color.getR(), color.getG(),color.getB());
   }
 }
