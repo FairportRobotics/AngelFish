@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -28,10 +31,12 @@ public class ArmSubsystem extends SubsystemBase {
 
   private double wristOffset;
 
+  private DoubleSolenoid brakeSolenoid;
+
   /**
    * Create a new ArmSubsystem.
    */
-  public ArmSubsystem() {
+  public ArmSubsystem(PneumaticHub ph) {
     armAnalogInput = new AnalogInput(Constants.ARM_PE_ID);
     wristAnalogInput = new AnalogInput(Constants.WRIST_PE_ID);
 
@@ -48,6 +53,9 @@ public class ArmSubsystem extends SubsystemBase {
     armPIDController.setSetpoint(Constants.CUBE_LOW_ANGLE);
 
     this.wristOffset = Constants.NEUTRAL_WRIST_OFFSET;
+
+    this.brakeSolenoid = ph.makeDoubleSolenoid(Constants.ARM_BRAKE_OFF, Constants.ARM_BRAKE_ON);
+    setBrakeOn();
 
     this.setName("ArmSubsystem");
   }
@@ -88,10 +96,20 @@ public class ArmSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Wrist Power", wristPower);
     SmartDashboard.putNumber("Wrist Potentiometer", wristAnalogInput.getValue());
     SmartDashboard.putNumber("Wrist Offset", wristOffset);
+    
+    if (atSetPoint()) {
+        setBrakeOn();
+    } else {
+        setBrakeOff();
+    }
 
-    armFalcon.set(ControlMode.PercentOutput, armPower);
-    wristFalcon.set(ControlMode.PercentOutput, wristPower);
-
+    if (brakeSolenoid.get() == Value.kForward) {
+      armFalcon.set(ControlMode.PercentOutput, armPower);
+      wristFalcon.set(ControlMode.PercentOutput, wristPower);
+    } else {
+      armFalcon.set(ControlMode.PercentOutput, 0);
+      wristFalcon.set(ControlMode.PercentOutput, 0);
+    }
 
 
   }
@@ -108,6 +126,18 @@ public class ArmSubsystem extends SubsystemBase {
   public void adjustWristLevel(double offsetAdjustment) {
     System.out.println(offsetAdjustment);
     wristOffset += offsetAdjustment;
+  }
+
+  public void setBrakeOn() {
+    this.brakeSolenoid.set(Value.kReverse);
+  }
+
+  public void setBrakeOff() {
+    this.brakeSolenoid.set(Value.kForward);
+  }
+  
+  public boolean atSetPoint() { //TODO: probably shoud take into account velocity
+    return Math.abs(armPIDController.getPositionError()) < Constants.ARM_TOLERANCE;
   }
 
   /**

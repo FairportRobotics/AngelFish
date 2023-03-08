@@ -30,7 +30,7 @@ public class ArmCommand extends CommandBase {
   }
 
   @Override
-  public void execute() {
+  public void initialize() {
     if (relative == true) {
       m_subsystem.setArmPoistion(setAngle + m_subsystem.getArmSetpoint());
     } else {
@@ -46,7 +46,7 @@ public class ArmCommand extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return true;
+    return m_subsystem.atSetPoint();
   }
 
   

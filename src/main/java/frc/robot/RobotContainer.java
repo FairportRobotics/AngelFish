@@ -7,7 +7,9 @@ package frc.robot;
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 
+import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
@@ -64,12 +66,19 @@ public class RobotContainer {
   private boolean targetingCones;
   public TimedMoveCommand timedMoveCommand;
 
+  private Compressor phCompressor;
+  private PneumaticHub ph;
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    // Initialize Pneumatics Hub
+    ph = new PneumaticHub(Constants.PH_CAN_ID);
+    phCompressor = ph.makeCompressor();
+    phCompressor.enableDigital();
     
-    this.armSubsystem = new ArmSubsystem();
+    this.armSubsystem = new ArmSubsystem(ph);
     //this.armSubsystem.armMovePosition(2048);
-    this.gripperSubsystem = new GripperSubsystem();
+    this.gripperSubsystem = new GripperSubsystem(ph);
     this.driveSubsystem = new DriveSubsystem();
 
     this.lightingSubsystem = new LightingSubsystem();
