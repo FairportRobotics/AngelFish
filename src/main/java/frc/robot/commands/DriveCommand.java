@@ -5,7 +5,6 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.Util;
 import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
@@ -20,6 +19,11 @@ public class DriveCommand extends CommandBase {
         this.controller = controller;
         this.driveSubsystem = driveSubsystem;
         addRequirements(driveSubsystem);
+    }
+
+    @Override
+    public void initialize() {
+        this.driveSubsystem.unlock();
     }
 
     @Override
