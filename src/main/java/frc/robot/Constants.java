@@ -6,6 +6,11 @@ public final class Constants {
     public static final int ARM_FALCON_ID = 58;
     public static final int WRIST_FALCON_ID = 20;
 
+    public static final int ARM_BRAKE_ON = -1; //TODO: Find actual values
+    public static final int ARM_BRAKE_OFF = -1;
+
+    public static final int ARM_TOLERANCE = 50;
+
     public static final int ARM_PE_ID = 1;
     public static final int WRIST_PE_ID = 0;
 

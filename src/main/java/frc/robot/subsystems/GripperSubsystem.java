@@ -1,7 +1,8 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.Compressor;
+import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725;
+import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725.TCS34725_RGB;
+
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
@@ -13,8 +14,12 @@ import frc.robot.Constants;
 public class GripperSubsystem extends SubsystemBase {
 
   private DoubleSolenoid gripperSolenoid;
+<<<<<<< HEAD
   private DoubleSolenoid brakeSolenoid;
   private PneumaticHub ph;
+=======
+  private TCS34725 colorSensor;
+>>>>>>> 6a7967bf3aeace9a4181ec43f361d14bcab99976
   private final int MIN_RED_CONE = 205;
   private final int MAX_RED_CONE = 265;
   private final int MIN_GREEN_CONE = 154;
@@ -28,18 +33,17 @@ public class GripperSubsystem extends SubsystemBase {
   private final int MIN_BLUE_CUBE = 151;
   private final int MAX_BLUE_CUBE = 211;
   private SerialPort lightController;
-  private Compressor phCompressor;
 
-  public GripperSubsystem() {
-    // Added some stuff from askar to constants and changed the names, PH as well.
-    ph = new PneumaticHub(Constants.PH_CAN_ID);
-    phCompressor = ph.makeCompressor();
-    phCompressor.enableDigital();
-
+  public GripperSubsystem(PneumaticHub ph) {
     gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
     gripperSolenoid.set(Value.kForward);
+<<<<<<< HEAD
     brakeSolenoid = ph.makeDoubleSolenoid(Constants.PH_BRAKE_OPEN, Constants.PH_BRAKE_CLOSE);
     brakeSolenoid.set(Value.kForward);
+=======
+
+    colorSensor = new TCS34725();
+>>>>>>> 6a7967bf3aeace9a4181ec43f361d14bcab99976
   }
 
   public GamePiece checkColors(int r, int g, int b) {
@@ -81,7 +85,6 @@ public class GripperSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putData(gripperSolenoid);
-    SmartDashboard.putData(phCompressor);
   }
 
   @Override
@@ -91,5 +94,11 @@ public class GripperSubsystem extends SubsystemBase {
 
   public int lightingInfo(String lightingInput) {
     return lightController.writeString(lightingInput);
+  }
+
+  public GamePiece detectGamePiece()
+  {
+    TCS34725_RGB color = colorSensor.getRGB();
+    return checkColors(color.getR(), color.getG(),color.getB());
   }
 }
