@@ -13,6 +13,7 @@ import frc.robot.Constants;
 public class GripperSubsystem extends SubsystemBase {
 
   private DoubleSolenoid gripperSolenoid;
+  private DoubleSolenoid brakeSolenoid;
   private PneumaticHub ph;
   private final int MIN_RED_CONE = 205;
   private final int MAX_RED_CONE = 265;
@@ -37,6 +38,8 @@ public class GripperSubsystem extends SubsystemBase {
 
     gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
     gripperSolenoid.set(Value.kForward);
+    brakeSolenoid = ph.makeDoubleSolenoid(Constants.PH_BRAKE_OPEN, Constants.PH_BRAKE_CLOSE);
+    brakeSolenoid.set(Value.kForward);
   }
 
   public GamePiece checkColors(int r, int g, int b) {
@@ -63,7 +66,7 @@ public class GripperSubsystem extends SubsystemBase {
   public void setClosed() {
     gripperSolenoid.set(Value.kReverse);
   }
-
+ 
   // Pistons that push/pull gripper claws -- toggles position
   public void GripperToggle() {
     // if (!ph.getPressureSwitch() && ph.getCompressor())

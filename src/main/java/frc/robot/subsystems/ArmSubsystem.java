@@ -51,6 +51,14 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.setName("ArmSubsystem");
   }
+  
+  public void brakeOpen () {
+  brakeSolenoid.set(Value.kForward);
+  }
+
+  public void brakeClosed () {
+  brakeSolenoid.set(Value.kReverse);
+  }
 
   @Override
   public void periodic() {
