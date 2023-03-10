@@ -7,10 +7,8 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.Solenoid;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.simulation.AnalogInputSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -131,35 +129,22 @@ public class ArmSubsystem extends SubsystemBase {
     armPower = Math.max(Math.min(armPower, 0.75), -0.75);
     wristPower = Math.max(Math.min(wristPower, 0.50), -0.50);
 
-    if(armAnalogInput.getValue() < Constants.ARM_MIN){
-      armPower = Math.max(armPower, 0);
-      System.out.println("Limit Arm Power Positive");
-
-    }
-
-    if(armAnalogInput.getValue() > Constants.ARM_MAX){
-      armPower = Math.min(armPower, 0);
-      System.out.println("Limit Arm Power Negative");
-    }
-
-    if(wristAnalogInput.getValue() < Constants.WRIST_MIN){
-      wristPower = Math.max(wristPower, 0);
-      System.out.println("Limit Wrist Power Positive");
-    }
-
-    if(wristAnalogInput.getValue() > Constants.WRIST_MAX){
-      wristPower = Math.min(wristPower, 0);
-      System.out.println("Limit Wrist Power Negative");
-    }
-
-    SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
-    SmartDashboard.putNumber("Arm Power", armPower);
-
-    SmartDashboard.putNumber("Wrist Position", wristAnalogInput.getValue()+armAnalogInput.getValue()-wristOffset);
-    SmartDashboard.putNumber("Wrist Power", wristPower);
-    SmartDashboard.putNumber("Wrist Potentiometer", wristAnalogInput.getValue());
-    SmartDashboard.putNumber("Wrist Offset", wristOffset);
-    
+           // If the arm is past its limits, don't allow it to go further
+           if (armAnalogInput.getValue() < Constants.ARM_MIN) { armPower = Math.max(armPower, 0); }
+           if (armAnalogInput.getValue() > Constants.ARM_MAX) { armPower = Math.min(armPower, 0); }
+           if (wristAnalogInput.getValue() < Constants.WRIST_MIN) { wristPower = Math.max(wristPower, 0); }
+           if (wristAnalogInput.getValue() > Constants.WRIST_MAX) { wristPower = Math.min(wristPower, 0); }
+   
+           SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
+           SmartDashboard.putNumber("Arm Power", armPower);
+   
+           SmartDashboard.putNumber("Wrist Position", wristAnalogInput.getValue() + armAnalogInput.getValue() - wristOffset);
+           SmartDashboard.putNumber("Wrist Power", wristPower);
+           SmartDashboard.putNumber("Wrist Potentiometer", wristAnalogInput.getValue());
+           SmartDashboard.putNumber("Wrist Offset", wristOffset);
+   
+           SmartDashboard.putData("Arm Widget", mechanism);
+            
     if (atSetPoint()) {
         setBrakeOn();
     } else {
@@ -174,7 +159,9 @@ public class ArmSubsystem extends SubsystemBase {
       wristFalcon.set(ControlMode.PercentOutput, 0);
     }
 
-
+    // Display the current arm state
+    arm.setAngle(Util.map(armAnalogInput.getValue(), Constants.ARM_MIN, Constants.ARM_MAX, 180, 0));
+    wrist.setAngle(Util.map(wristAnalogInput.getValue(), Constants.WRIST_MIN, Constants.WRIST_MAX, 90, -90));
   }
 
   /**

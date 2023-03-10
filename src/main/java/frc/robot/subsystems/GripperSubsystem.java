@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725;
 import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725.TCS34725_RGB;
 
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -18,22 +17,7 @@ import frc.robot.Constants;
 public class GripperSubsystem extends SubsystemBase {
 
     private DoubleSolenoid gripperSolenoid;
-    private DoubleSolenoid brakeSolenoid;
-    private PneumaticHub ph;
-    private Compressor phCompressor;
     private TCS34725 colorSensor;
-    private final int MIN_RED_CONE = 205;
-    private final int MAX_RED_CONE = 265;
-    private final int MIN_GREEN_CONE = 154;
-    private final int MAX_GREEN_CONE = 214;
-    private final int MIN_BLUE_CONE = 0;
-    private final int MAX_BLUE_CONE = 30;
-    private final int MIN_RED_CUBE = 123;
-    private final int MAX_RED_CUBE = 183;
-    private final int MIN_GREEN_CUBE = 32;
-    private final int MAX_GREEN_CUBE = 92;
-    private final int MIN_BLUE_CUBE = 151;
-    private final int MAX_BLUE_CUBE = 211;
     private SerialPort lightController;
 
     private Mechanism2d mechanism;
