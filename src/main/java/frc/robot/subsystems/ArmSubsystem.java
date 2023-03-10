@@ -31,7 +31,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   private double wristOffset;
 
-  private DoubleSolenoid brakeSolenoid;
+  private Solenoid brakeSolenoid;
 
   /**
    * Create a new ArmSubsystem.
@@ -54,18 +54,18 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.wristOffset = Constants.NEUTRAL_WRIST_OFFSET;
 
-    this.brakeSolenoid = ph.makeDoubleSolenoid(Constants.ARM_BRAKE_OFF, Constants.ARM_BRAKE_ON);
+    this.brakeSolenoid = ph.makeSolenoid(Constants.ARM_BRAKE_OFF, Constants.ARM_BRAKE_ON);
     setBrakeOn();
 
     this.setName("ArmSubsystem");
   }
   
   public void brakeOpen () {
-  brakeSolenoid.set(Value.kForward);
+  brakeSolenoid.set(true);
   }
 
   public void brakeClosed () {
-  brakeSolenoid.set(Value.kReverse);
+  brakeSolenoid.set(false);
   }
 
   @Override

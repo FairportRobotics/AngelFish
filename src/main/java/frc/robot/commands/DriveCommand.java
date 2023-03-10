@@ -1,12 +1,12 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
-import frc.robot.subsystems.swerve.DriveSubsystem;
+import frc.robot.Util;
+import frc.robot.subsystems.DriveSubsystem;
 
 public class DriveCommand extends CommandBase {
 
@@ -27,32 +27,20 @@ public class DriveCommand extends CommandBase {
         double forward = controller.getLeftY();
         double strafe = controller.getLeftX();
         double rotate = controller.getRightX();
-        forward = deadband(forward, Constants.DEADBAND_TRANSLATE);
-        strafe = deadband(strafe, Constants.DEADBAND_TRANSLATE);
-        rotate = deadband(rotate, Constants.DEADBAND_ROTATE);
+
+        forward = MathUtil.applyDeadband(forward, Constants.DEADBAND_TRANSLATE);
+        strafe = MathUtil.applyDeadband(strafe, Constants.DEADBAND_TRANSLATE);
+        rotate = MathUtil.applyDeadband(rotate, Constants.DEADBAND_ROTATE);
+
         forward *= Math.abs(forward);
         strafe *= Math.abs(strafe);
         rotate *= Math.abs(rotate);
-        double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.MAX_SPEED : Constants.SLOW_SPEED;
-        driveSubsystem.drive(forward * speed, strafe * speed, rotate, driveSubsystem.getYaw());
-    }
 
-    /**
-     * Remove small inputs from the controllers.
-     * @param value current controller value.
-     * @param deadband cutoff for deadband.
-     * @return deadbanded value.
-     */
-    private static double deadband(double value, double deadband) {
-        if(Math.abs(value) > deadband) {
-            if(value > 0.0) {
-                return (value - deadband) / (1.0 - deadband);
-            } else {
-                return (value + deadband) / (1.0 - deadband);
-            }
-        } else {
-            return 0.0;
-        }
+        double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.FAST_SPEED : Constants.SLOW_SPEED;
+
+        ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(-forward * speed, -strafe * speed, rotate * Constants.ROTATION_RATE, driveSubsystem.getRotation());
+        
+        driveSubsystem.drive(chassisSpeed);
     }
 
     @Override
