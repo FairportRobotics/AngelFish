@@ -1,5 +1,8 @@
 package frc.robot;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
+
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 
 public final class Constants {
 
@@ -87,4 +90,8 @@ public final class Constants {
     public static final int MAX_GREEN_CUBE = 92;
     public static final int MIN_BLUE_CUBE = 151;
     public static final int MAX_BLUE_CUBE = 211;
+
+    // Distance From Center of Robot To Cameras
+    public static final Transform3d FRONT_CAM_TO_CENTER = new Transform3d(new Translation3d(-0.0762, 0.1524, 0.9398), new Rotation3d(0,0,0));
+    public static final Transform3d BACK_CAM_TO_CENTER = new Transform3d(new Translation3d(0.0762, 0.1524, 0.9398), new Rotation3d(0,0,0));
 }
