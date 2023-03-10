@@ -48,6 +48,11 @@ public class DriveCommand extends CommandBase {
     }
 
     @Override
+    public void end(boolean interrupted) {
+        driveSubsystem.lock();
+    }
+
+    @Override
     public boolean isFinished() {
         return false;
     }

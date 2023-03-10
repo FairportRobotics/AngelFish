@@ -112,6 +112,8 @@ public class RobotContainer {
         this.driveCommand = new DriveCommand(controller, driveSubsystem);
 
         // Bindings
+        controller.rightBumper().onTrue(Commands.runOnce(()->{driveSubsystem.unlock();}));
+        controller.axisGreaterThan(3, 0.75).onTrue(Commands.runOnce(()->{driveSubsystem.lock();}));
         operator.leftBumper().onTrue(openGripperCommand);
         operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
 
