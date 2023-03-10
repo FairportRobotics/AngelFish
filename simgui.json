@@ -1,10 +1,5 @@
 {
   "HALProvider": {
-    "Analog Inputs": {
-      "window": {
-        "visible": true
-      }
-    },
     "Other Devices": {
       "Talon FX[20]": {
         "header": {
@@ -15,6 +10,9 @@
         "header": {
           "open": true
         }
+      },
+      "window": {
+        "visible": false
       }
     },
     "Timing": {
@@ -48,6 +46,7 @@
       "/LiveWindow/Ungrouped/Talon FX [8]": "Motor Controller",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Arm Widget": "Mechanism2d",
+      "/SmartDashboard/Auto Chooser": "String Chooser",
       "/SmartDashboard/Auto Route": "String Chooser",
       "/SmartDashboard/Cargo Destination Row": "String Chooser",
       "/SmartDashboard/Cargo Starting Position": "String Chooser",
@@ -57,32 +56,12 @@
       "/SmartDashboard/SendableChooser[0]": "String Chooser"
     },
     "windows": {
-      "/FMSInfo": {
-        "window": {
-          "visible": true
-        }
-      },
       "/SmartDashboard/Arm Widget": {
         "window": {
           "visible": true
         }
       },
-      "/SmartDashboard/Auto Route": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Cargo Destination Row": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Cargo Starting Position": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Charging Station Destination": {
+      "/SmartDashboard/Auto Chooser": {
         "window": {
           "visible": true
         }
@@ -92,7 +71,7 @@
           "length": 0.5,
           "width": 0.5
         },
-        "image": "C:\\Users\\TimHortonsakaClinton\\robotics\\Angelfish\\field.png",
+        "image": "C:\\Users\\Greydon The Comedy J\\AngelFish\\field.png",
         "window": {
           "visible": true
         }

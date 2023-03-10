@@ -69,22 +69,9 @@ public class RobotContainer {
 
     private boolean targetingCones;
 
-    private final SendableChooser<Boolean> routeChooser;
-    private final SendableChooser<Integer> pickUpCargoChooser;
-    private final SendableChooser<Integer> putDownCargoChooser;
-    private final SendableChooser<Integer> chargingStationChooser;
+    private final SendableChooser<String> routeChooser;
 
-    private final PathPoint insideRouteStart;
-    private final PathPoint insideRouteEnd;
-
-    private final PathPoint outsideRouteStart;
-    private final PathPoint outsideRouteEnd;
-
-    private final PathPoint chargingStationStart;
-
-    private final PathPoint[] nodePositions;
-    private final PathPoint[] startingCargoPositions;
-    private final PathPoint[] chargingStationPos;
+    
 
     private HashMap<String, Command> eventMap = new HashMap<String, Command>();
 
@@ -139,67 +126,13 @@ public class RobotContainer {
         }));
 
         // Autonomous options
-        this.routeChooser = new SendableChooser<Boolean>();
-        this.routeChooser.addOption("Inside", false);
-        this.routeChooser.addOption("Outside", true);
-        SmartDashboard.putData("Auto Route", routeChooser);
+        routeChooser = new SendableChooser<String>();
+        routeChooser.addOption("Leave Community", "Leave Community");
 
-        this.pickUpCargoChooser = new SendableChooser<Integer>();
-        this.pickUpCargoChooser.addOption("Position 1", 0);
-        this.pickUpCargoChooser.addOption("Position 2", 1);
-        this.pickUpCargoChooser.addOption("Position 3", 2);
-        this.pickUpCargoChooser.addOption("Position 4", 3);
-        SmartDashboard.putData("Cargo Starting Position", pickUpCargoChooser);
+        routeChooser.setDefaultOption("Leave Community", "Leave Community");
 
-        this.putDownCargoChooser = new SendableChooser<Integer>();
-        this.putDownCargoChooser.addOption("Row 1", 0);
-        this.putDownCargoChooser.addOption("Row 2", 1);
-        this.putDownCargoChooser.addOption("Row 3", 2);
-        this.putDownCargoChooser.addOption("Row 4", 3);
-        this.putDownCargoChooser.addOption("Row 5", 4);
-        this.putDownCargoChooser.addOption("Row 6", 5);
-        this.putDownCargoChooser.addOption("Row 7", 6);
-        this.putDownCargoChooser.addOption("Row 8", 7);
-        this.putDownCargoChooser.addOption("Row 9", 8);
-        SmartDashboard.putData("Cargo Destination Row", putDownCargoChooser);
-
-        this.chargingStationChooser = new SendableChooser<Integer>();
-        this.chargingStationChooser.addOption("Position 1", 0);
-        this.chargingStationChooser.addOption("Position 2", 1);
-        this.chargingStationChooser.addOption("Position 3", 2);
-        SmartDashboard.putData("Charging Station Destination", chargingStationChooser);
-
-        // Autonomous on-the-fly generation points
-        this.outsideRouteStart = new PathPoint(new Translation2d(2.1, 4.8), Rotation2d.fromDegrees(0));
-        this.outsideRouteEnd = new PathPoint(new Translation2d(5.8, 4.8), Rotation2d.fromDegrees(0));
-        this.insideRouteStart = new PathPoint(new Translation2d(2.1, 1.0), Rotation2d.fromDegrees(0));
-        this.insideRouteEnd = new PathPoint(new Translation2d(5.8, 1.0), Rotation2d.fromDegrees(0));
-
-        this.chargingStationStart = new PathPoint(new Translation2d(2.6,3.0), Rotation2d.fromDegrees(180));
+        SmartDashboard.putData("Auto Chooser", routeChooser);
         
-        this.nodePositions = new PathPoint[] {
-            new PathPoint(new Translation2d(2,1), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,1.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,2), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,2.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,3), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,3.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,4), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,4.5), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-            new PathPoint(new Translation2d(2,5.0), Rotation2d.fromDegrees(0), Rotation2d.fromDegrees(180)),
-        };
-        this.startingCargoPositions = new PathPoint[] {
-            new PathPoint(new Translation2d(6.5,4.5), Rotation2d.fromDegrees(0)),
-            new PathPoint(new Translation2d(6.5,3.4), Rotation2d.fromDegrees(0)),
-            new PathPoint(new Translation2d(6.5,2.1), Rotation2d.fromDegrees(0)),
-            new PathPoint(new Translation2d(6.5,1.0), Rotation2d.fromDegrees(0)),
-        };
-        this.chargingStationPos = new PathPoint[] {
-            new PathPoint(new Translation2d(4.0,3.7), Rotation2d.fromDegrees(0)),
-            new PathPoint(new Translation2d(4.0,3), Rotation2d.fromDegrees(0)),
-            new PathPoint(new Translation2d(4.0,2.2), Rotation2d.fromDegrees(0)),
-        };
-
         // PathPlanner event hashmap
         eventMap.put("openGripper", openGripperCommand);
         eventMap.put("closeGripper", closeGripperCommand);
@@ -230,38 +163,10 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        PathPlannerTrajectory outbound = PathPlanner.generatePath(
-            new PathConstraints(4, 3),
-            new PathPoint(new Translation2d(2.5, 2), Rotation2d.fromDegrees(0)),
-            routeChooser.getSelected() ? insideRouteStart : outsideRouteStart,
-            routeChooser.getSelected() ? insideRouteEnd : outsideRouteEnd,
-            startingCargoPositions[pickUpCargoChooser.getSelected()]
-        );
-        PathPlannerTrajectory inbound = PathPlanner.generatePath(
-            new PathConstraints(4, 3),
-            startingCargoPositions[pickUpCargoChooser.getSelected()],
-            routeChooser.getSelected() ? insideRouteEnd : outsideRouteEnd,
-            routeChooser.getSelected() ? insideRouteStart : outsideRouteStart,
-            nodePositions[putDownCargoChooser.getSelected()]
-            
-        );
-        PathPlannerTrajectory station = PathPlanner.generatePath(
-            new PathConstraints(4,3),
-            nodePositions[putDownCargoChooser.getSelected()],
-            chargingStationStart, 
-            chargingStationPos[chargingStationChooser.getSelected()]
-        );
-        return new SequentialCommandGroup(
-            new GripperOpenCommand(gripperSubsystem, true),
-            driveSubsystem.followTrajectoryCommand(outbound, true),
-            new GripperOpenCommand(gripperSubsystem, false),
-            driveSubsystem.followTrajectoryCommand(inbound, false),
-            new ArmCommand(armSubsystem, false, Constants.CONE_HIGH_ANGLE),
-            new WaitCommand(.5),
-            new GripperOpenCommand(gripperSubsystem, true),
-            new WaitCommand(2),
-            driveSubsystem.followTrajectoryCommand(station, false)
-            
-        );
+        PathPlannerTrajectory trajectory = PathPlanner.loadPath(routeChooser.getSelected(), new PathConstraints(3, 4));
+    
+    return new FollowPathWithEvents(driveSubsystem.followTrajectoryCommand(trajectory, true),
+     trajectory.getMarkers(),
+      eventMap);
     }
 }
