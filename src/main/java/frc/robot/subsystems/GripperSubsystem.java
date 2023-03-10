@@ -17,33 +17,23 @@ import frc.robot.Constants;
 
 public class GripperSubsystem extends SubsystemBase {
 
-  private DoubleSolenoid gripperSolenoid;
-  private DoubleSolenoid brakeSolenoid;
-  private PneumaticHub ph;
-  private TCS34725 colorSensor;
-  private final int MIN_RED_CONE = 205;
-  private final int MAX_RED_CONE = 265;
-  private final int MIN_GREEN_CONE = 154;
-  private final int MAX_GREEN_CONE = 214;
-  private final int MIN_BLUE_CONE = 0;
-  private final int MAX_BLUE_CONE = 30;
-  private final int MIN_RED_CUBE = 123;
-  private final int MAX_RED_CUBE = 183;
-  private final int MIN_GREEN_CUBE = 32;
-  private final int MAX_GREEN_CUBE = 92;
-  private final int MIN_BLUE_CUBE = 151;
-  private final int MAX_BLUE_CUBE = 211;
-  private SerialPort lightController;
-
-  public GripperSubsystem(PneumaticHub ph) {
-    gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
-    gripperSolenoid.set(Value.kForward);
-    brakeSolenoid = ph.makeDoubleSolenoid(Constants.PH_BRAKE_OPEN, Constants.PH_BRAKE_CLOSE);
-    brakeSolenoid.set(Value.kForward);
     private DoubleSolenoid gripperSolenoid;
+    private DoubleSolenoid brakeSolenoid;
     private PneumaticHub ph;
     private Compressor phCompressor;
     private TCS34725 colorSensor;
+    private final int MIN_RED_CONE = 205;
+    private final int MAX_RED_CONE = 265;
+    private final int MIN_GREEN_CONE = 154;
+    private final int MAX_GREEN_CONE = 214;
+    private final int MIN_BLUE_CONE = 0;
+    private final int MAX_BLUE_CONE = 30;
+    private final int MIN_RED_CUBE = 123;
+    private final int MAX_RED_CUBE = 183;
+    private final int MIN_GREEN_CUBE = 32;
+    private final int MAX_GREEN_CUBE = 92;
+    private final int MIN_BLUE_CUBE = 151;
+    private final int MAX_BLUE_CUBE = 211;
     private SerialPort lightController;
 
     private Mechanism2d mechanism;
@@ -51,11 +41,8 @@ public class GripperSubsystem extends SubsystemBase {
     private MechanismRoot2d rootRight;
     private MechanismLigament2d left;
     private MechanismLigament2d right;
-    }
-    public GripperSubsystem() {
-        ph = new PneumaticHub(Constants.PH_CAN_ID);
-        phCompressor = ph.makeCompressor();
-        phCompressor.enableDigital();
+
+    public GripperSubsystem(PneumaticHub ph) {
 
         gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
         gripperSolenoid.set(Value.kForward);
@@ -66,26 +53,28 @@ public class GripperSubsystem extends SubsystemBase {
 
         rootLeft = mechanism.getRoot("left", 1, 0);
         rootRight = mechanism.getRoot("right", 2, 0);
+
+        left = rootLeft.append(new MechanismLigament2d("left", 1.5, 70));
+        right = rootRight.append(new MechanismLigament2d("right", 1.5, 110));
+
     }
-  public void setClosed() {
-    gripperSolenoid.set(Value.kReverse);
-  }
- 
-  // Pistons that push/pull gripper claws -- toggles position
+
+    // Pistons that push/pull gripper claws -- toggles position
   public void GripperToggle() {
     // if (!ph.getPressureSwitch() && ph.getCompressor())
     if (gripperSolenoid.get() == Value.kOff) {
       gripperSolenoid.set(Value.kForward);
     } else {
       gripperSolenoid.toggle();
-        left = rootLeft.append(new MechanismLigament2d("left", 1.5, 70));
-        right = rootRight.append(new MechanismLigament2d("right", 1.5, 110));
     }
+}
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
     SmartDashboard.putData(gripperSolenoid);
+    SmartDashboard.putData("Gripper", mechanism);
+
   }
     public GamePiece checkColors(int r, int g, int b) {
         if (r >= Constants.MIN_RED_CONE && r <= Constants.MAX_RED_CONE
@@ -117,11 +106,6 @@ public class GripperSubsystem extends SubsystemBase {
         gripperSolenoid.set(Value.kReverse);
         left.setAngle(70);
         right.setAngle(110);
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putData("Gripper", mechanism);
     }
 
     public int lightingInfo(String lightingInput) {

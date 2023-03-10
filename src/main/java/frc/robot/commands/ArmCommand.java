@@ -9,34 +9,33 @@ public class ArmCommand extends CommandBase {
     private boolean relative;
     private double setAngle;
 
-<<<<<<< HEAD
-  @Override
-  public void initialize() {
-    if (relative == true) {
-      m_subsystem.setArmPoistion(setAngle + m_subsystem.getArmSetpoint());
-    } else {
-      m_subsystem.setArmPoistion(setAngle);
-=======
     public ArmCommand(ArmSubsystem subsystem, boolean relative, double setAngle) {
         this.armSubsystem = subsystem;
         this.relative = relative;
         this.setAngle = setAngle;
 
         addRequirements(subsystem);
->>>>>>> origin/master
     }
 
     public void setTargetAngle(double setAngle) {
         this.setAngle = setAngle;
     }
 
-<<<<<<< HEAD
+    @Override
+    public void initialize() {
+      if (relative == true) {
+        armSubsystem.setArmPoistion(setAngle + armSubsystem.getArmSetpoint());
+      } else {
+        armSubsystem.setArmPoistion(setAngle);
+      }
+    }
+
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return m_subsystem.atSetPoint();
+    return armSubsystem.atSetPoint();
   }
-=======
+
     @Override
     public void execute() {
         if (relative == true) {
@@ -45,11 +44,4 @@ public class ArmCommand extends CommandBase {
             armSubsystem.setArmPoistion(setAngle);
         }
     }
-
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
->>>>>>> origin/master
-
 }

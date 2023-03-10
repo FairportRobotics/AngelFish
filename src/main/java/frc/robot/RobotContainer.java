@@ -14,13 +14,10 @@ import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 import com.pathplanner.lib.commands.FollowPathWithEvents;
 
-<<<<<<< HEAD
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.XboxController;
-=======
->>>>>>> origin/master
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -84,25 +81,11 @@ public class RobotContainer {
     private final PathPoint insideRouteStart;
     private final PathPoint insideRouteEnd;
 
-<<<<<<< HEAD
-  private Compressor phCompressor;
-  private PneumaticHub ph;
+    private Compressor phCompressor;
+    private PneumaticHub ph;
 
-  /** The container for the robot. Contains subsystems, OI devices, and commands. */
-  public RobotContainer() {
-    // Initialize Pneumatics Hub
-    ph = new PneumaticHub(Constants.PH_CAN_ID);
-    phCompressor = ph.makeCompressor();
-    phCompressor.enableDigital();
-    
-    this.armSubsystem = new ArmSubsystem(ph);
-    //this.armSubsystem.armMovePosition(2048);
-    this.gripperSubsystem = new GripperSubsystem(ph);
-    this.driveSubsystem = new DriveSubsystem();
-=======
     private final PathPoint outsideRouteStart;
     private final PathPoint outsideRouteEnd;
->>>>>>> origin/master
 
     private final PathPoint chargingStationStart;
 
@@ -122,9 +105,16 @@ public class RobotContainer {
         this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
 
         // Subsystems
-        this.armSubsystem = new ArmSubsystem();
-        this.gripperSubsystem = new GripperSubsystem();
+        // Initialize Pneumatics Hub
+        ph = new PneumaticHub(Constants.PH_CAN_ID);
+        phCompressor = ph.makeCompressor();
+        phCompressor.enableDigital();
+    
+        this.armSubsystem = new ArmSubsystem(ph);
+        //this.armSubsystem.armMovePosition(2048);
+        this.gripperSubsystem = new GripperSubsystem(ph);
         this.driveSubsystem = new DriveSubsystem();
+
         this.lightingSubsystem = new LightingSubsystem();
 
         // Commands
