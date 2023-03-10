@@ -6,13 +6,10 @@ package frc.robot;
 
 import java.util.HashMap;
 
-import javax.swing.text.TabSet;
-
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
-import com.pathplanner.lib.commands.FollowPathWithEvents;
 
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.GenericHID;
@@ -24,12 +21,10 @@ import frc.robot.subsystems.ArmSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
@@ -131,6 +126,8 @@ public class RobotContainer {
         this.driveCommand = new DriveCommand(controller, driveSubsystem);
 
         // Bindings
+        controller.rightBumper().onTrue(Commands.runOnce(()->{driveSubsystem.unlock();}));
+        controller.axisGreaterThan(3, 0.75).onTrue(Commands.runOnce(()->{driveSubsystem.lock();}));
         operator.leftBumper().onTrue(openGripperCommand);
         operator.axisGreaterThan(2, 0.75).onTrue(closeGripperCommand);
 
@@ -274,8 +271,8 @@ public class RobotContainer {
             new WaitCommand(.5),
             new GripperOpenCommand(gripperSubsystem, true),
             new WaitCommand(2),
-            driveSubsystem.followTrajectoryCommand(station, false)
-            
+            driveSubsystem.followTrajectoryCommand(station, false),
+            Commands.runOnce(()->{driveSubsystem.lock();})
         );
     }
 }

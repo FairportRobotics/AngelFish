@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -56,6 +58,8 @@ public class DriveSubsystem extends SubsystemBase {
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
+    private boolean locked;
+
     private final Field2d m_field = new Field2d();
 
     private SlewRateLimiter simVelocityX;
@@ -108,6 +112,12 @@ public class DriveSubsystem extends SubsystemBase {
             .withSteerOffset(Constants.BACK_RIGHT_SWERVE_OFFSET)
             .build();
 
+        ((WPI_TalonFX) frontLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+        ((WPI_TalonFX) frontRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+        ((WPI_TalonFX) backLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+        ((WPI_TalonFX) backRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+
+
         odometry = new SwerveDriveOdometry(
             kinematics,
             Rotation2d.fromDegrees(gyro.getYaw()),
@@ -118,6 +128,8 @@ public class DriveSubsystem extends SubsystemBase {
                 backRightModule.getPosition()
             }
         );
+
+        this.locked = false;
 
         shuffleboardTab.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
         shuffleboardTab.addNumber("Pose X", () -> odometry.getPoseMeters().getX());
@@ -165,6 +177,14 @@ public class DriveSubsystem extends SubsystemBase {
         this.chassisSpeeds = chassisSpeeds;
     }
 
+    public void lock() {
+        this.locked = true;
+    }
+
+    public void unlock() {
+        this.locked = false;
+    }
+
     @Override
     public void periodic() {
         odometry.update(
@@ -176,13 +196,19 @@ public class DriveSubsystem extends SubsystemBase {
                 backRightModule.getPosition()
             }
         );
-
-        SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
-
-        frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
-        frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
-        backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
-        backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+        if (locked) {
+            frontLeftModule.set(0, Math.PI/4);
+            frontRightModule.set(0, 3*Math.PI/4);
+            backLeftModule.set(0, Math.PI/4);
+            backRightModule.set(0, 3*Math.PI/4);
+        } else {
+            frontLeftModule.set(0, 0);
+            SwerveModuleState[] states = kinematics.toSwerveModuleStates(chassisSpeeds);
+            frontLeftModule.set(states[0].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[0].angle.getRadians());
+            frontRightModule.set(states[1].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[1].angle.getRadians());
+            backLeftModule.set(states[2].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[2].angle.getRadians());
+            backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
+        }
         m_field.setRobotPose(getPose());
     }
 
@@ -209,6 +235,7 @@ public class DriveSubsystem extends SubsystemBase {
 
     @Override
     public void simulationPeriodic() {
+        if (locked) { return; }
         double x = getPose().getX();
         double y = getPose().getY();
         Rotation2d rotation = getRotation();
