@@ -88,17 +88,11 @@
       "buttonCount": 0,
       "povCount": 0
     }
-<<<<<<< HEAD
   ],
   "robotJoysticks": [
     {
-      "guid": "030000006f0e00004603000030040000",
-      "useGamepad": true
-    },
-    {
+      "guid": "03000000d62000000220000001010000",
       "useGamepad": true
     }
-=======
->>>>>>> origin/master
   ]
 }
