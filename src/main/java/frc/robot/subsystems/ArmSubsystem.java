@@ -73,8 +73,8 @@ public class ArmSubsystem extends SubsystemBase {
     double armPower = armPIDController.calculate(armAnalogInput.getValue());
     double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()+armAnalogInput.getValue()-wristOffset);
 
-    armPower = Math.max(Math.min(armPower, 0.50), -0.50);
-    wristPower = Math.max(Math.min(wristPower, 0.25), -0.25);
+    armPower = Math.max(Math.min(armPower, 0.75), -0.75);
+    wristPower = Math.max(Math.min(wristPower, 0.50), -0.50);
 
     if(armAnalogInput.getValue() < Constants.ARM_MIN){
       armPower = Math.max(armPower, 0);

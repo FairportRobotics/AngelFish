@@ -14,12 +14,9 @@ import frc.robot.Constants;
 public class GripperSubsystem extends SubsystemBase {
 
   private DoubleSolenoid gripperSolenoid;
-<<<<<<< HEAD
   private DoubleSolenoid brakeSolenoid;
   private PneumaticHub ph;
-=======
   private TCS34725 colorSensor;
->>>>>>> 6a7967bf3aeace9a4181ec43f361d14bcab99976
   private final int MIN_RED_CONE = 205;
   private final int MAX_RED_CONE = 265;
   private final int MIN_GREEN_CONE = 154;
@@ -37,13 +34,10 @@ public class GripperSubsystem extends SubsystemBase {
   public GripperSubsystem(PneumaticHub ph) {
     gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
     gripperSolenoid.set(Value.kForward);
-<<<<<<< HEAD
     brakeSolenoid = ph.makeDoubleSolenoid(Constants.PH_BRAKE_OPEN, Constants.PH_BRAKE_CLOSE);
     brakeSolenoid.set(Value.kForward);
-=======
 
     colorSensor = new TCS34725();
->>>>>>> 6a7967bf3aeace9a4181ec43f361d14bcab99976
   }
 
   public GamePiece checkColors(int r, int g, int b) {
