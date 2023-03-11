@@ -22,6 +22,21 @@ public class ArmCommand extends CommandBase {
     }
 
     @Override
+    public void initialize() {
+      if (relative == true) {
+        armSubsystem.setArmPoistion(setAngle + armSubsystem.getArmSetpoint());
+      } else {
+        armSubsystem.setArmPoistion(setAngle);
+      }
+    }
+
+  // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+    return armSubsystem.atSetPoint();
+  }
+
+    @Override
     public void execute() {
         if (relative == true) {
             armSubsystem.setArmPoistion(setAngle + armSubsystem.getArmSetpoint());
@@ -29,10 +44,4 @@ public class ArmCommand extends CommandBase {
             armSubsystem.setArmPoistion(setAngle);
         }
     }
-
-    @Override
-    public boolean isFinished() {
-        return true;
-    }
-
 }
