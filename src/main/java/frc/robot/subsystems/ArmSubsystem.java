@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -18,6 +19,7 @@ import frc.robot.Util;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
@@ -31,14 +33,12 @@ public class ArmSubsystem extends SubsystemBase {
 
   private AnalogInputSim armAnalogInputSim;
   private AnalogInputSim wristAnalogInputSim;
-  
-  private WPI_TalonFX wristFalcon;
+
+  private WPI_TalonSRX wristMotor;
   private WPI_TalonFX armFalcon;
 
   private PIDController wristPIDController;
   private PIDController armPIDController;
-
-  private double wristOffset;
 
   private Solenoid brakeSolenoid;
 
@@ -61,23 +61,20 @@ public class ArmSubsystem extends SubsystemBase {
     this.armAnalogInputSim = new AnalogInputSim(armAnalogInput);
     this.wristAnalogInputSim = new AnalogInputSim(wristAnalogInput);
 
-
     armFalcon = new WPI_TalonFX(Constants.ARM_FALCON_ID);
     armFalcon.setNeutralMode(NeutralMode.Coast);
 
-    wristFalcon = new WPI_TalonFX(Constants.WRIST_FALCON_ID);
-    wristFalcon.setNeutralMode(NeutralMode.Coast);
+    wristMotor = new WPI_TalonSRX(Constants.WRIST_FALCON_ID);
+    wristMotor.setInverted(true);
+    wristMotor.setNeutralMode(NeutralMode.Coast);
 
-    armPIDController = new PIDController(.001, 0, 0);
-    wristPIDController = new PIDController(.001, 0, 0);
+    armPIDController = new PIDController(.005, 0, 0);
+    wristPIDController = new PIDController(.0015, 0, 0);
 
-    wristPIDController.setSetpoint(0);
-    armPIDController.setSetpoint(Constants.CUBE_LOW_ANGLE);
-
-    this.wristOffset = Constants.NEUTRAL_WRIST_OFFSET;
+    wristPIDController.setSetpoint(wristAnalogInput.getValue());
+    armPIDController.setSetpoint(armAnalogInput.getValue());
 
     this.brakeSolenoid = ph.makeSolenoid(Constants.ARM_BRAKE_ID);
-    setBrakeOn();
 
     this.mechanism = new Mechanism2d(5, 5);
     this.root = mechanism.getRoot("support", 4, 0);
@@ -112,52 +109,60 @@ public class ArmSubsystem extends SubsystemBase {
 
     this.setName("ArmSubsystem");
   }
-  
-  public void brakeOpen () {
-  brakeSolenoid.set(false);
+
+  public void brakeOpen() {
+    brakeSolenoid.set(false);
   }
 
-  public void brakeClosed () {
-  brakeSolenoid.set(true);
+  public void brakeClosed() {
+    brakeSolenoid.set(true);
   }
 
   @Override
   public void periodic() {
     double armPower = armPIDController.calculate(armAnalogInput.getValue());
-    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue()+armAnalogInput.getValue()-wristOffset);
+    double wristPower = wristPIDController.calculate(wristAnalogInput.getValue());
 
-    armPower = Math.max(Math.min(armPower, 0.75), -0.75);
-    wristPower = Math.max(Math.min(wristPower, 0.50), -0.50);
+    armPower = Math.max(Math.min(armPower, 0.25), -0.25);
+    wristPower = Math.max(Math.min(wristPower, 1), -1);
 
-           // If the arm is past its limits, don't allow it to go further
-           if (armAnalogInput.getValue() < Constants.ARM_MIN) { armPower = Math.max(armPower, 0); }
-           if (armAnalogInput.getValue() > Constants.ARM_MAX) { armPower = Math.min(armPower, 0); }
-           if (wristAnalogInput.getValue() < Constants.WRIST_MIN) { wristPower = Math.max(wristPower, 0); }
-           if (wristAnalogInput.getValue() > Constants.WRIST_MAX) { wristPower = Math.min(wristPower, 0); }
-   
-           SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
-           SmartDashboard.putNumber("Arm Power", armPower);
-   
-           SmartDashboard.putNumber("Wrist Position", wristAnalogInput.getValue() + armAnalogInput.getValue() - wristOffset);
-           SmartDashboard.putNumber("Wrist Power", wristPower);
-           SmartDashboard.putNumber("Wrist Potentiometer", wristAnalogInput.getValue());
-           SmartDashboard.putNumber("Wrist Offset", wristOffset);
-   
-           SmartDashboard.putData("Arm Widget", mechanism);
-            
+    // If the arm is past its limits, don't allow it to go further
+    if (armAnalogInput.getValue() < Constants.ARM_MIN) {
+      armPower = Math.max(armPower, 0);
+    }
+    if (armAnalogInput.getValue() > Constants.ARM_MAX) {
+      armPower = Math.min(armPower, 0);
+    }
+    if (wristAnalogInput.getValue() > Constants.WRIST_MIN) {
+      wristPower = Math.min(wristPower, 0);
+    }
+    if (wristAnalogInput.getValue() < Constants.WRIST_MAX) {
+      wristPower = Math.max(wristPower, 0);
+    }
+
+    SmartDashboard.putNumber("Arm Position", armAnalogInput.getValue());
+    SmartDashboard.putNumber("Arm Power", armPower);
+    SmartDashboard.putNumber("Arm SetPoint", armPIDController.getSetpoint());
+
+    SmartDashboard.putNumber("Wrist Setpoint", wristPIDController.getSetpoint());
+    SmartDashboard.putNumber("Wrist Power", wristPower);
+    SmartDashboard.putNumber("Wrist Potentiometer", wristAnalogInput.getValue());
+
+    SmartDashboard.putData("Arm Widget", mechanism);
+
     if (atSetPoint()) {
-        setBrakeOn();
+      //setBrakeOn();
     } else {
-        setBrakeOff();
+      //setBrakeOff();
     }
 
-    if (!brakeSolenoid.get()) {
+    //if (!brakeSolenoid.get()) {
       armFalcon.set(ControlMode.PercentOutput, armPower);
-      wristFalcon.set(ControlMode.PercentOutput, wristPower);
-    } else {
-      armFalcon.set(ControlMode.PercentOutput, 0);
-      wristFalcon.set(ControlMode.PercentOutput, 0);
-    }
+      wristMotor.set(ControlMode.PercentOutput, wristPower);
+    //} else {
+      //armFalcon.set(ControlMode.PercentOutput, 0);
+      //wristMotor.set(ControlMode.PercentOutput, 0);
+    
 
     // Display the current arm state
     arm.setAngle(Util.map(armAnalogInput.getValue(), Constants.ARM_MIN, Constants.ARM_MAX, 180, 0));
@@ -166,6 +171,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   /**
    * Set the target arm position.
+   * 
    * @param armAngle ranges from 0 to 4000
    */
   public void setArmPoistion(double armAngle) {
@@ -174,8 +180,13 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
   public void adjustWristLevel(double offsetAdjustment) {
-    System.out.println(offsetAdjustment);
-    wristOffset += offsetAdjustment;
+    // System.out.println(offsetAdjustment);
+    // wristOffset += offsetAdjustment;
+    wristPIDController.setSetpoint(MathUtil.clamp(offsetAdjustment + wristPIDController.getSetpoint(), Constants.WRIST_MAX, Constants.WRIST_MIN));
+  }
+
+  public void adjustArmLevel(double armAdjustment) {
+    armPIDController.setSetpoint(MathUtil.clamp(armAdjustment + armPIDController.getSetpoint(), Constants.ARM_MIN, Constants.ARM_MAX));
   }
 
   public void setBrakeOn() {
@@ -185,13 +196,14 @@ public class ArmSubsystem extends SubsystemBase {
   public void setBrakeOff() {
     this.brakeSolenoid.set(false);
   }
-  
-  public boolean atSetPoint() { //TODO: probably shoud take into account velocity
+
+  public boolean atSetPoint() { // TODO: probably shoud take into account velocity
     return Math.abs(armPIDController.getPositionError()) < Constants.ARM_TOLERANCE;
   }
 
   /**
    * Get the current arm position.
+   * 
    * @return ranges from 0 to 4000
    */
   public double getArmPosition() {
@@ -200,6 +212,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   /**
    * Get the current arm setpoint.
+   * 
    * @return current arm setpoint
    */
   public double getArmSetpoint() {
@@ -208,19 +221,19 @@ public class ArmSubsystem extends SubsystemBase {
 
   /**
    * Get the current wrist position.
+   * 
    * @return ranges from 0 to 4000
    */
   public double getWristPosition() {
     return wristAnalogInput.getValue();
   }
 
-
-@Override
-public void simulationPeriodic() {
+  @Override
+  public void simulationPeriodic() {
     armSim.setInputVoltage(armFalcon.getMotorOutputVoltage());
-    wristSim.setInputVoltage(wristFalcon.getMotorOutputVoltage());
+    wristSim.setInputVoltage(wristMotor.getMotorOutputVoltage());
     armAnalogInputSim.setVoltage(Util.map(armSim.getAngleRads(), 0, Math.PI, 0.3, 2.3));
-    wristAnalogInputSim.setVoltage(Util.map(wristSim.getAngleRads(), -Math.PI/2, Math.PI/2, 2.1, 4.8));
+    wristAnalogInputSim.setVoltage(Util.map(wristSim.getAngleRads(), -Math.PI / 2, Math.PI / 2, 2.1, 4.8));
 
     armSim.update(0.02);
     wristSim.update(0.02);

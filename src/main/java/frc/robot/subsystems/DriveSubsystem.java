@@ -112,10 +112,10 @@ public class DriveSubsystem extends SubsystemBase {
             .withSteerOffset(Constants.BACK_RIGHT_SWERVE_OFFSET)
             .build();
 
-        ((WPI_TalonFX) frontLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
-        ((WPI_TalonFX) frontRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
-        ((WPI_TalonFX) backLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
-        ((WPI_TalonFX) backRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+        // ((WPI_TalonFX) frontLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+        // ((WPI_TalonFX) frontRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+        // ((WPI_TalonFX) backLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
+        // ((WPI_TalonFX) backRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
 
 
         odometry = new SwerveDriveOdometry(
@@ -188,7 +188,7 @@ public class DriveSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         odometry.update(
-            Robot.isReal() ? Rotation2d.fromDegrees(gyro.getYaw()) : getRotation(),
+            Robot.isReal() ? Rotation2d.fromDegrees(-gyro.getYaw()) : getRotation(),
             new SwerveModulePosition[] {
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
@@ -196,10 +196,10 @@ public class DriveSubsystem extends SubsystemBase {
                 backRightModule.getPosition()
             }
         );
-        SmartDashboard.putNumber("frontLeftSteerAngle", frontLeftModule.getSteerAngle());
-        SmartDashboard.putNumber("frontRightSteerAngle", frontRightModule.getSteerAngle());
-        SmartDashboard.putNumber("backLeftSteerAngle",backLeftModule.getSteerAngle());
-        SmartDashboard.putNumber("backRightSteerAngle", backRightModule.getSteerAngle());
+        SmartDashboard.putNumber("frontLeftSteerAngle", frontLeftModule.getSteerEncoder().getAbsoluteAngle());
+        SmartDashboard.putNumber("frontRightSteerAngle", frontRightModule.getSteerEncoder().getAbsoluteAngle());
+        SmartDashboard.putNumber("backLeftSteerAngle",backLeftModule.getSteerEncoder().getAbsoluteAngle());
+        SmartDashboard.putNumber("backRightSteerAngle", backRightModule.getSteerEncoder().getAbsoluteAngle());
         if (locked) {
             frontLeftModule.set(0, Math.PI/4);
             frontRightModule.set(0, 3*Math.PI/4);

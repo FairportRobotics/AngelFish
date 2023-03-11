@@ -53,7 +53,7 @@ public class RobotContainer {
     private final ArmSubsystem armSubsystem;
     private final GripperSubsystem gripperSubsystem;
     private final DriveSubsystem driveSubsystem;
-    private final LightingSubsystem lightingSubsystem;
+    //private final LightingSubsystem lightingSubsystem;
 
     private final GripperOpenCommand openGripperCommand;
     private final GripperOpenCommand closeGripperCommand;
@@ -110,7 +110,7 @@ public class RobotContainer {
         this.gripperSubsystem = new GripperSubsystem(ph);
         this.driveSubsystem = new DriveSubsystem();
 
-        this.lightingSubsystem = new LightingSubsystem();
+        //this.lightingSubsystem = new LightingSubsystem();
 
         // Commands
         this.openGripperCommand = new GripperOpenCommand(gripperSubsystem, true);
@@ -137,13 +137,13 @@ public class RobotContainer {
         operator.povUp().onTrue(substationArmCommand);
 
         operator.y().onTrue(Commands.runOnce(() -> {
-            lightingSubsystem.setConeColor();
+           // lightingSubsystem.setConeColor();
             lowArmCommand.setTargetAngle(Constants.CONE_LOW_ANGLE);
             midArmCommand.setTargetAngle(Constants.CONE_MID_ANGLE);
             highArmCommand.setTargetAngle(Constants.CONE_HIGH_ANGLE);
         }));
         operator.x().onTrue(Commands.runOnce(() -> {
-            lightingSubsystem.setCubeColor();
+            //lightingSubsystem.setCubeColor();
             lowArmCommand.setTargetAngle(Constants.CUBE_LOW_ANGLE);
             midArmCommand.setTargetAngle(Constants.CUBE_MID_ANGLE);
             highArmCommand.setTargetAngle(Constants.CUBE_HIGH_ANGLE);

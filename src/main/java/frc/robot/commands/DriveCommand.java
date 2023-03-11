@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -11,6 +12,8 @@ public class DriveCommand extends CommandBase {
 
     private DriveSubsystem driveSubsystem;
     private CommandXboxController controller;
+
+    private SlewRateLimiter rotationLimiter;
 
     /**
      * Construct a new drive command.
@@ -42,7 +45,7 @@ public class DriveCommand extends CommandBase {
 
         double speed = controller.getLeftTriggerAxis() > 0.5 ? Constants.FAST_SPEED : Constants.SLOW_SPEED;
 
-        ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(-forward * speed, -strafe * speed, rotate * Constants.ROTATION_RATE, driveSubsystem.getRotation());
+        ChassisSpeeds chassisSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(forward * speed, strafe * speed, rotate * Constants.ROTATION_RATE, driveSubsystem.getRotation());
         
         driveSubsystem.drive(chassisSpeed);
     }

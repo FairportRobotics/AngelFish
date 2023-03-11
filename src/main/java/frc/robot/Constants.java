@@ -8,8 +8,8 @@ public final class Constants {
     public static final int OPERATOR_CONTROLLER = 1;
 
     // Arm & Wrist ID's
-    public static final int ARM_FALCON_ID = 58;
-    public static final int WRIST_FALCON_ID = 20;
+    public static final int ARM_FALCON_ID = 20;
+    public static final int WRIST_FALCON_ID = 50;
 
     public static final int ARM_BRAKE_ID = 4; //TODO: Find actual values
 
@@ -20,62 +20,69 @@ public final class Constants {
 
     // TODO: Remeasure for new arm
     // Arm & Wrist Constraints
-    public static final int WRIST_MIN = 1800;
-    public static final int WRIST_MAX = 4000;
+    public static final int WRIST_MIN = 3000;
+    public static final int WRIST_MAX = 730;
 
-    public static final int ARM_MIN = 249;
-    public static final int ARM_MAX = 1886;
-
-    public static final int NEUTRAL_WRIST_OFFSET = 3750;
+    public static final int ARM_MIN = 4;
+    public static final int ARM_MAX = 1127;
     
     // Arm Setpoints
     public static final double SUBSTATION_ANGLE = 1000;
     
     public static final double CONE_LOW_ANGLE = 325;
-    public static final double CONE_MID_ANGLE = 1380;
-    public static final double CONE_HIGH_ANGLE = 1610;
+    public static final double CONE_MID_ANGLE = 756;
+    public static final double CONE_HIGH_ANGLE = 1035;
 
     public static final double CUBE_LOW_ANGLE = 325;
-    public static final double CUBE_MID_ANGLE = 1050;
-    public static final double CUBE_HIGH_ANGLE = 1370;
+    public static final double CUBE_MID_ANGLE = 745;
+    public static final double CUBE_HIGH_ANGLE = 1100;
+
+    //Wrist Setpoints
+    public static final double WRIST_CONE_LOW_ANGLE = 325;
+    public static final double WRIST_CONE_MID_ANGLE = 1890;
+    public static final double WRIST_CONE_HIGH_ANGLE = 2405;
+
+    public static final double WRIST_CUBE_LOW_ANGLE = 325;
+    public static final double WRIST_CUBE_MID_ANGLE = 2000;
+    public static final double WRIST_CUBE_HIGH_ANGLE = 2350; 
 
     // Swerve
-    public static final double FAST_SPEED = 4; // Meters per second
-    public static final double SLOW_SPEED = 2; // Meters per second
+    public static final double FAST_SPEED = 2; // Meters per second
+    public static final double SLOW_SPEED = 1; // Meters per second
 
-    public static final double ROTATION_RATE = 4; // Radians per second
+    public static final double ROTATION_RATE = 3; // Radians per second
 
-    public static final double DEADBAND_TRANSLATE = 0.05;
-    public static final double DEADBAND_ROTATE = 0.05;
+    public static final double DEADBAND_TRANSLATE = 0.1;
+    public static final double DEADBAND_ROTATE = 0.1;
 
-    public static final double DRIVETRAIN_WHEELBASE_METERS = 1; //TODO
-    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 1;
+    public static final double DRIVETRAIN_WHEELBASE_METERS = 0.5842;
+    public static final double DRIVETRAIN_TRACKWIDTH_METERS = 0.4826;
 
     // Swerve ID's and offsets
     public static final int FRONT_LEFT_DRIVE_ID = 1;
     public static final int FRONT_LEFT_SWERVE_ID = 2;
     public static final int FRONT_LEFT_ENCODER_ID = 3;
-    public static final double FRONT_LEFT_SWERVE_OFFSET = 104.062;
+    public static final double FRONT_LEFT_SWERVE_OFFSET = -Math.toRadians(282.832);
 
     public static final int FRONT_RIGHT_DRIVE_ID = 4;
     public static final int FRONT_RIGHT_SWERVE_ID = 5;
     public static final int FRONT_RIGHT_ENCODER_ID = 6;
-    public static final double FRONT_RIGHT_SWERVE_OFFSET = -12.393;
+    public static final double FRONT_RIGHT_SWERVE_OFFSET = -Math.toRadians(241.787);
 
 
     public static final int BACK_LEFT_DRIVE_ID = 7;
     public static final int BACK_LEFT_SWERVE_ID = 8;
     public static final int BACK_LEFT_ENCODER_ID = 9;
-    public static final double BACK_LEFT_SWERVE_OFFSET = -161.895  ;
+    public static final double BACK_LEFT_SWERVE_OFFSET = -Math.toRadians(155.918);
 
     public static final int BACK_RIGHT_DRIVE_ID = 10;
     public static final int BACK_RIGHT_SWERVE_ID = 11;
     public static final int BACK_RIGHT_ENCODER_ID = 12;
-    public static final double BACK_RIGHT_SWERVE_OFFSET = 291.533 ;
-    
+    public static final double BACK_RIGHT_SWERVE_OFFSET = -Math.toRadians(107.842);
+
     // Gripper Pneumatics
-    public static final int PH_GRIPPER_CLOSE = 2;
-    public static final int PH_GRIPPER_OPEN = 0;
+    public static final int PH_GRIPPER_CLOSE = 3;
+    public static final int PH_GRIPPER_OPEN = 1;
     public static final int PH_CAN_ID = 18;
     // not final ID's for brake
  
