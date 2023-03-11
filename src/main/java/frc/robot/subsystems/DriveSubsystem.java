@@ -196,6 +196,10 @@ public class DriveSubsystem extends SubsystemBase {
                 backRightModule.getPosition()
             }
         );
+        SmartDashboard.putNumber("frontLeftSteerAngle", frontLeftModule.getSteerAngle());
+        SmartDashboard.putNumber("frontRightSteerAngle", frontRightModule.getSteerAngle());
+        SmartDashboard.putNumber("backLeftSteerAngle",backLeftModule.getSteerAngle());
+        SmartDashboard.putNumber("backRightSteerAngle", backRightModule.getSteerAngle());
         if (locked) {
             frontLeftModule.set(0, Math.PI/4);
             frontRightModule.set(0, 3*Math.PI/4);
