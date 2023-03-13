@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -219,78 +221,37 @@ public class DriveSubsystem extends SubsystemBase {
 
         EstimatedRobotPose resultToUse = null;
         double lowestAmbiguity = 1;
-        //We should always have a front camera (front > back)
+
         if(frontCameraRobotFieldPosition != null) {
-            
-            //Set the pose and freeze the positions to prevent issues
-            frontCameraRobotFieldPosition.setLastPose(odometry.getEstimatedPosition());
-            frontCameraRobotFieldPosition.freeze();
-
-            if(backCameraRobotFieldPosition != null) {
-                backCameraRobotFieldPosition.setLastPose(odometry.getEstimatedPosition());
-                backCameraRobotFieldPosition.freeze();
+            frontCameraRobotFieldPosition.setLastPose(getPose());
+            Optional<EstimatedRobotPose> frontCameraPose = frontCameraRobotFieldPosition.getEstimatedGlobalPose();
+            if(frontCameraPose.isPresent()) {
+                for(PhotonTrackedTarget target : frontCameraPose.get().targetsUsed) {
+                    if(target.getPoseAmbiguity() < lowestAmbiguity) {
+                        System.out.println("yes");
+                        lowestAmbiguity = target.getPoseAmbiguity();
+                        resultToUse = frontCameraPose.get();
+                    }
+                }
             }
+        }
 
-            // If both cameras have a result, use the one with the highest ambiguity target inside
-            if(frontCameraRobotFieldPosition.getEstimatedGlobalPose().isPresent() && 
-                    backCameraRobotFieldPosition != null && 
-                    backCameraRobotFieldPosition.getEstimatedGlobalPose().isPresent()) {
-
-
-
-                EstimatedRobotPose frontCameraPose = frontCameraRobotFieldPosition.getEstimatedGlobalPose().get();
-                EstimatedRobotPose backCameraPose = backCameraRobotFieldPosition.getEstimatedGlobalPose().get();
-
-                //Get the pose with the lowest ambiguity target
-                for(PhotonTrackedTarget target : frontCameraPose.targetsUsed) {
-                    if(target.getPoseAmbiguity() < lowestAmbiguity) {
-                        resultToUse = frontCameraPose;
-                        lowestAmbiguity = target.getPoseAmbiguity();
-                    }
-                }
-
-                for(PhotonTrackedTarget target : backCameraPose.targetsUsed) {
-                    if(target.getPoseAmbiguity() < lowestAmbiguity) {
-                        resultToUse = backCameraPose;
-                        lowestAmbiguity = target.getPoseAmbiguity();
-                    }
-                }
-
-                //If only the front camera returned a position
-            } else if(frontCameraRobotFieldPosition.getEstimatedGlobalPose().isPresent()) {
-                for(PhotonTrackedTarget target : frontCameraRobotFieldPosition.getEstimatedGlobalPose().get().targetsUsed) {
+        if(backCameraRobotFieldPosition != null) {
+            frontCameraRobotFieldPosition.setLastPose(getPose());
+            Optional<EstimatedRobotPose> backCameraPose = backCameraRobotFieldPosition.getEstimatedGlobalPose();
+            if(backCameraPose.isPresent()) {
+                for(PhotonTrackedTarget target : backCameraPose.get().targetsUsed) {
                     if(target.getPoseAmbiguity() < lowestAmbiguity) {
                         lowestAmbiguity = target.getPoseAmbiguity();
+                        resultToUse = backCameraPose.get();
                     }
                 }
-                resultToUse = frontCameraRobotFieldPosition.getEstimatedGlobalPose().get();
-
-                //If only the back camera returned a position
-            } else if(backCameraRobotFieldPosition != null && backCameraRobotFieldPosition.getEstimatedGlobalPose().isPresent()) {
-                for(PhotonTrackedTarget target : backCameraRobotFieldPosition.getEstimatedGlobalPose().get().targetsUsed) {
-                    if(target.getPoseAmbiguity() < lowestAmbiguity) {
-                        lowestAmbiguity = target.getPoseAmbiguity();
-                    }
-                }
-                resultToUse = backCameraRobotFieldPosition.getEstimatedGlobalPose().get();
-
-            } 
-
-            frontCameraRobotFieldPosition.unfreeze();
-            if(backCameraRobotFieldPosition != null) {
-                backCameraRobotFieldPosition.unfreeze();
             }
         }
 
         //TODO Factor in the position if ambiguity is above 0.05
         if(resultToUse != null && lowestAmbiguity < 0.05) {
             odometry.addVisionMeasurement(resultToUse.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
-            odometry.resetPosition(Rotation2d.fromDegrees(-gyro.getYaw()), new SwerveModulePosition[]{             
-                frontLeftModule.getPosition(),
-                frontRightModule.getPosition(),
-                backLeftModule.getPosition(),
-                backRightModule.getPosition()}, 
-                new Pose2d(resultToUse.estimatedPose.getX(), resultToUse.estimatedPose.getY(), resultToUse.estimatedPose.getRotation().toRotation2d()));
         }
 
 
