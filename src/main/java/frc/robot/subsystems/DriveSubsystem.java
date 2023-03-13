@@ -1,9 +1,5 @@
 package frc.robot.subsystems;
 
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.stream.Stream;
-
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -19,18 +15,18 @@ import com.swervedrivespecialties.swervelib.MotorType;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -65,7 +61,8 @@ public class DriveSubsystem extends SubsystemBase {
                     Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
             new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
                     -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0));
-    private final SwerveDriveOdometry odometry;
+
+    private final SwerveDrivePoseEstimator odometry;
 
     private RobotFieldPosition frontCameraRobotFieldPosition;
     private RobotFieldPosition backCameraRobotFieldPosition;
@@ -132,7 +129,7 @@ public class DriveSubsystem extends SubsystemBase {
         ((WPI_TalonFX) backRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
 
 
-        odometry = new SwerveDriveOdometry(
+        odometry = new SwerveDrivePoseEstimator(
             kinematics,
             Rotation2d.fromDegrees(gyro.getYaw()),
             new SwerveModulePosition[] {
@@ -140,7 +137,8 @@ public class DriveSubsystem extends SubsystemBase {
                 frontRightModule.getPosition(),
                 backLeftModule.getPosition(),
                 backRightModule.getPosition()
-            }
+            },
+            new Pose2d(0, 0, new Rotation2d())
         );
 
         try { 
@@ -154,8 +152,8 @@ public class DriveSubsystem extends SubsystemBase {
         this.locked = false;
 
         shuffleboardTab.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
-        shuffleboardTab.addNumber("Pose X", () -> odometry.getPoseMeters().getX());
-        shuffleboardTab.addNumber("Pose Y", () -> odometry.getPoseMeters().getY());
+        shuffleboardTab.addNumber("Pose X", () -> odometry.getEstimatedPosition().getX());
+        shuffleboardTab.addNumber("Pose Y", () -> odometry.getEstimatedPosition().getY());
         SmartDashboard.putData("Field", m_field);
         simVelocityX = new SlewRateLimiter(10);
         simVelocityY = new SlewRateLimiter(10);
@@ -169,7 +167,7 @@ public class DriveSubsystem extends SubsystemBase {
                 frontRightModule.getPosition(),
                 backLeftModule.getPosition(),
                 backRightModule.getPosition() },
-            new Pose2d(odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0.0)
+            new Pose2d(odometry.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(0.0)
             )
         );
     }
@@ -188,11 +186,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        return odometry.getPoseMeters().getRotation();
+        return odometry.getEstimatedPosition().getRotation();
     }
 
     public Pose2d getPose() {
-        return odometry.getPoseMeters();
+        return odometry.getEstimatedPosition();
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -223,12 +221,13 @@ public class DriveSubsystem extends SubsystemBase {
         double lowestAmbiguity = 1;
         //We should always have a front camera (front > back)
         if(frontCameraRobotFieldPosition != null) {
+            
             //Set the pose and freeze the positions to prevent issues
-            frontCameraRobotFieldPosition.setLastPose(odometry.getPoseMeters());
+            frontCameraRobotFieldPosition.setLastPose(odometry.getEstimatedPosition());
             frontCameraRobotFieldPosition.freeze();
 
             if(backCameraRobotFieldPosition != null) {
-                backCameraRobotFieldPosition.setLastPose(odometry.getPoseMeters());
+                backCameraRobotFieldPosition.setLastPose(odometry.getEstimatedPosition());
                 backCameraRobotFieldPosition.freeze();
             }
 
@@ -285,6 +284,7 @@ public class DriveSubsystem extends SubsystemBase {
 
         //TODO Factor in the position if ambiguity is above 0.05
         if(resultToUse != null && lowestAmbiguity < 0.05) {
+            odometry.addVisionMeasurement(resultToUse.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
             odometry.resetPosition(Rotation2d.fromDegrees(-gyro.getYaw()), new SwerveModulePosition[]{             
                 frontLeftModule.getPosition(),
                 frontRightModule.getPosition(),
@@ -309,6 +309,7 @@ public class DriveSubsystem extends SubsystemBase {
             backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         }
         m_field.setRobotPose(getPose());
+
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
