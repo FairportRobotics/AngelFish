@@ -219,19 +219,20 @@ public class DriveSubsystem extends SubsystemBase {
             }
         );
 
-        EstimatedRobotPose resultToUse = null;
-        double lowestAmbiguity = 1;
 
         if(frontCameraRobotFieldPosition != null) {
             frontCameraRobotFieldPosition.setLastPose(getPose());
             Optional<EstimatedRobotPose> frontCameraPose = frontCameraRobotFieldPosition.getEstimatedGlobalPose();
             if(frontCameraPose.isPresent()) {
+                double lowestAmbiguity = 1;
                 for(PhotonTrackedTarget target : frontCameraPose.get().targetsUsed) {
                     if(target.getPoseAmbiguity() < lowestAmbiguity) {
                         System.out.println("yes");
                         lowestAmbiguity = target.getPoseAmbiguity();
-                        resultToUse = frontCameraPose.get();
                     }
+                }
+                if (lowestAmbiguity < 0.3) {
+                    odometry.addVisionMeasurement(frontCameraPose.get().estimatedPose.toPose2d(), Timer.getFPGATimestamp());
                 }
             }
         }
@@ -240,18 +241,16 @@ public class DriveSubsystem extends SubsystemBase {
             frontCameraRobotFieldPosition.setLastPose(getPose());
             Optional<EstimatedRobotPose> backCameraPose = backCameraRobotFieldPosition.getEstimatedGlobalPose();
             if(backCameraPose.isPresent()) {
+                double lowestAmbiguity = 1;
                 for(PhotonTrackedTarget target : backCameraPose.get().targetsUsed) {
                     if(target.getPoseAmbiguity() < lowestAmbiguity) {
                         lowestAmbiguity = target.getPoseAmbiguity();
-                        resultToUse = backCameraPose.get();
                     }
                 }
+                if (lowestAmbiguity < 0.3) {
+                    odometry.addVisionMeasurement(backCameraPose.get().estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+                }
             }
-        }
-
-        //TODO Factor in the position if ambiguity is above 0.05
-        if(resultToUse != null && lowestAmbiguity < 0.05) {
-            odometry.addVisionMeasurement(resultToUse.estimatedPose.toPose2d(), Timer.getFPGATimestamp());
         }
 
 
