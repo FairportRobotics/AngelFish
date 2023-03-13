@@ -11,6 +11,10 @@ import com.pathplanner.lib.PathPlanner;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.PathPoint;
 
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PneumaticHub;
+import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.DriveCommand;
 import frc.robot.commands.ArmCommand;
 import frc.robot.subsystems.ArmSubsystem;
@@ -72,6 +76,9 @@ public class RobotContainer {
     private final PathPoint insideRouteStart;
     private final PathPoint insideRouteEnd;
 
+    private Compressor phCompressor;
+    private PneumaticHub ph;
+
     private final PathPoint outsideRouteStart;
     private final PathPoint outsideRouteEnd;
 
@@ -93,9 +100,16 @@ public class RobotContainer {
         this.operator = new CommandXboxController(Constants.OPERATOR_CONTROLLER);
 
         // Subsystems
-        this.armSubsystem = new ArmSubsystem();
-        this.gripperSubsystem = new GripperSubsystem();
+        // Initialize Pneumatics Hub
+        ph = new PneumaticHub(Constants.PH_CAN_ID);
+        phCompressor = ph.makeCompressor();
+        phCompressor.enableDigital();
+    
+        this.armSubsystem = new ArmSubsystem(ph);
+        //this.armSubsystem.armMovePosition(2048);
+        this.gripperSubsystem = new GripperSubsystem(ph);
         this.driveSubsystem = new DriveSubsystem();
+
         this.lightingSubsystem = new LightingSubsystem();
 
         // Commands

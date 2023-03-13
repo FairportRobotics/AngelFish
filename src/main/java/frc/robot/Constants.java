@@ -14,6 +14,10 @@ public final class Constants {
     public static final int ARM_FALCON_ID = 58;
     public static final int WRIST_FALCON_ID = 20;
 
+    public static final int ARM_BRAKE_ID = 4; //TODO: Find actual values
+
+    public static final int ARM_TOLERANCE = 50;
+
     public static final int ARM_PE_ID = 1;
     public static final int WRIST_PE_ID = 0;
 
@@ -76,7 +80,8 @@ public final class Constants {
     public static final int PH_GRIPPER_CLOSE = 2;
     public static final int PH_GRIPPER_OPEN = 0;
     public static final int PH_CAN_ID = 18;
-
+    // not final ID's for brake
+ 
     // Cone & Cube RBG Thresholds
     public static final int MIN_RED_CONE = 205;
     public static final int MAX_RED_CONE = 265;

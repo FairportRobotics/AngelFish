@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725;
 import com.fairportrobotics.frc.poe.sensors.colorsensors.TCS34725.TCS34725_RGB;
 
-import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.PneumaticHub;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -18,8 +17,6 @@ import frc.robot.Constants;
 public class GripperSubsystem extends SubsystemBase {
 
     private DoubleSolenoid gripperSolenoid;
-    private PneumaticHub ph;
-    private Compressor phCompressor;
     private TCS34725 colorSensor;
     private SerialPort lightController;
 
@@ -29,10 +26,7 @@ public class GripperSubsystem extends SubsystemBase {
     private MechanismLigament2d left;
     private MechanismLigament2d right;
 
-    public GripperSubsystem() {
-        ph = new PneumaticHub(Constants.PH_CAN_ID);
-        phCompressor = ph.makeCompressor();
-        phCompressor.enableDigital();
+    public GripperSubsystem(PneumaticHub ph) {
 
         gripperSolenoid = ph.makeDoubleSolenoid(Constants.PH_GRIPPER_OPEN, Constants.PH_GRIPPER_CLOSE);
         gripperSolenoid.set(Value.kForward);
@@ -46,8 +40,26 @@ public class GripperSubsystem extends SubsystemBase {
 
         left = rootLeft.append(new MechanismLigament2d("left", 1.5, 70));
         right = rootRight.append(new MechanismLigament2d("right", 1.5, 110));
+
     }
 
+    // Pistons that push/pull gripper claws -- toggles position
+  public void GripperToggle() {
+    // if (!ph.getPressureSwitch() && ph.getCompressor())
+    if (gripperSolenoid.get() == Value.kOff) {
+      gripperSolenoid.set(Value.kForward);
+    } else {
+      gripperSolenoid.toggle();
+    }
+}
+
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+    SmartDashboard.putData(gripperSolenoid);
+    SmartDashboard.putData("Gripper", mechanism);
+
+  }
     public GamePiece checkColors(int r, int g, int b) {
         if (r >= Constants.MIN_RED_CONE && r <= Constants.MAX_RED_CONE
                 && g >= Constants.MIN_GREEN_CONE && g <= Constants.MAX_GREEN_CONE
@@ -78,11 +90,6 @@ public class GripperSubsystem extends SubsystemBase {
         gripperSolenoid.set(Value.kReverse);
         left.setAngle(70);
         right.setAngle(110);
-    }
-
-    @Override
-    public void periodic() {
-        SmartDashboard.putData("Gripper", mechanism);
     }
 
     public int lightingInfo(String lightingInput) {
