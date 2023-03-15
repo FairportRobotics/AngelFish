@@ -1,7 +1,14 @@
 package frc.robot.subsystems;
 
+import java.util.Optional;
+
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.fairportrobotics.frc.poe.CameraTracking.RobotFieldPosition;
 import com.kauailabs.navx.frc.AHRS;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.commands.PPSwerveControllerCommand;
@@ -10,16 +17,18 @@ import com.swervedrivespecialties.swervelib.MotorType;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
 
+import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -54,7 +63,11 @@ public class DriveSubsystem extends SubsystemBase {
                     Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0),
             new Translation2d(-Constants.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
                     -Constants.DRIVETRAIN_WHEELBASE_METERS / 2.0));
-    private final SwerveDriveOdometry odometry;
+
+    private final SwerveDrivePoseEstimator odometry;
+
+    private RobotFieldPosition frontCameraRobotFieldPosition;
+    private RobotFieldPosition backCameraRobotFieldPosition;
 
     private ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
@@ -118,7 +131,7 @@ public class DriveSubsystem extends SubsystemBase {
         ((WPI_TalonFX) backRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Brake);
 
 
-        odometry = new SwerveDriveOdometry(
+        odometry = new SwerveDrivePoseEstimator(
             kinematics,
             Rotation2d.fromDegrees(gyro.getYaw()),
             new SwerveModulePosition[] {
@@ -126,14 +139,23 @@ public class DriveSubsystem extends SubsystemBase {
                 frontRightModule.getPosition(),
                 backLeftModule.getPosition(),
                 backRightModule.getPosition()
-            }
+            },
+            new Pose2d(0, 0, new Rotation2d())
         );
+
+        try { 
+            frontCameraRobotFieldPosition = new RobotFieldPosition("front-facing", Constants.FRONT_CAM_TO_CENTER, AprilTagFields.k2023ChargedUp.m_resourceFile, PoseStrategy.CLOSEST_TO_LAST_POSE);
+            //backCameraRobotFieldPosition = new RobotFieldPosition("back-facing", Constants.FRONT_CAM_TO_CENTER, AprilTagFields.k2023ChargedUp.m_resourceFile, PoseStrategy.CLOSEST_TO_LAST_POSE);
+        } catch (Exception e) {
+            System.out.println("Failed To Load AprilTagLayout (basically we don't have april tag based file positioning)");
+            e.printStackTrace();
+        }
 
         this.locked = false;
 
         shuffleboardTab.addNumber("Gyroscope Angle", () -> getRotation().getDegrees());
-        shuffleboardTab.addNumber("Pose X", () -> odometry.getPoseMeters().getX());
-        shuffleboardTab.addNumber("Pose Y", () -> odometry.getPoseMeters().getY());
+        shuffleboardTab.addNumber("Pose X", () -> odometry.getEstimatedPosition().getX());
+        shuffleboardTab.addNumber("Pose Y", () -> odometry.getEstimatedPosition().getY());
         SmartDashboard.putData("Field", m_field);
         simVelocityX = new SlewRateLimiter(10);
         simVelocityY = new SlewRateLimiter(10);
@@ -147,7 +169,7 @@ public class DriveSubsystem extends SubsystemBase {
                 frontRightModule.getPosition(),
                 backLeftModule.getPosition(),
                 backRightModule.getPosition() },
-            new Pose2d(odometry.getPoseMeters().getTranslation(), Rotation2d.fromDegrees(0.0)
+            new Pose2d(odometry.getEstimatedPosition().getTranslation(), Rotation2d.fromDegrees(0.0)
             )
         );
     }
@@ -166,11 +188,11 @@ public class DriveSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getRotation() {
-        return odometry.getPoseMeters().getRotation();
+        return odometry.getEstimatedPosition().getRotation();
     }
 
     public Pose2d getPose() {
-        return odometry.getPoseMeters();
+        return odometry.getEstimatedPosition();
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -196,6 +218,43 @@ public class DriveSubsystem extends SubsystemBase {
                 backRightModule.getPosition()
             }
         );
+
+
+        if(frontCameraRobotFieldPosition != null) {
+            frontCameraRobotFieldPosition.setLastPose(getPose());
+            Optional<EstimatedRobotPose> frontCameraPose = frontCameraRobotFieldPosition.getEstimatedGlobalPose();
+            if(frontCameraPose.isPresent()) {
+                double lowestAmbiguity = 1;
+                for(PhotonTrackedTarget target : frontCameraPose.get().targetsUsed) {
+                    if(target.getPoseAmbiguity() < lowestAmbiguity) {
+                        System.out.println("yes");
+                        lowestAmbiguity = target.getPoseAmbiguity();
+                    }
+                }
+                if (lowestAmbiguity < 0.3) {
+                    odometry.addVisionMeasurement(frontCameraPose.get().estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+                }
+            }
+        }
+
+        if(backCameraRobotFieldPosition != null) {
+            frontCameraRobotFieldPosition.setLastPose(getPose());
+            Optional<EstimatedRobotPose> backCameraPose = backCameraRobotFieldPosition.getEstimatedGlobalPose();
+            if(backCameraPose.isPresent()) {
+                double lowestAmbiguity = 1;
+                for(PhotonTrackedTarget target : backCameraPose.get().targetsUsed) {
+                    if(target.getPoseAmbiguity() < lowestAmbiguity) {
+                        lowestAmbiguity = target.getPoseAmbiguity();
+                    }
+                }
+                if (lowestAmbiguity < 0.3) {
+                    odometry.addVisionMeasurement(backCameraPose.get().estimatedPose.toPose2d(), Timer.getFPGATimestamp());
+                }
+            }
+        }
+
+
+
         if (locked) {
             frontLeftModule.set(0, Math.PI/4);
             frontRightModule.set(0, 3*Math.PI/4);
@@ -210,6 +269,7 @@ public class DriveSubsystem extends SubsystemBase {
             backRightModule.set(states[3].speedMetersPerSecond / MAX_VELOCITY_METERS_PER_SECOND * MAX_VOLTAGE, states[3].angle.getRadians());
         }
         m_field.setRobotPose(getPose());
+
     }
 
     public Command followTrajectoryCommand(PathPlannerTrajectory traj, boolean isFirstPath) {
